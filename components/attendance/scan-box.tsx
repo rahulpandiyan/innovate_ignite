@@ -68,6 +68,21 @@ export function ScanBox() {
           throw new Error("This browser does not support camera access");
         }
 
+        try {
+          const cameraPermission = await navigator.permissions.query({
+            name: "camera" as PermissionName,
+          });
+          if (cameraPermission.state === "denied") {
+            throw new Error(
+              "Camera permission is blocked. Click the lock icon beside the address, set Camera to Allow, then reload this page."
+            );
+          }
+        } catch (permissionError: any) {
+          if (permissionError.message?.includes("Camera permission is blocked")) {
+            throw permissionError;
+          }
+        }
+
         // Request permission explicitly before the QR library creates its video stream.
         const permissionStream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: "environment" },
@@ -96,9 +111,13 @@ export function ScanBox() {
         console.error("Camera start error:", err);
 
         if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
-          setError("Camera access denied. Please allow camera permissions in your browser.");
+          setError(
+            "Camera access was denied. Click the lock icon beside the address, set Camera to Allow, reload this page, and try again."
+          );
         } else if (err.name === "NotFoundError") {
           setError("No camera found on this device.");
+        } else if (err.message?.includes("Camera permission is blocked")) {
+          setError(err.message);
         } else if (err.message?.includes("HTTPS") || err.message?.includes("support camera")) {
           setError(err.message);
         } else {

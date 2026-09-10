@@ -3,9 +3,6 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
     reactStrictMode: true,
 
-    eslint: {
-        ignoreDuringBuilds: true, // Ensures best practices are followed
-    },
     typescript: {
         ignoreBuildErrors: true, // Prevents broken builds due to TypeScript errors
     },
@@ -52,7 +49,7 @@ const nextConfig: NextConfig = {
                     },
                     {
                         key: "Permissions-Policy",
-                        value: "geolocation=(), microphone=(), camera=()", // Blocks unnecessary access
+                        value: "geolocation=(), microphone=(), camera=(self)",
                     },
                 ],
             },
