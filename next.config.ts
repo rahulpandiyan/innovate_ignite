@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
     reactStrictMode: true,
+    allowedDevOrigins: ["shriek-bullish-chaste.ngrok-free.dev"],
 
     typescript: {
         ignoreBuildErrors: true, // Prevents broken builds due to TypeScript errors
