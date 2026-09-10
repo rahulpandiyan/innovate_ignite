@@ -118,7 +118,23 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-16 pt-8 border-t border-gat-cobalt/30 flex items-center justify-center">
           <p className="w-full text-center text-xs text-gat-steel font-body">
-            © 2026 VVIT Innovate Ignite · Made by Rahul × Sam · No bugs were harmed.
+            © 2026 VVIT Innovate Ignite · Made by{" "}
+            <a
+              href="https://www.linkedin.com/in/rahulpandiyan/"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-gat-gold transition-colors"
+            >
+              Rahul
+            </a>{" "}×{" "}
+            <a
+              href="https://www.linkedin.com/in/samgoldwin/"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-gat-gold transition-colors"
+            >
+              Sam
+            </a>{" "}· No bugs were harmed.
           </p>
         </div>
       </div>
