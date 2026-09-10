@@ -151,7 +151,7 @@ export default async function DashboardOverviewPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Welcome, {user.name.split(" ")[0]}</h1>
         <p className="text-muted-foreground">
-          Your participant dashboard for INTERACT 2026.
+          Your participant dashboard for VVIT Innovate Ignite.
         </p>
       </div>
 

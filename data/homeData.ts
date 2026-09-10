@@ -26,7 +26,7 @@ export const categories = [
     accent: "hsl(224 68% 30%)",
     accentLight: "hsl(224 68% 30% / 0.08)",
     accentBorder: "hsl(224 68% 30% / 0.2)",
-    tags: ["Voice of GAT", "Instrumental", "Classical"],
+    tags: ["VVIT Voice", "Instrumental", "Classical"],
   },
   {
     name: "Fashion",
@@ -67,6 +67,6 @@ export const categories = [
 ];
 
 export const marqueeItems = [
-  "Mimicry", "Dance Battle", "Voice of GAT", "Ramp Walk", "Debate",
+  "Mimicry", "Dance Battle", "VVIT Voice", "Ramp Walk", "Debate",
   "Painting", "Photography", "Quiz", "Mime", "Skit",
 ];

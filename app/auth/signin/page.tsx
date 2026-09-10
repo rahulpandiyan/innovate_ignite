@@ -35,7 +35,7 @@ import { motion } from "framer-motion";
 
 // Import logos and background image – paths unchanged
 import gatLogo from "@/public/images/gat-logo.png";
-import interactLogo from "@/public/gat-logos/INTERACT2K26.png";
+import innovateIgniteLogo from "@/public/gat-logos/VVIT-Innovate-Ignite.png";
 import MagneticButton from "@/components/ui/MagneticButton";
 
 export default function SignIn() {
@@ -116,7 +116,7 @@ export default function SignIn() {
         }}
         aria-hidden
       >
-        INTERACT
+        VVIT Innovate Ignite
       </div>
       <div
         className="font-display absolute right-[-2%] top-[4%] font-black leading-none select-none pointer-events-none"
@@ -157,7 +157,7 @@ export default function SignIn() {
               className="text-xs font-bold uppercase tracking-[0.18em] mx-12 flex-shrink-0"
               style={{ color: "hsl(var(--foreground) / 0.5)" }}
             >
-              Registrations Starting Soon · Stay tuned for updates · INTERACT 2K26 ·
+              Registrations Starting Soon · Stay tuned for updates · VVIT Innovate Ignite ·
             </span>
           ))}
         </div>
@@ -189,14 +189,14 @@ export default function SignIn() {
               <div className="mb-2 flex items-center justify-center gap-4">
                 <Image
                   src={gatLogo}
-                  alt="GAT Logo"
+                  alt="VVIT Logo"
                   width={52}
                   height={52}
                   className="object-contain opacity-100"
                 />
                 <Image
-                  src={interactLogo}
-                  alt="INTERACT Logo"
+                  src={innovateIgniteLogo}
+                  alt="VVIT Innovate Ignite Logo"
                   width={52}
                   height={52}
                   className="object-contain opacity-100"
@@ -209,7 +209,7 @@ export default function SignIn() {
                   className="font-display text-4xl font-black tracking-tighter"
                   style={{ color: "hsl(var(--foreground))" }}
                 >
-                  INTERACT
+                  VVIT Innovate Ignite
                 </h1>
                 <span
                   className="font-display text-2xl font-black tracking-tight"

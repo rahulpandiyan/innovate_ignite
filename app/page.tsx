@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import interactLogo from "@/public/gat-logos/INTERACT2K26.png";
+import innovateIgniteLogo from "@/public/gat-logos/VVIT-Innovate-Ignite.png";
 import { ArrowRight, MapPin, Calendar } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { categories, marqueeItems } from "@/data/homeData";
@@ -141,8 +141,8 @@ export default function Home() {
           aria-hidden
         >
           <Image
-            src={interactLogo}
-            alt="Interact Logo Watermark"
+            src={innovateIgniteLogo}
+                alt="VVIT Innovate Ignite Logo Watermark"
             className="w-full h-auto object-contain"
             priority
           />
@@ -156,7 +156,7 @@ export default function Home() {
             transition={{ duration: 0.45 }}
           >
             <span className="pill-badge mb-8 inline-flex">
-              Global Academy of Technology Presents
+              VVIT Innovate Ignite Presents
             </span>
           </motion.div>
 
@@ -259,7 +259,7 @@ export default function Home() {
               style={{ color: "hsl(var(--muted))" }}
             >
               <MapPin size={12} />
-              GAT Campus, Bengaluru
+              VVIT Campus, Bengaluru
             </span>
           </motion.div>
         </div>
@@ -382,7 +382,7 @@ export default function Home() {
           }}
           aria-hidden
         >
-          INTERACT
+          VVIT Innovate Ignite
         </div>
         {/* ghost watermark */}
         <div
@@ -417,7 +417,7 @@ export default function Home() {
                 className="text-base leading-relaxed mb-8 max-w-sm"
                 style={{ color: "hsl(var(--muted-foreground))" }}
               >
-                Plan your days ahead to make the most of INTERACT 2026. Every slot is a story — pick yours.
+                Plan your days ahead to make the most of VVIT Innovate Ignite. Every slot is a story — pick yours.
               </p>
               <button
                 disabled
@@ -457,7 +457,7 @@ export default function Home() {
           >
             READY TO
             <br />
-            <span style={{ color: "hsl(var(--secondary))" }}>INTERACT?</span>
+            <span style={{ color: "hsl(var(--secondary))" }}>VVIT Innovate Ignite?</span>
           </h2>
           <p
             className="text-base leading-relaxed mb-8"

@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/form";
 
 import gatLogo from "@/public/images/gat-logo.png";
-import interactLogo from "@/public/gat-logos/INTERACT2K26.png";
+import innovateIgniteLogo from "@/public/gat-logos/VVIT-Innovate-Ignite.png";
 
 const schema = z.object({
   email: z.string().email("Invalid email address"),
@@ -85,8 +85,8 @@ export default function ForgotPasswordPage() {
           <div className="px-8 pt-8 pb-6 border-b" style={{ borderColor: "hsl(var(--border))" }}>
             <div className="flex flex-col items-center text-center gap-3">
               <div className="mb-2 flex items-center justify-center gap-4">
-                <Image src={gatLogo} alt="GAT Logo" width={52} height={52} className="object-contain" />
-                <Image src={interactLogo} alt="INTERACT Logo" width={52} height={52} className="object-contain" />
+                <Image src={gatLogo} alt="VVIT Logo" width={52} height={52} className="object-contain" />
+                <Image src={innovateIgniteLogo} alt="VVIT Innovate Ignite Logo" width={52} height={52} className="object-contain" />
               </div>
               <div className="flex items-center gap-2">
                 <h1 className="font-display text-3xl font-black tracking-tighter" style={{ color: "hsl(var(--foreground))" }}>
@@ -94,7 +94,7 @@ export default function ForgotPasswordPage() {
                 </h1>
               </div>
               <p className="font-mono-jb text-xs font-semibold tracking-[0.2em] uppercase" style={{ color: "hsl(var(--muted))" }}>
-                INTERACT 2K26
+                VVIT Innovate Ignite
               </p>
             </div>
           </div>

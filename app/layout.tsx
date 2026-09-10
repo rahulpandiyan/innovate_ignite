@@ -14,17 +14,18 @@ const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" });
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono" });
 
 export const metadata = {
-  metadataBase: new URL("https://www.vtufestinteract.com"),
+  metadataBase: new URL("https://www.vvitinnovateignite.com"),
   title: {
-    default: "Home - INTERACT 2026",
-    template: "%s - INTERACT 2026",
+    default: "Home - VVIT Innovate Ignite",
+    template: "%s - VVIT Innovate Ignite",
   },
   description:
-    "Join Global Academy of Technology for INTERACT 2026 – a celebration of innovation, creativity, and technology at one of the biggest college fests. Explore events, workshops, and performances designed for a memorable experience.",
+    "Vijaya Vittala Institute Of Technology presents Innovate Ignite, a celebration of innovation, creativity, and technology. Explore events, workshops, and performances designed for a memorable experience.",
   keywords: [
-    "INTERACT 2026",
-    "Global Academy of Technology",
-    "gat fest 2026",
+    "VVIT Innovate Ignite",
+    "VVIT",
+    "Innovate Ignite",
+    "Vijaya Vittala Institute Of Technology",
     "college fest",
     "tech fest",
     "university festival",
@@ -34,31 +35,31 @@ export const metadata = {
   ],
   authors: [{ name: "Bhuvan S A", url: "https://www.bhuvansa.com/" }],
   creator: "Bhuvan S A",
-  publisher: "Global Academy of Technology",
+  publisher: "Vijaya Vittala Institute Of Technology",
   openGraph: {
-    url: "https://www.vtufestinteract.com",
-    siteName: "INTERACT 2026",
+    url: "https://www.vvitinnovateignite.com",
+    siteName: "VVIT Innovate Ignite",
     type: "website",
-    title: "INTERACT 2026",
+    title: "VVIT Innovate Ignite",
     description:
-      "Join Global Academy of Technology for INTERACT 2026 – a celebration of innovation, creativity, and technology with events, workshops, and performances designed for an unforgettable experience.",
+      "Join VVIT Innovate Ignite, a celebration of innovation, creativity, and technology with events, workshops, and performances designed for an unforgettable experience.",
     images: [
       {
-        url: "https://www.vtufestinteract.com/images/og-image.jpg",
+        url: "https://www.vvitinnovateignite.com/images/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "INTERACT 2026",
+        alt: "VVIT Innovate Ignite",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "INTERACT 2026",
+    title: "VVIT Innovate Ignite",
     description:
-      "Experience the best of innovation and creativity at INTERACT 2026 hosted by Global Academy of Technology.",
-    site: "@vtufest2026",
+      "Experience the best of innovation and creativity at VVIT Innovate Ignite.",
+    site: "@vvitinnovateignite",
     creator: "@bhuvansa",
-    images: ["https://www.vtufestinteract.com/images/og-image.jpg"],
+    images: ["https://www.vvitinnovateignite.com/images/og-image.jpg"],
   },
 };
 

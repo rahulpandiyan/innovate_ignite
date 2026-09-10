@@ -16,11 +16,11 @@ async function generateAdminHash() {
       `INSERT INTO "Users" (email, phone, collegeName, collegeCode, region, password, role, "createdAt") VALUES`,
     );
     console.log(
-      `('admin@interact2k26.com', '9999999999', 'Global Academy of Technology', 'ADMIN001', 'Bangalore', '${hash}', 'ADMIN', NOW());`,
+      `('admin@vvitinnovateignite.in', '9999999999', 'Vijaya Vittala Institute Of Technology', 'ADMIN001', 'Bangalore', '${hash}', 'ADMIN', NOW());`,
     );
     console.log("");
     console.log("=== Login Credentials ===");
-    console.log(`Email: admin@interact2k26.com`);
+    console.log(`Email: admin@vvitinnovateignite.in`);
     console.log(`Password: ${plainPassword}`);
     console.log("");
     console.log(

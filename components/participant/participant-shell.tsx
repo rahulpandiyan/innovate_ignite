@@ -149,7 +149,7 @@ export function ParticipantShell({
                     <ShieldCheck className="size-4" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">My Interact</span>
+                    <span className="truncate font-semibold">My Innovate Ignite</span>
                     <span className="truncate text-xs">Participant</span>
                   </div>
                 </Link>

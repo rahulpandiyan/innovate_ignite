@@ -58,7 +58,7 @@ export default function Sponsors() {
               OUR <span className="text-[hsl(var(--primary))]">SPONSORS.</span>
             </h1>
             <p className="text-[hsl(var(--muted-foreground))] text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-              We extend our heartfelt gratitude to the incredible organizations driving INTERACT 2026 forward. Their support makes this techno-cultural fest a reality.
+              We extend our heartfelt gratitude to the incredible organizations driving VVIT Innovate Ignite forward. Their support makes this techno-cultural fest a reality.
             </p>
           </motion.div>
         </div>
@@ -166,7 +166,7 @@ export default function Sponsors() {
             </h2>
             <p className="text-[hsl(var(--muted-foreground))] mb-10 text-lg">
               Want to showcase your brand to thousands of tech enthusiasts and future leaders? 
-              Partner with INTERACT 2026 and be a part of the biggest techno-cultural fest.
+              Partner with VVIT Innovate Ignite and be a part of the biggest techno-cultural fest.
             </p>
             <Link
               href="/contactus"

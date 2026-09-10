@@ -120,7 +120,7 @@ const ThemeSection = () => {
           </p>
           <p className="text-xl text-[#003366] mb-4">
             <strong>Date:</strong> 24th - 27th March 2025 •{" "}
-            <strong>Venue:</strong> Global Academy of Technology, Bengaluru
+            <strong>Venue:</strong> Vijaya Vittala Institute Of Technology, Bengaluru
           </p>
           <p className="text-xl text-justify text-[#003366]">
             Come, immerse yourself in the soul of Karnataka and the pulse of

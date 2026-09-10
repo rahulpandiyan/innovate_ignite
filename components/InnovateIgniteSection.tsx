@@ -1,13 +1,13 @@
 "use client";
 
-const Interact2K26Section = () => {
+const InnovateIgniteSection = () => {
   return (
     <div className="max-w-5xl mx-auto border border-gray-300 rounded-lg overflow-hidden shadow-lg mb-8">
       <section className="bg-white text-black py-16 px-4 md:px-8">
         {/* Main Heading */}
         <div className="text-center mb-12">
           {/* <h2 className="text-5xl md:text-6xl font-extrabold text-[#003366] mb-4">
-            INTERACT 2K26 IS BACK!
+            VVIT Innovate Ignite IS BACK!
           </h2> */}
           <p className="text-2xl md:text-3xl font-bold text-[#D32F23] mb-2">
             With a Spectacular Lineup of Events
@@ -83,7 +83,7 @@ const Interact2K26Section = () => {
         {/* Why Attend Section */}
         <div className="bg-gray-50 p-8 rounded-lg border border-gray-300 mb-12">
           <h3 className="text-3xl font-bold text-[#003366] mb-6">
-            Why Attend Interact 2K26?
+            Why Attend VVIT Innovate Ignite?
           </h3>
           <ul className="space-y-4">
             <li className="flex items-start gap-3">
@@ -127,7 +127,7 @@ const Interact2K26Section = () => {
             brilliance, creativity, and celebration.
           </p>
           <p className="text-lg font-semibold text-[#D32F23] mb-4">
-            Coming Soon... | Global Academy of Technology, Bengaluru
+            Coming Soon... | VVIT Innovate Ignite, Bengaluru
           </p>
           <p className="text-black/60 italic">
             "The only limit is your imagination. Come, celebrate, perform,
@@ -139,4 +139,4 @@ const Interact2K26Section = () => {
   );
 };
 
-export default Interact2K26Section;
+export default InnovateIgniteSection;

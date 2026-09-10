@@ -39,7 +39,7 @@ export default async function VerifyCertificatePage({
           <CardTitle className="mt-3 text-2xl">
             {certificate.participant.user.name}
           </CardTitle>
-          <CardDescription>INTERACT 2026</CardDescription>
+          <CardDescription>VVIT Innovate Ignite</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <Row label="Type" value={humanizeType(certificate.type)} badge />
@@ -53,7 +53,7 @@ export default async function VerifyCertificatePage({
         </CardContent>
       </Card>
       <p className="mt-4 text-xs text-muted-foreground">
-        This page confirms the certificate above was officially issued by the INTERACT 2026
+        This page confirms the certificate above was officially issued by the VVIT Innovate Ignite
         committee.
       </p>
     </div>

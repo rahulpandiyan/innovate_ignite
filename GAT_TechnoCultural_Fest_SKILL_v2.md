@@ -1,11 +1,11 @@
-# SKILL.md — GAT Techno-Cultural Fest Frontend (v2 — Official Brand Palette)
-### Global Academy of Technology | Next.js + shadcn/ui + Tailwind CSS
+# SKILL.md — VVIT Techno-Cultural Fest Frontend (v2 — Official Brand Palette)
+### VVIT Innovate Ignite | Next.js + shadcn/ui + Tailwind CSS
 
 ---
 
 ## 🎯 Context & Vision
 
-You are building the official website for **Global Academy of Technology's Techno-Cultural Fest** — an event where institutional prestige meets cultural energy. The design must feel **bold, professional, and alive** — not a generic college fest, not a startup SaaS — something uniquely GAT.
+You are building the official website for **VVIT Innovate Ignite's Techno-Cultural Fest** — an event where institutional prestige meets cultural energy. The design must feel **bold, professional, and alive** — not a generic college fest, not a startup SaaS — something uniquely VVIT.
 
 **The Aesthetic Direction: "Prestige in Motion"**
 Think: Oxford meets ISRO. Deep institutional blues and navies as the backbone. Gold as the accent of excellence. White as the breathing room. Clean, authoritative, with motion that surprises.
@@ -75,9 +75,9 @@ OFF_WHITE       #f8f9fc   ← Card backgrounds, alternate section bg, input fiel
     gallery/page.tsx        ← Previous fest photo gallery
 ```
 
-### shadcn/ui — Theming for the GAT Palette
+### shadcn/ui — Theming for the VVIT Palette
 
-Set CSS variables in `globals.css` to map GAT brand colors into shadcn's system:
+Set CSS variables in `globals.css` to map VVIT brand colors into shadcn's system:
 
 ```css
 /* globals.css */
@@ -221,7 +221,7 @@ Color on white backgrounds:
                    transition-all duration-300 data-[scrolled]:bg-gat-midnight
                    data-[scrolled]:border-gat-cobalt/30">
 
-  {/* Logo: "GAT" in Rajdhani bold gat-midnight | "FEST NAME" in gat-gold */}
+  {/* Logo: "VVIT" in Rajdhani bold gat-midnight | "FEST NAME" in gat-gold */}
   <Logo />
 
   {/* Desktop nav: DM Sans medium, charcoal, hover→gat-blue, active→gat-blue with underline */}
@@ -259,7 +259,7 @@ Color on white backgrounds:
 
     {/* Pre-title badge */}
     <Badge className="bg-gat-gold/20 text-gat-gold border border-gat-gold/40 mb-6">
-      Global Academy of Technology Presents
+      VVIT Innovate Ignite Presents
     </Badge>
 
     {/* Fest name: Playfair Display, 6xl–10xl fluid, white */}
@@ -297,7 +297,7 @@ Color on white backgrounds:
 
     {/* Date/venue strip below CTAs */}
     <p className="mt-6 text-gat-steel text-sm font-mono">
-      March 14–16, 2025 &nbsp;·&nbsp; GAT Campus, Bengaluru
+      March 14–16, 2025 &nbsp;·&nbsp; VVIT Campus, Bengaluru
     </p>
   </div>
 
@@ -547,10 +547,10 @@ SECTION 6: GLIMPSES
 
 SECTION 7: FOOTER
   bg-gat-midnight | white/steel text
-  [GAT Logo white] [Fest Name in gat-gold]
+  [VVIT Logo white] [Fest Name in gat-gold]
   4-col grid: Quick Links | Events | Connect | Contact
   Social icons: gat-steel, hover→gat-gold
-  Bottom bar: © 2025 GAT | Developed by [Club Name] with ♥
+  Bottom bar: © 2025 VVIT | Developed by [Club Name] with ♥
 ```
 
 ---
@@ -794,6 +794,6 @@ function CountUp({ to, duration = 1500 }: { to: number; duration?: number }) {
 
 ---
 
-*This SKILL.md is purpose-built for Global Academy of Technology's Techno-Cultural Fest.*
+*This SKILL.md is purpose-built for VVIT Innovate Ignite's Techno-Cultural Fest.*
 *Palette extracted directly from official brand palette image.*
 *Every decision balances institutional authority (navy/midnight) with festive energy (gold/blue) on a clean white canvas.*

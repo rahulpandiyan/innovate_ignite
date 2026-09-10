@@ -75,7 +75,7 @@ async function upsertUser(data: {
 
 async function seedColleges() {
   const colleges = [
-    { name: "GLOBAL ACADEMY OF TECHNOLOGY", code: "GA-047", region: "Bengaluru" },
+    { name: "Vijaya Vittala Institute Of Technology", code: "GA-047", region: "Bengaluru" },
     { name: "B.M.S. COLLEGE OF ENGINEERING", code: "BMS-021", region: "Bengaluru" },
     { name: "RAMAIAH INSTITUTE OF TECHNOLOGY", code: "RIT-014", region: "Bengaluru" },
   ];

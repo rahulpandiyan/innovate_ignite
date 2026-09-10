@@ -49,7 +49,7 @@ import Paperpresentationinter from "./images/poster/pp_inter.jpeg"
 import Grouprampwalkinter from "./images/poster/grw_inter.jpeg"
 import Battleofbands from "./images/poster/bob_inter.jpeg"
 import Beatboxing from "./images/poster/bbx_inter.jpeg"
-import Voiceofinteract from "./images/poster/voi_inter.jpeg"
+import VoiceofInnovateIgnite from "./images/poster/voi_inter.jpeg"
 import Dancebattle from "./images/poster/db_inter.jpeg"
 import Westerngroupdanceinter from "./images/poster/wgd_inter.jpeg"
 import Indiangroupdance from "./images/poster/igd_inter.jpeg"
@@ -203,7 +203,7 @@ export const events = [
     },
     "schedule": {
       "day": "29th May",
-      "venue": "GAT",
+      "venue": "VVIT",
       "time": "9:00 AM"
     }
   },
@@ -226,7 +226,7 @@ export const events = [
     },
     "schedule": {
       "day": "29th May",
-      "venue": "GAT",
+      "venue": "VVIT",
       "time": "11:00 AM"
     }
   },
@@ -281,10 +281,10 @@ export const events = [
     }
   },
   {
-    "name": "Voice of GAT",
+    "name": "VVIT Voice",
     "alias": "VoiceofGAT_intra",
     "image": VoiceOfGlobal,
-    "aboutEvent": "Raise your voice and become the Voice of GAT in our exhilarating singing competition! This event celebrates the diverse talent and vocal prowess of our students as they compete for the coveted title. From soulful ballads to energetic pop anthems, contestants will showcase their unique style and interpretation, captivating the audience with their mesmerizing performances. Join us for an electrifying showcase of musical talent, where every note and every melody resonates with passion and emotion. Let your voice be heard and compete for the title of Voice of GAT in this unforgettable singing extravaganza!",
+    "aboutEvent": "Raise your voice and become the VVIT Voice in our exhilarating singing competition! This event celebrates the diverse talent and vocal prowess of our students as they compete for the coveted title. From soulful ballads to energetic pop anthems, contestants will showcase their unique style and interpretation, captivating the audience with their mesmerizing performances. Join us for an electrifying showcase of musical talent, where every note and every melody resonates with passion and emotion. Let your voice be heard and compete for the title of VVIT Voice in this unforgettable singing extravaganza!",
     "eventDetail": [],
     "rules": [
       "Time limit: 4+1 min (min-4min, max-5max).",
@@ -543,7 +543,7 @@ export const events = [
     }
   },
   {
-    "name": "MR & MS Interact",
+    "name": "MR & MS Innovate Ignite",
     "alias": "RampWalkS_intra",
     "image": RampSolo,
     "aboutEvent": "Step into the spotlight and strut your stuff in our Solo Ramp Walk Competition! This event is your chance to showcase your style, confidence, and personality as you dazzle the audience with your runway presence. Whether you're a seasoned model or new to the catwalk, this is your moment to shine. With each step, you'll captivate the crowd with your poise, grace, and individual flair. Join us for a glamorous evening of fashion, elegance, and self-expression as you take center stage and compete for the title of Ramp Walk Diva!",
@@ -1400,7 +1400,7 @@ export const events = [
     },
     "schedule": {
       "day": "29th May",
-      "venue": "GAT",
+      "venue": "VVIT",
       "time": "11:00 AM"
     }
   },
@@ -1439,10 +1439,10 @@ export const events = [
     }
   },
   {
-    "name": "Voice of INTERACT",
+    "name": "VVIT Voice",
     "alias": "voi_inter",
-    "image": Voiceofinteract,
-    "aboutEvent": "Raise your voice and become the Voice of INTERACT in our exhilarating singing competition! This event celebrates the diverse talent and vocal prowess of our students as they compete for the coveted title. From soulful ballads to energetic pop anthems, contestants will showcase their unique style and interpretation, captivating the audience with their mesmerizing performances. Join us for an electrifying showcase of musical talent, where every note and every melody resonates with passion and emotion. Let your voice be heard and compete for the title of Voice of INTERACT in this unforgettable singing extravaganza!",
+    "image": VoiceofInnovateIgnite,
+    "aboutEvent": "Raise your voice and become the VVIT Voice champion in our exhilarating singing competition! This event celebrates the diverse talent and vocal prowess of our students as they compete for the coveted title. From soulful ballads to energetic pop anthems, contestants will showcase their unique style and interpretation, captivating the audience with their mesmerizing performances. Join us for an electrifying showcase of musical talent, where every note and every melody resonates with passion and emotion. Let your voice be heard and compete for the title of VVIT Voice in this unforgettable singing extravaganza!",
     "eventDetail": [],
     "rules": [
       "It is a solo event.",
@@ -1692,7 +1692,7 @@ export const events = [
       "The winner will be decided by the most number of runs scored in their innings. No declarations allowed.",
       "The LBW dismissal will not be a valid wicket.",
       "Team size : 7+1",
-      "7+1 players can be of mix department only from GAT COLLEGE (ID card is compulsory).",
+      "7+1 players can be of mix department only from VVIT COLLEGE (ID card is compulsory).",
       "Re-Entry : Rs.700/- Per Team (Re-entry only for the teams eliminated in round 1)",
       "On spot registration: 700 per team",
       "Maximum of two overs per bowler which cannot be consecutive.",
@@ -1777,7 +1777,7 @@ export const events = [
     },
     "schedule": {
       "day": "1st June",
-      "venue": "GAT",
+      "venue": "VVIT",
       "time": "9:00 AM"
     }
   }

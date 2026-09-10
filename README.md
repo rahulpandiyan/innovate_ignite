@@ -1,6 +1,6 @@
-# INTERACT 2026 - Global Academy of Technology
+# VVIT Innovate Ignite
 
-A comprehensive web application for managing the INTERACT 2026 at Global Academy of Technology, Bengaluru. This platform enables colleges to register, manage student participants, handle event registrations, process payments, and facilitate document verification for a seamless fest experience.
+A comprehensive web application for managing VVIT Innovate Ignite at Vijaya Vittala Institute Of Technology, Bengaluru. This platform enables colleges to register, manage student participants, handle event registrations, process payments, and facilitate document verification for a seamless fest experience.
 
 ## 🖼️ Demo Screenshots
 
@@ -9,7 +9,7 @@ A comprehensive web application for managing the INTERACT 2026 at Global Academy
 
 ## 🎯 Overview
 
-This application serves as the central hub for INTERACT 2026, celebrating Karnataka's rich cultural heritage and Bengaluru's innovative spirit. It provides a complete registration and management system for colleges, students, and administrators.
+This application serves as the central hub for VVIT Innovate Ignite, celebrating Karnataka's rich cultural heritage and Bengaluru's innovative spirit. It provides a complete registration and management system for colleges, students, and administrators.
 
 ## ✨ Key Features
 
@@ -186,7 +186,7 @@ This application serves as the central hub for INTERACT 2026, celebrating Karnat
 ## 📁 Project Structure
 
 ```
-interact2026/
+vvit-innovate-ignite/
 ├── app/                    # Next.js app directory
 │   ├── api/               # API routes (new-model auth/cart/orders/teams/invites/events/admin)
 │   ├── auth/              # Authentication pages
@@ -274,11 +274,11 @@ interact2026/
 
 ## 📄 License
 
-This project is proprietary software developed for Global Academy of Technology.
+This project is proprietary software developed for VVIT Innovate Ignite.
 
 ## 🙏 Acknowledgments
 
-- Global Academy of Technology for the opportunity
+- VVIT Innovate Ignite for the opportunity
 - VTU for organizing the Youth Fest 2025
 - The development team for their dedication
 - Open source community for the amazing tools and libraries
@@ -289,4 +289,4 @@ For questions or support, please contact the development team at [bhuvansa@bhuva
 
 ---
 
-**Built with ❤️ for INTERACT 2026**
+**Built with ❤️ for VVIT Innovate Ignite**

@@ -1,4 +1,4 @@
-# Interact 2026 - Backend Endpoint Contracts and Sprint Checklist
+# VVIT Innovate Ignite - Backend Endpoint Contracts and Sprint Checklist
 
 ## 1) Finalized Product Rules
 - Participant login: email + password.
@@ -83,7 +83,7 @@ Request:
   "email": "user@example.com",
   "name": "John Doe",
   "phone": "+919876543210",
-  "collegeName": "Global Academy of Technology",
+  "collegeName": "Vijaya Vittala Institute Of Technology",
   "password": "Strong@123",
   "confirmPassword": "Strong@123"
 }
@@ -100,7 +100,7 @@ Success `200`:
       "email": "user@example.com",
       "name": "John Doe",
       "phone": "+919876543210",
-      "collegeName": "Global Academy of Technology",
+      "collegeName": "Vijaya Vittala Institute Of Technology",
       "role": "PARTICIPANT"
     }
   }
@@ -245,7 +245,7 @@ Request (example):
 {
   "name": "John Doe",
   "phone": "+919876543210",
-  "collegeName": "Global Academy of Technology",
+  "collegeName": "Vijaya Vittala Institute Of Technology",
   "photoUrl": "https://uploadthing.../photo.jpg",
   "collegeIdCardUrl": "https://uploadthing.../id.jpg"
 }

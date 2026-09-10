@@ -7,7 +7,7 @@ import { Menu, X, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import gatLogo from "@/public/gat-logos/GAT_Linear Logo.png";
-import interactLogo from "@/public/gat-logos/INTERACT2K26.png";
+import innovateIgniteLogo from "@/public/gat-logos/VVIT-Innovate-Ignite.png";
 import LoginLogoutButton from "./LoginLogoutButton";
 
 const navLinks = [
@@ -41,15 +41,15 @@ const Navbar = () => {
             <Link href="/" className="flex-shrink-0 group flex items-center">
               <Image
                 src={gatLogo}
-                alt="GAT Logo"
+                alt="VVIT Logo"
                 width={160}
                 height={90}
                 className={`object-contain h-10 md:h-12 w-auto transition-all duration-300 ${scrolled ? 'opacity-90' : 'opacity-100'}`}
                 priority
               />
               <Image
-                src={interactLogo}
-                alt="Interact Logo"
+                src={innovateIgniteLogo}
+                alt="VVIT Innovate Ignite Logo"
                 width={160}
                 height={90}
                 className={`object-contain h-10 md:h-12 w-auto transition-all duration-300 ${scrolled ? 'opacity-90' : 'opacity-100'}`}

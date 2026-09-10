@@ -51,7 +51,7 @@ export default function SpocsPage() {
             style={{ color: "hsl(var(--muted-foreground))" }}
           >
             Reach out to your respective department Single Point of Contacts (SPOCs) for event
-            registrations, specific queries, and internal coordination for INTERACT 2K26.
+            registrations, specific queries, and internal coordination for VVIT Innovate Ignite.
           </p>
         </motion.div>
       </div>

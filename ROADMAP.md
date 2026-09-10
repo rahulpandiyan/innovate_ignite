@@ -1,4 +1,4 @@
-# ROADMAP — INTERACT 2026
+# ROADMAP — VVIT Innovate Ignite
 
 Status of the PRD v2 rebuild. Foundation, RBAC, Super Admin dashboard and the participant dashboard are done.
 Remaining slices are ordered by dependency. Every slice is permission-gated via `lib/rbac.ts` (`assertPermission` / `assertEventScope`).

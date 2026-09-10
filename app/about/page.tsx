@@ -25,9 +25,9 @@ const About = () => {
             transition={{ duration: 0.5 }}
             className="md:text-center max-w-4xl mx-auto"
           >
-            <span className="eyebrow mb-6 inline-block">Global Academy Of Technology</span>
+            <span className="eyebrow mb-6 inline-block">Vijaya Vittala Institute Of Technology</span>
             <h1 className="font-display text-5xl md:text-7xl xl:text-8xl font-black leading-[0.95] mb-8">
-              ABOUT <span className="text-[hsl(var(--primary))]">GAT.</span>
+              ABOUT <span className="text-[hsl(var(--primary))]">VVIT.</span>
             </h1>
             <p className="text-[hsl(var(--muted-foreground))] text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
               A legacy of academic excellence, innovation, and transformative education marking its Silver Jubilee.
@@ -55,7 +55,7 @@ const About = () => {
               <div className="absolute inset-0 bg-[hsl(var(--secondary))]/20 rounded-2xl -translate-x-4 translate-y-4 -z-10" />
               <Image
                 src={gat}
-                alt="Global Academy of Technology"
+                alt="VVIT Innovate Ignite"
                 className="w-full h-auto max-h-[550px] object-cover rounded-2xl shadow-2xl shadow-[hsl(var(--foreground))]/5 border border-[hsl(var(--border))]"
                 priority
               />
@@ -73,13 +73,13 @@ const About = () => {
                 Inspiring Futures Since 2001
               </h2>
               <p className="text-lg leading-relaxed text-[hsl(var(--muted-foreground))]">
-                Global Academy of Technology (GAT), <strong className="text-[hsl(var(--foreground))]">established in 2001</strong>, is one of the most sought-after engineering and management colleges in Bengaluru, Karnataka. Nestled within a sprawling 10-acre campus, GAT provides an ideal environment for students to excel academically amidst an atmosphere of innovation and optimism.
+                Vijaya Vittala Institute Of Technology (VVIT), <strong className="text-[hsl(var(--foreground))]">established in 2001</strong>, is one of the most sought-after engineering and management colleges in Bengaluru, Karnataka. Nestled within a sprawling 10-acre campus, VVIT provides an ideal environment for students to excel academically amidst an atmosphere of innovation and optimism.
               </p>
               <p className="text-lg leading-relaxed text-[hsl(var(--muted-foreground))]">
-                This year <strong className="text-[hsl(var(--secondary))]">2026</strong> marks a momentous milestone as the institution celebrates its <strong className="text-[hsl(var(--primary))]">Silver Jubilee – 25 years</strong> of academic excellence, innovation, and transformative education. With a legacy of shaping future leaders and achievers, GAT continues to set benchmarks in higher education, solidifying its position as a premier destination for aspiring engineers and managers.
+                This year <strong className="text-[hsl(var(--secondary))]">2026</strong> marks a momentous milestone as the institution celebrates its <strong className="text-[hsl(var(--primary))]">Silver Jubilee – 25 years</strong> of academic excellence, innovation, and transformative education. With a legacy of shaping future leaders and achievers, VVIT continues to set benchmarks in higher education, solidifying its position as a premier destination for aspiring engineers and managers.
               </p>
               <p className="text-lg leading-relaxed text-[hsl(var(--muted-foreground))]">
-                GAT offers ample opportunities for various co-curricular and extracurricular activities, ensuring a well-rounded student experience. The campus is home to over <strong className="text-[hsl(var(--foreground))]">3,500 students</strong> and <strong className="text-[hsl(var(--foreground))]">300 experienced staff members</strong> dedicated to an effective teaching and learning process.
+                VVIT offers ample opportunities for various co-curricular and extracurricular activities, ensuring a well-rounded student experience. The campus is home to over <strong className="text-[hsl(var(--foreground))]">3,500 students</strong> and <strong className="text-[hsl(var(--foreground))]">300 experienced staff members</strong> dedicated to an effective teaching and learning process.
               </p>
             </motion.div>
           </div>
@@ -170,13 +170,13 @@ const About = () => {
       <section className="py-24 bg-[hsl(var(--card))] border-t border-[hsl(var(--border))] text-center">
         <div className="container mx-auto px-6 max-w-2xl">
           <h2 className="font-display text-3xl font-bold mb-6 text-[hsl(var(--foreground))]">
-            Discover More About GAT
+                Discover More About Vijaya Vittala Institute Of Technology
           </h2>
           <p className="text-[hsl(var(--muted-foreground))] mb-8">
             Experience our vibrant campus, explore academic alliances, and visualize your future at one of Bengaluru&apos;s premier institutions.
           </p>
           <a
-            href="http://www.gat.ac.in"
+            href="http://www.vvit.ac.in"
             target="_blank"
             rel="noreferrer"
             className="btn-primary inline-flex"

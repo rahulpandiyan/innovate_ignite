@@ -16,13 +16,13 @@ const Footer = () => {
           <div className="space-y-6">
             <div className="flex items-center gap-3">
               <span className="font-heading font-bold text-3xl tracking-wide">
-                <span className="text-white">GAT</span>{" "}
-                <span className="text-gat-gold">INTERACT</span>
+                <span className="text-white">VVIT</span>{" "}
+                <span className="text-gat-gold">Innovate Ignite</span>
               </span>
             </div>
             
             <p className="text-sm text-gat-steel font-body leading-relaxed pr-4">
-              Join Global Academy of Technology for INTERACT 2026 – a celebration of innovation, creativity, and technology. Where Code Meets Culture.
+              Vijaya Vittala Institute Of Technology presents Innovate Ignite – a celebration of innovation, creativity, and technology. Where Code Meets Culture.
             </p>
             
             {/* Social icons */}
@@ -60,7 +60,7 @@ const Footer = () => {
                 <Link href="/" className="text-gat-steel hover:text-gat-gold transition-colors">Home</Link>
               </li>
               <li>
-                <Link href="/about" className="text-gat-steel hover:text-gat-gold transition-colors">About GAT</Link>
+                <Link href="/about" className="text-gat-steel hover:text-gat-gold transition-colors">About Vijaya Vittala Institute Of Technology</Link>
               </li>
               <li>
                 <Link href="/sponsors" className="text-gat-steel hover:text-gat-gold transition-colors">Sponsors</Link>
@@ -118,10 +118,10 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-16 pt-8 border-t border-gat-cobalt/30 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-gat-steel font-body">
-            Copyright © 2026 Global Academy of Technology · All Rights Reserved.
+            Copyright © 2026 VVIT Innovate Ignite · All Rights Reserved.
           </p>
           <p className="text-xs text-gat-steel font-body">
-            Developed with ♥ by the Interact 2026 Website Team
+            Developed with ♥ by the Innovate Ignite Website Team
           </p>
         </div>
       </div>

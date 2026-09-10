@@ -147,7 +147,7 @@ export function AppSidebar({
                   <ShieldCheck className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Interact Admin</span>
+                  <span className="truncate font-semibold">VVIT Admin</span>
                   <span className="truncate text-xs">2026</span>
                 </div>
               </Link>
@@ -184,7 +184,7 @@ export function AppSidebar({
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser name={userName ?? "Super Admin"} email={userEmail ?? "admin@interact2026.in"} />
+        <NavUser name={userName ?? "Super Admin"} email={userEmail ?? "admin@vvitinnovateignite.in"} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

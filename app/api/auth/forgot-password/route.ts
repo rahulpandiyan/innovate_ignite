@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     });
 
     const appUrl =
-      process.env.NEXT_PUBLIC_APP_URL ?? "https://vtufestinteract.com";
+      process.env.NEXT_PUBLIC_APP_URL ?? "https://vvitinnovateignite.com";
     const resetUrl = `${appUrl}/reset-password?token=${rawToken}`;
 
     await sendPasswordResetEmail(email, resetUrl);

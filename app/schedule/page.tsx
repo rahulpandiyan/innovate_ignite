@@ -56,7 +56,7 @@ export default function SchedulePage() {
             initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
             className="text-xs font-bold tracking-[0.3em] uppercase text-[#00f2ff]/60 mb-4"
           >
-            INTERACT 2K26 · Global Academy of Technology
+            VVIT Innovate Ignite
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}

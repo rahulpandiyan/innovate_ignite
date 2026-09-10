@@ -17,13 +17,13 @@ const Home = () => {
       </div>
 
       <div className="relative z-10">
-        {/* Blue Box Section: Global Academy of Technology */}
+        {/* Blue Box Section: Vijaya Vittala Institute Of Technology */}
         <div className="max-w-5xl mx-auto border border-gray-300 rounded-lg overflow-hidden shadow-lg mb-8">
           <section className="bg-[#003366] text-white py-8 px-4 md:px-8">
             {/* Header Titles */}
             <div className="mb-6 text-left">
               <p className="text-4xl font-bold  text-[#F4D03F]">
-                GLOBAL ACADEMY OF TECHNOLOGY
+                Vijaya Vittala Institute Of Technology
               </p>
               <p className="text-2xl font-bold text-[#D32F23] mt-2">
                 GROWING AHEAD OF TIME
@@ -47,7 +47,7 @@ const Home = () => {
                     />
                   </div>
                   <p>
-                    Global Academy of Technology is an A-grade Cooollege counted
+                    Vijaya Vittala Institute Of Technology is an A-grade college counted
                     among the bestesr engineering colleges in Bangalore. Equipped
                     with modern technology and top‑notch infrastructure, the
                     institution fosters an ambience and culture that accelerates
@@ -59,12 +59,12 @@ const Home = () => {
                 </div>
               </div>
               <div>
-                <p className="font-semibold">-- Why is 2025 iconic for GAT?</p>
+                <p className="font-semibold">-- Why is 2025 iconic for VVIT?</p>
                 <p>
                   This year 2025 marks a momentous milestone as the institution
                   celebrates its Silver Jubilee – 25 years of academic excellence,
                   innovation, and transformative education. With a legacy of
-                  shaping future leaders and achievers, GAT continues to set
+                  shaping future leaders and achievers, VVIT continues to set
                   benchmarks in higher education, solidifying its position as a
                   premier destination for aspiring engineers and managers.
                 </p>
@@ -105,7 +105,7 @@ const Home = () => {
                 </svg>
                 <a href="https://maps.app.goo.gl/SQYGicDVGunvnhYc7">
                   <span className="text-blue-200 font-semibold">
-                    Global Academy of Technology
+                    Vijaya Vittala Institute Of Technology
                   </span>
                 </a>
               </div>
@@ -238,7 +238,7 @@ const Home = () => {
                 by the essence of Namma Karnataka and Namma Bengaluru.
               </p>
               <p className="text-xl text-[#003366] mb-4">
-                <strong>Date:</strong> 24th - 27th March 2025  • <strong>Venue:</strong> Global Academy
+                <strong>Date:</strong> 24th - 27th March 2025  • <strong>Venue:</strong> VVIT Innovate Ignite
                 of Technology, Bengaluru
               </p>
               <p className="text-xl text-justify text-[#003366]">

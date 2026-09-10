@@ -17,7 +17,7 @@ const navItems = [
         text: "About Us",
         href: "/about",
         subitems: [
-            { href:"/about" , text:"About Global Academy Of Technology"},
+            { href:"/about" , text:"About Vijaya Vittala Institute Of Technology"},
             { href: "/about/vtu", text: "About VTU" },
             { href: "/about/youthfest", text: "About Youth Fest" },
             { href: "/Dignitaries", text: "Organising Committee" },

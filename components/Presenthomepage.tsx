@@ -23,7 +23,7 @@ const Presenthomepage = () => {
             dy=".35em"
             className="text-5xl font-extrabold fill-primary_heading stroke-white stroke-[2px]"
           >
-            Global Academy of Technology
+            Vijaya Vittala Institute Of Technology
             
           </text>
         </svg>

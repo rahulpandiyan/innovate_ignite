@@ -106,7 +106,7 @@ export async function generateCertificatePdf(args: {
   doc.setFontSize(15);
   doc.setTextColor(80, 70, 60);
   doc.text(
-    `has successfully participated in "${args.eventName}" at INTERACT 2026`,
+    `has successfully participated in "${args.eventName}" at VVIT Innovate Ignite`,
     cx,
     250,
     { align: "center", maxWidth: width - 200 }
@@ -127,7 +127,7 @@ export async function generateCertificatePdf(args: {
   doc.line(cx - 130, 330, cx + 130, 330);
   doc.setFont("times", "italic");
   doc.setFontSize(10);
-  doc.text("Event Committee · INTERACT 2026", cx, 345, { align: "center" });
+  doc.text("Event Committee · VVIT Innovate Ignite", cx, 345, { align: "center" });
 
   // Bottom footer
   doc.setFont("times", "normal");

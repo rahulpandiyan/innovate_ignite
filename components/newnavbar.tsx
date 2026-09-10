@@ -82,7 +82,7 @@ const NavBar = () => {
                 <div className="flex items-center justify-between mt-1 mb-1">
                     <div className="flex items-center gap-3">
                     <div style={{textAlign: 'left'}}>
-                    <Image src={gatlogo} alt="GAT Logo" width={800} height={200} priority />
+                    <Image src={gatlogo} alt="VVIT Logo" width={800} height={200} priority />
                     </div>
 
                         
@@ -111,7 +111,7 @@ const NavBar = () => {
                     <NavigationMenu>
                         <NavigationMenuList className="bg-inherit">
                             <NavigationMenuItem className="bg-inherit">
-                                <Link href="https://vtufestinteract.com/" legacyBehavior passHref>
+                                <Link href="https://vvitinnovateignite.com/" legacyBehavior passHref>
                                     <NavigationMenuLink
                                         className={cn(
                                             navigationMenuTriggerStyle(),
@@ -140,11 +140,11 @@ const NavBar = () => {
                                                             src="/images/college-logo.png"
                                                             height={30}
                                                             width={30}
-                                                            alt="Global Academy of Technology"
+                                                            alt="VVIT Innovate Ignite"
                                                         />
                                                     </div>
                                                     <div className="mb-0 mt-4 text-base font-medium">
-                                                        Global Academy of Technology
+                                                        VVIT Innovate Ignite
                                                     </div>
                                                     <p className="text-sm leading-tight text-muted-foreground">
                                                         Growing Ahead of time..{" "}

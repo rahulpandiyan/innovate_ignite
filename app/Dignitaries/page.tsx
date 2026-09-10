@@ -72,27 +72,27 @@ const Dignitaries = () => {
             members: [
                 {
                     name: "Dr. H B Balakrishna",
-                    role: "PRINCIPAL , GAT",
+                    role: "PRINCIPAL , VVIT",
                     image: organize1,
                 },
                 {
                     name: "Dr. A Sreedhar Kumar",
-                    role: "CAMPUS DIRECTOR , GAT",
+                    role: "CAMPUS DIRECTOR , VVIT",
                     image: organize3,
                 },
                 {
                     name: "Dr. Latha Rajagopalan",
-                    role: "Dean-Academics , GAT",
+                    role: "Dean-Academics , VVIT",
                     image: organize4,
                 },
                 {
                     name: "Dr. Ravi J",
-                    role: "Dean-Student Affairs & Welfare, GAT",
+                    role: "Dean-Student Affairs & Welfare, VVIT",
                     image: organize5,
                 },
                 {
                     name: "Lt. Saravannan R",
-                    role: "PHYSICAL EDUCATION DIRECTOR, GAT",
+                    role: "PHYSICAL EDUCATION DIRECTOR, VVIT",
                     image: organize2,
                 },
             ],
