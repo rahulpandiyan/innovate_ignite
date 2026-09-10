@@ -37,86 +37,103 @@ export function ScanBox() {
   const [scanMode, setScanMode] = React.useState<"manual" | "camera">("manual");
   const html5QrCodeRef = React.useRef<any>(null);
   const videoContainerRef = React.useRef<HTMLDivElement>(null);
+  const scannerStartingRef = React.useRef(false);
+  const scriptLoadRef = React.useRef<Promise<void> | null>(null);
 
-  // Initialize QR scanner script
   React.useEffect(() => {
-    if ((window as any).Html5Qrcode) return; // Already loaded
-    
-    const script = document.createElement("script");
-    script.src = "https://unpkg.com/html5-qrcode@2.3.7/dist/html5-qrcode.min.js";
-    script.async = true;
-    document.body.appendChild(script);
-    
-    return () => {
-      // Cleanup on unmount
-      if (html5QrCodeRef.current) {
-        html5QrCodeRef.current.stop().catch(() => {});
+    if ((window as any).Html5Qrcode || scriptLoadRef.current) return;
+
+    scriptLoadRef.current = new Promise<void>((resolve, reject) => {
+      const existingScript = document.querySelector<HTMLScriptElement>(
+        'script[src*="html5-qrcode"]'
+      );
+      if (existingScript) {
+        existingScript.addEventListener("load", () => resolve(), { once: true });
+        existingScript.addEventListener("error", () => reject(new Error("Unable to load QR scanner")), { once: true });
+        return;
       }
-      const scripts = document.querySelectorAll('script[src*="html5-qrcode"]');
-      scripts.forEach(s => s.remove());
+
+      const script = document.createElement("script");
+      script.src = "https://unpkg.com/html5-qrcode@2.3.7/dist/html5-qrcode.min.js";
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error("Unable to load QR scanner"));
+      document.body.appendChild(script);
+    });
+
+    return () => {
+      void stopQRScanner();
     };
   }, []);
 
-  async function startQRScanner() {
+  React.useEffect(() => {
+    if (scanMode !== "camera" || !videoContainerRef.current || scannerStartingRef.current) return;
+
+    let cancelled = false;
+    scannerStartingRef.current = true;
+    setError(null);
+
+    async function startScanner() {
+      try {
+        await scriptLoadRef.current;
+        if (cancelled || !videoContainerRef.current) return;
+
+        const Html5Qrcode = (window as any).Html5Qrcode;
+        if (!Html5Qrcode) throw new Error("QR scanner library is unavailable");
+
+        const scanner = new Html5Qrcode(videoContainerRef.current.id);
+        html5QrCodeRef.current = scanner;
+        await scanner.start(
+          { facingMode: "environment" },
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 },
+          },
+          (decodedText: string) => {
+            void stopQRScanner();
+            setToken(decodedText);
+            void processScan(decodedText);
+          },
+          () => {}
+        );
+      } catch (err: any) {
+        if (cancelled) return;
+        console.error("Camera start error:", err);
+
+        if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+          setError("Camera access denied. Please allow camera permissions in your browser.");
+        } else if (err.name === "NotFoundError") {
+          setError("No camera found on this device.");
+        } else {
+          setError(`Camera error: ${err.message || "Please check permissions and try again."}`);
+        }
+
+        setScanMode("manual");
+        html5QrCodeRef.current = null;
+      } finally {
+        scannerStartingRef.current = false;
+      }
+    }
+
+    void startScanner();
+    return () => {
+      cancelled = true;
+    };
+  }, [scanMode]);
+
+  function startQRScanner() {
     setScanMode("camera");
     setError(null);
-    
-    // Wait for library to load
-    const Html5Qrcode = (window as any).Html5Qrcode;
-    if (!Html5Qrcode) {
-      setError("QR scanner library is loading. Please wait a moment and try again.");
-      return;
-    }
-    
-    // Stop any existing scanner
-    if (html5QrCodeRef.current) {
-      try {
-        await html5QrCodeRef.current.stop();
-      } catch (e) {}
-    }
-    
-    const scanner = new Html5Qrcode("qr-reader");
-    html5QrCodeRef.current = scanner;
-    
-    try {
-      // Request camera permission and start scanning
-      await scanner.start(
-        { facingMode: "environment" },
-        {
-          fps: 10,
-          qrbox: { width: 250, height: 250 },
-        },
-        (decodedText: string, decodedResult: any) => {
-          // QR code detected!
-          stopQRScanner();
-          setToken(decodedText);
-          processScan(decodedText);
-        },
-        (errorMessage: string) => {
-          // Scan error (ignored - just means no QR in frame)
-        }
-      );
-    } catch (err: any) {
-      console.error("Camera start error:", err);
-      
-      if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
-        setError("Camera access denied. Please allow camera permissions in your browser.");
-      } else if (err.name === "NotFoundError") {
-        setError("No camera found on this device.");
-      } else {
-        setError(`Camera error: ${err.message || "Please check permissions and try again."}`);
-      }
-      
-      setScanMode("manual");
-      html5QrCodeRef.current = null;
-    }
   }
 
-  function stopQRScanner() {
-    if (html5QrCodeRef.current) {
-      html5QrCodeRef.current.stop().catch(() => {});
-      html5QrCodeRef.current.clear().catch(() => {});
-      html5QrCodeRef.current = null;
+  async function stopQRScanner() {
+    const scanner = html5QrCodeRef.current;
+    html5QrCodeRef.current = null;
+    if (scanner) {
+      try {
+        await scanner.stop();
+        await scanner.clear();
+      } catch {}
     }
     setScanMode("manual");
   }
