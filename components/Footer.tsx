@@ -121,7 +121,8 @@ const Footer = () => {
             Copyright © 2026 VVIT Innovate Ignite · All Rights Reserved.
           </p>
           <p className="text-xs text-gat-steel font-body">
-            Developed with ♥ by the Innovate Ignite Website Team
+            <span className="block font-semibold">Innovate Ignite</span>
+            <span className="block">Built &amp; brought to life by <strong>Rahul × Sam</strong></span>
           </p>
         </div>
       </div>
