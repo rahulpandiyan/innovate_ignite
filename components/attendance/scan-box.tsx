@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { ScanLine, CheckCircle2, Camera, XCircle } from "lucide-react";
+import { Html5Qrcode } from "html5-qrcode";
 
 type ScanResult = {
   checkIn: boolean;
@@ -38,29 +39,8 @@ export function ScanBox() {
   const html5QrCodeRef = React.useRef<any>(null);
   const videoContainerRef = React.useRef<HTMLDivElement>(null);
   const scannerStartingRef = React.useRef(false);
-  const scriptLoadRef = React.useRef<Promise<void> | null>(null);
 
   React.useEffect(() => {
-    if ((window as any).Html5Qrcode || scriptLoadRef.current) return;
-
-    scriptLoadRef.current = new Promise<void>((resolve, reject) => {
-      const existingScript = document.querySelector<HTMLScriptElement>(
-        'script[src*="html5-qrcode"]'
-      );
-      if (existingScript) {
-        existingScript.addEventListener("load", () => resolve(), { once: true });
-        existingScript.addEventListener("error", () => reject(new Error("Unable to load QR scanner")), { once: true });
-        return;
-      }
-
-      const script = document.createElement("script");
-      script.src = "https://unpkg.com/html5-qrcode@2.3.7/dist/html5-qrcode.min.js";
-      script.async = true;
-      script.onload = () => resolve();
-      script.onerror = () => reject(new Error("Unable to load QR scanner"));
-      document.body.appendChild(script);
-    });
-
     return () => {
       void stopQRScanner();
     };
@@ -75,11 +55,7 @@ export function ScanBox() {
 
     async function startScanner() {
       try {
-        await scriptLoadRef.current;
         if (cancelled || !videoContainerRef.current) return;
-
-        const Html5Qrcode = (window as any).Html5Qrcode;
-        if (!Html5Qrcode) throw new Error("QR scanner library is unavailable");
 
         const scanner = new Html5Qrcode(videoContainerRef.current.id);
         html5QrCodeRef.current = scanner;
