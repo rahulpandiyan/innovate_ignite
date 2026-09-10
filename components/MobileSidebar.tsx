@@ -111,10 +111,10 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
                             <li>
 
                                 <Link
-                                    href="/register/getallregister"
+                                    href="/dashboard"
                                     className="block py-1 text-foreground hover:text-primary transition-colors"
                                 >
-                                    Register
+                                    Dashboard
                                 </Link>
 
                             </li>

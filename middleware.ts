@@ -1,5 +1,4 @@
 import { NextResponse, NextRequest } from "next/server";
-import { verifySession as verifyLegacySession } from "@/lib/session";
 import { verifyAuthToken } from "@/lib/authCookie";
 import { Redis } from "@upstash/redis"; // Use Upstash Redis
 
@@ -23,29 +22,27 @@ const OTP_RATE_LIMIT_WINDOW = 60; // Time window in seconds for OTP
 const OTP_RATE_LIMIT_MAX = 5; // Maximum OTP requests per window
 
 const protectedRoutes: string[] = [
-    "/api/register",
-    "/api/getallregister",
-    "/api/eventsregister",
-    "/api/getalleventregister",
-    "/api/deleteeventregister",
-    "/api/postdatetime",
-    "/api/updateregisterdetails",
-    "/api/updateregisterfiles",
-    "/api/updateroleinevent",
-    "/api/deleteregistrantevent",
-    "/api/addeventregister",
-    "/register",
-    "/register/documentupload",
-    "/register/eventregister",
-    "/register/getallregister",
-    "/register/getregister",
-    "/register/updateregister",
-    "/api/getPaymentInfo",
+    "/admin",
+    "/coordinator",
+    "/dashboard",
+    "/judge",
+    "/attendance",
+    "/certificates",
+    "/payments",
+    "/college-admin",
+    "/api/admin",
+    "/api/cart",
+    "/api/orders",
+    "/api/teams",
+    "/api/invites",
 ];
 
-const adminRoutes: string[] = [
-    "/adminDashboard",
-    "/api/admin",
+const superAdminRoutes: string[] = [
+    "/admin",
+];
+
+const coordinatorRoutes: string[] = [
+    "/coordinator",
 ];
 
 
@@ -60,7 +57,7 @@ export async function middleware(request: NextRequest) {
         "unknown";
 
     // Apply OTP-specific rate limiting (skip if Redis unavailable)
-    if (path === "/api/sendOtp" && redis) {
+    if (path === "/api/auth/register/send-otp" && redis) {
         try {
             const otpRedisKey = `otp-rate-limit:${ip}`;
             const currentOtpRequests = await redis.incr(otpRedisKey);
@@ -107,41 +104,43 @@ export async function middleware(request: NextRequest) {
         );
     }
 
-    const legacySession = await verifyLegacySession();
     const authToken = request.cookies.get("auth_token")?.value;
-    const newSession = authToken ? await verifyAuthToken(authToken) : null;
-    
-    const session = newSession || legacySession;
+    const session = authToken ? await verifyAuthToken(authToken) : null;
 
-    // Admin-only routes
-    if (adminRoutes.some(route => path.startsWith(route)) && (!session?.id || (session?.role !== "ADMIN" && session?.role !== "SUPER_ADMIN"))) {
+    // Super-admin-only routes
+    if (superAdminRoutes.some(route => path.startsWith(route)) && (!session?.id || session?.role !== "SUPER_ADMIN")) {
         return NextResponse.redirect(new URL("/auth/signin", request.nextUrl));
     }
 
-
-    if(protectedRoutes.includes(path) && session?.id && session?.paymentUrl){
-        return NextResponse.redirect(new URL("/auth/countdown", request.nextUrl));
+    // Coordinator routes: EVENT_COORDINATOR (or SUPER_ADMIN) only
+    if (coordinatorRoutes.some(route => path.startsWith(route)) && (!session?.id || (session?.role !== "EVENT_COORDINATOR" && session?.role !== "SUPER_ADMIN"))) {
+        return NextResponse.redirect(new URL("/auth/signin", request.nextUrl));
     }
-    
-    if (protectedRoutes.includes(path) && !session?.id) {
+
+    // Authenticated routes
+    if (protectedRoutes.some(route => path.startsWith(route)) && !session?.id) {
         return NextResponse.redirect(new URL("/auth/signin", request.nextUrl));
     }
 }
 
 export const config = {
     matcher: [
-        "/api/register",
-        "/api/getallregister",
-        "/api/sendEmailOtp",
-        "/api/eventsregister",
-        "/register",
-        "/register/documentupload",
-        "/register/eventregister",
-        "/register/getallregister",
-        "/register/getregister",
-        "/register/updateregister",
-        "/adminDashboard",
+        "/admin",
+        "/admin/:path*",
+        "/coordinator",
+        "/coordinator/:path*",
+        "/dashboard",
+        "/dashboard/:path*",
+        "/judge",
+        "/judge/:path*",
+        "/attendance",
+        "/attendance/:path*",
+        "/certificates",
+        "/certificates/:path*",
+        "/payments",
+        "/payments/:path*",
+        "/college-admin",
+        "/college-admin/:path*",
         "/api/admin/:path*",
     ],
 };
-

@@ -23,45 +23,64 @@ model PendingRegistration {
 }
 
 model Event {
-  id            String         @id @default(uuid())
-  name          String
-  description   String?
-  type          EventType
-  category      String
-  price         Decimal        @db.Decimal(10, 2)
-  date          DateTime?
-  time          String?
-  venue         String?
-  imageUrl      String?
-  rules         String?
-  minTeamSize   Int?
-  maxTeamSize   Int?
-  isActive      Boolean        @default(true)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  cartItems     CartItem[]
-  orderItems    OrderItem[]
-  registrations Registration[]
-  teams         Team[]
+  id                  String              @id @default(uuid())
+  name                String
+  description         String?
+  type                EventType
+  category            String
+  price               Decimal             @db.Decimal(10, 2)
+  date                DateTime?
+  time                String?
+  venue               String?
+  imageUrl            String?
+  rules               String?
+  minTeamSize         Int?
+  maxTeamSize         Int?
+  isActive            Boolean             @default(true)
+  status              EventStatus         @default(DRAFT)
+  registrationStart   DateTime?
+  registrationEnd     DateTime?
+  maxTeams            Int?
+  createdById         String?
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  createdBy           User?               @relation("EventCreator", fields: [createdById], references: [id])
+  cartItems           CartItem[]
+  orderItems          OrderItem[]
+  registrations       Registration[]
+  teams               Team[]
+  coordinators        EventCoordinator[]
+  judges              Judge[]
+  form                RegistrationForm?
+  results             Result[]
+  judgeScores         JudgeScore[]
+  attendance          Attendance[]
+  certificates        Certificate[]
 
   @@index([category])
   @@index([isActive])
   @@index([type])
+  @@index([status])
 }
 
 model Team {
-  id         String       @id @default(uuid())
+  id         String          @id @default(uuid())
+  teamId     String?         @unique
   name       String
   eventId    String
   leaderId   String
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  collegeId  String?
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
   cartItems  CartItem[]
   OrderItem  OrderItem[]
-  event      Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  leader     User         @relation("TeamLeader", fields: [leaderId], references: [id], onDelete: Cascade)
+  event      Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  leader     User            @relation("TeamLeader", fields: [leaderId], references: [id], onDelete: Cascade)
+  college    College?        @relation(fields: [collegeId], references: [id])
   TeamInvite TeamInvite[]
   members    TeamMember[]
+  registration Registration?
+  judgeScores JudgeScore[]
 
   @@unique([leaderId, eventId])
   @@index([eventId])
@@ -131,13 +150,22 @@ model OrderItem {
 }
 
 model Registration {
-  id        String   @id @default(uuid())
-  userId    String
-  eventId   String
-  teamId    String?
-  createdAt DateTime @default(now())
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String             @id @default(uuid())
+  registrationId String             @unique
+  userId         String
+  eventId        String
+  teamId         String?             @unique
+  collegeId      String?
+  formResponses  Json?
+  status         RegistrationStatus @default(PENDING)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  event          Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team           Team?              @relation(fields: [teamId], references: [id])
+  college        College?           @relation(fields: [collegeId], references: [id])
+  payment        Payment?
+  attendees      Attendee[]
 
   @@unique([userId, eventId])
   @@index([eventId])
@@ -208,6 +236,8 @@ model User {
   email                                     String         @unique
   phone                                     String         @unique
   collegeName                               String
+  collegeId                                 String?
+  roleId                                    String?
   photoUrl                                  String?
   collegeIdCardUrl                          String?
   collegeIdNumber                           String?
@@ -219,6 +249,12 @@ model User {
   aadharCardUrl                             String?
   aadharNumber                              String?        @unique
   usn                                       String?        @unique
+  college                                   College?       @relation(fields: [collegeId], references: [id])
+  userRole                                  UserRole?      @relation(fields: [roleId], references: [id])
+  participant                               Participant?
+  coordinators                              EventCoordinator[]
+  judges                                    Judge[]
+  eventsCreated                             Event[]        @relation("EventCreator")
   AuditLog                                  AuditLog[]
   cartItems                                 CartItem[]
   orders                                    Order[]
@@ -229,6 +265,11 @@ model User {
   TeamInvite_TeamInvite_invitedByIdToUser   TeamInvite[]   @relation("TeamInvite_invitedByIdToUser")
   TeamInvite_TeamInvite_invitedUserIdToUser TeamInvite[]   @relation("TeamInvite_invitedUserIdToUser")
   teamMemberships                           TeamMember[]
+  paymentsVerified                          Payment[]      @relation("PaymentVerifier")
+  attendanceMarked                          Attendance[]   @relation("AttendanceChecker")
+  judgeScores                               JudgeScore[]   @relation("JudgeScorer")
+  announcementsAuthored                     Announcement[] @relation("AnnouncementAuthor")
+  notifications                             Notification[]
 
   @@index([collegeName])
   @@index([email])
@@ -256,6 +297,27 @@ enum AuditAction {
   USER_UPDATED
   TEAM_UPDATED
   ADMIN_LOGIN
+  LOGIN
+  LOGOUT
+  COLLEGE_CREATED
+  COLLEGE_UPDATED
+  ROLE_ASSIGNED
+  PERMISSION_CHANGED
+  TEAM_CREATED
+  TEAM_INVITATION_SENT
+  TEAM_INVITATION_RESPONDED
+  REGISTRATION_CREATED
+  REGISTRATION_UPDATED
+  PAYMENT_RECORDED
+  PAYMENT_REFUNDED
+  ATTENDANCE_CHECKED_IN
+  ATTENDANCE_CORRECTED
+  RESULT_SUBMITTED
+  RESULT_MODIFIED
+  CERTIFICATE_GENERATED
+  COORDINATOR_ASSIGNED
+  JUDGE_ASSIGNED
+  ANNOUNCEMENT_SENT
 }
 
 enum OtpPurpose {
@@ -277,4 +339,341 @@ enum TeamInviteStatus {
 enum TeamRole {
   LEADER
   MEMBER
+}
+
+// ── PRD architecture (docs/PRD.md) ──────────────────────────────────────────
+
+enum EventStatus {
+  DRAFT
+  OPEN
+  REGISTRATION_CLOSED
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum RegistrationStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCESS
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+enum AttendanceStatus {
+  NOT_CHECKED_IN
+  CHECKED_IN
+  ABSENT
+}
+
+enum WinnerStatus {
+  WINNER
+  RUNNER_UP
+  NONE
+}
+
+enum CertificateType {
+  PARTICIPATION
+  WINNER
+  RUNNER_UP
+  SPECIAL_RECOGNITION
+}
+
+enum FormFieldType {
+  TEXT
+  NUMBER
+  EMAIL
+  PHONE
+  DROPDOWN
+  RADIO
+  CHECKBOX
+  FILE
+}
+
+enum AnnouncementTarget {
+  ALL
+  COLLEGE
+  TEAM
+  EVENT
+  USERS
+}
+
+model College {
+  id            String         @id @default(uuid())
+  name          String         @unique
+  code          String         @unique
+  region        String?
+  address       String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  users         User[]
+  participants  Participant[]
+  teams         Team[]
+  registrations Registration[]
+  certificates  Certificate[]
+
+  @@map("College")
+}
+
+model UserRole {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  description String?
+  isSystem    Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  permissions RolePermission[]
+  users       User[]
+
+  @@map("RbacRole")
+}
+
+model Permission {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  description String?
+  createdAt   DateTime         @default(now())
+  roles       RolePermission[]
+
+  @@map("RbacPermission")
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  permissionId String
+  role         UserRole   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@map("RolePermission")
+}
+
+model EventCoordinator {
+  id      String @id @default(uuid())
+  eventId String
+  userId  String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@map("EventCoordinator")
+}
+
+model Judge {
+  id      String @id @default(uuid())
+  eventId String
+  userId  String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@map("Judge")
+}
+
+model RegistrationForm {
+  id        String   @id @default(uuid())
+  eventId   String   @unique
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  fields    RegistrationField[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("RegistrationForm")
+}
+
+model RegistrationField {
+  id         String        @id @default(uuid())
+  formId     String
+  label      String
+  type       FormFieldType
+  required   Boolean       @default(false)
+  options    Json?
+  validation Json?
+  order      Int           @default(0)
+  form       RegistrationForm @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@map("RegistrationField")
+}
+
+model Participant {
+  id            String       @id @default(uuid())
+  userId        String       @unique
+  collegeId     String
+  participantId String       @unique
+  createdAt     DateTime     @default(now())
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  college       College      @relation(fields: [collegeId], references: [id])
+  attendees     Attendee[]
+  certificates  Certificate[]
+
+  @@map("Participant")
+}
+
+model Payment {
+  id             String        @id @default(uuid())
+  registrationId String        @unique
+  amount         Decimal       @db.Decimal(10, 2)
+  status         PaymentStatus @default(PENDING)
+  transactionId  String?
+  gatewayRef     String?
+  receiptUrl     String?
+  initiatedAt    DateTime      @default(now())
+  confirmedAt    DateTime?
+  refundedAt     DateTime?
+  verifiedBy     String?
+  verifier       User?         @relation("PaymentVerifier", fields: [verifiedBy], references: [id])
+  registration   Registration  @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  @@map("Payment")
+}
+
+model Attendee {
+  id             String       @id @default(uuid())
+  registrationId String
+  participantId  String
+  attendeeId     String       @unique
+  status         String       @default("ELIGIBLE")
+  createdAt      DateTime     @default(now())
+  registration   Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  participant    Participant  @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  qrPass         QRPass?
+  attendance     Attendance[]
+
+  @@unique([registrationId, participantId])
+  @@map("Attendee")
+}
+
+model QRPass {
+  id         String   @id @default(uuid())
+  attendeeId String   @unique
+  token      String   @unique
+  issuedAt   DateTime @default(now())
+  expiresAt  DateTime?
+  attendee   Attendee @relation(fields: [attendeeId], references: [id], onDelete: Cascade)
+
+  @@map("QRPass")
+}
+
+model Attendance {
+  id              String           @id @default(uuid())
+  attendeeId      String
+  eventId         String
+  registrationId  String
+  status          AttendanceStatus @default(NOT_CHECKED_IN)
+  checkedInAt     DateTime?
+  checkedBy       String?
+  checker         User?            @relation("AttendanceChecker", fields: [checkedBy], references: [id])
+  event           Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  attendee        Attendee         @relation(fields: [attendeeId], references: [id], onDelete: Cascade)
+
+  @@unique([attendeeId, eventId])
+  @@map("Attendance")
+}
+
+model JudgeScore {
+  id            String    @id @default(uuid())
+  eventId       String
+  teamId        String?
+  participantId String?
+  judgeId       String
+  score         Decimal   @db.Decimal(5, 2)
+  remarks       String?
+  isFinal       Boolean   @default(false)
+  submittedAt   DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  judge         User      @relation("JudgeScorer", fields: [judgeId], references: [id], onDelete: Cascade)
+  event         Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  team          Team?     @relation(fields: [teamId], references: [id])
+
+  @@map("JudgeScore")
+}
+
+model Result {
+  id            String       @id @default(uuid())
+  eventId       String
+  teamId        String?
+  participantId String?
+  score         Decimal?     @db.Decimal(5, 2)
+  rank          Int?
+  winnerStatus  WinnerStatus @default(NONE)
+  declaredAt    DateTime     @default(now())
+  declaredBy    String?
+  event         Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@map("Result")
+}
+
+model CertificateTemplate {
+  id           String         @id @default(uuid())
+  name         String
+  type         CertificateType
+  layout       Json?
+  isActive     Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  certificates Certificate[]
+
+  @@map("CertificateTemplate")
+}
+
+model Certificate {
+  id                String              @id @default(uuid())
+  certificateId     String              @unique
+  participantId     String
+  collegeId         String
+  eventId           String
+  type              CertificateType
+  templateId        String?
+  isPublished       Boolean             @default(false)
+  verificationToken String              @unique
+  issuedAt          DateTime            @default(now())
+  participant       Participant         @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  college           College             @relation(fields: [collegeId], references: [id])
+  event             Event               @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  template          CertificateTemplate? @relation(fields: [templateId], references: [id])
+
+  @@map("Certificate")
+}
+
+model Announcement {
+  id            String             @id @default(uuid())
+  title         String
+  body          String
+  createdById   String
+  target        AnnouncementTarget @default(ALL)
+  targetIds     Json?
+  publishedAt   DateTime?          @default(now())
+  createdBy     User               @relation("AnnouncementAuthor", fields: [createdById], references: [id])
+  notifications Notification[]
+
+  @@map("Announcement")
+}
+
+model Notification {
+  id             String       @id @default(uuid())
+  userId         String
+  announcementId String?
+  title          String
+  message        String
+  type           String       @default("INFO")
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  announcement   Announcement? @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+
+  @@map("Notification")
+}
+
+model IdCounter {
+  entity String  @id
+  value  Int     @default(0)
+
+  @@map("IdCounter")
 }

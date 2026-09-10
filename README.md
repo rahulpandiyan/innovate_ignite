@@ -104,10 +104,11 @@ This application serves as the central hub for INTERACT 2026, celebrating Karnat
 
 ### Database Schema
 
-- **Users**: College accounts with payment and verification status
-- **Registrants**: Student participants with document links
-- **Events**: Event definitions with capacity management
-- **EventRegistrations**: Junction table for participant-event relationships
+- **User**: Single identity model for all roles (super admin, college admin, team leader, participant, coordinator, judge, staff)
+- **PendingRegistration**: Pre-approval registration queue with OTP verification
+- **College**: Colleges with codes and meet access
+- **RbacRole / RbacPermission / RbacRolePermission**: PRD §20 permission matrix
+- **Event / Registration / Team / Payment / Order / QRPass / Attendance / Result / Certificate + others**: Full PRD data model
 
 ### Security Features
 
@@ -187,17 +188,20 @@ This application serves as the central hub for INTERACT 2026, celebrating Karnat
 ```
 interact2026/
 ├── app/                    # Next.js app directory
-│   ├── api/               # API routes
+│   ├── api/               # API routes (new-model auth/cart/orders/teams/invites/events/admin)
 │   ├── auth/              # Authentication pages
-│   ├── adminDashboard/    # Admin interface
-│   ├── register/          # Registration pages
+│   ├── admin/             # Super admin dashboard (shadcn template shell)
+│   ├── dashboard/         # User dashboard (per-role)
 │   └── ...
-├── components/            # Reusable UI components
+├── components/            # Reusable UI components (admin/ shell, ui/)
 ├── lib/                   # Utility libraries
 │   ├── db.ts             # Database connection
-│   ├── session.ts        # JWT session management
+│   ├── authCookie.ts     # JWT auth token (only session mechanism)
+│   ├── rbac.ts           # Permission/role enforcement (Prisma-backed)
+│   ├── rbac-data.ts      # Pure permission matrix + getHomeRoute
 │   └── ...
-├── prisma/               # Database schema and migrations
+├── prisma/               # Database schema (PRD models only)
+├── scripts/              # Seed + wipe utilities (tsx)
 ├── public/               # Static assets
 └── utils/                # Helper utilities
 ```
@@ -206,26 +210,34 @@ interact2026/
 
 ### Authentication
 
-- `POST /api/login` - User login
-- `POST /api/signup` - User registration
-- `POST /api/logout` - User logout
-- `POST /api/resetpassword` - Password reset
+- `POST /api/auth/login` - User login (returns role-specific `home`)
+- `POST /api/auth/logout` - User logout
+- `POST /api/auth/register` - Pending registration
+- `GET /api/auth/me` - Current session
+- `POST /api/auth/register/complete` - Activate account
+- `POST /api/auth/register/send-otp` / `verify-otp` - OTP verification
+- `POST /api/auth/forgot-password` / `reset-password` - Password reset
 
-### Registration
+### Registration & Events
 
-- `POST /api/register` - College registration
-- `POST /api/eventsregister` - Event registration
-- `GET /api/getallregister` - Get all registrations
+- `GET/POST /api/events` - Event list / create
+- `GET/PATCH /api/events/:eventId` (+ `toggle`) - Event details / status
+- `POST /api/teams` + `/api/teams/invite` - Team creation & invites
+- `POST /api/invites/:eventId/respond` - Invite acceptance
 
-### File Upload
+### Cart & Orders
 
-- `POST /api/uploadthing/*` - File upload endpoints
+- `GET/POST/DELETE /api/cart` + `/api/cart/:cartItemId` - Cart management
+- `POST /api/orders` + `POST /api/orders/:orderId/pay` - Checkout & pay
+- `POST /api/admin/orders/:orderId/verify` - Verify payment & create registrations
 
 ### Admin
 
-- `GET /api/getalleventregister` - Get all event registrations
-- `POST /api/markverified` - Verify documents
-- `POST /api/attendancemark` - Mark attendance
+- `GET /api/admin/users` + `/api/admin/users/:userId` - User management
+- `GET /api/admin/teams` - Team registry
+- `GET /api/admin/orders` (+ list) - Orders
+- `GET /api/admin/audit-logs` - Audit trail
+- Server actions in `app/admin/actions.ts`: createCollege, createEvent, assignEventUsers, updateEventStatus, setUserRole, createAdminUser
 
 ## 🎨 UI/UX Features
 

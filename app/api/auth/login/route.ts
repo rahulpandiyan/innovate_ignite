@@ -3,6 +3,7 @@ import { newLoginSchema } from "@/lib/schemas/newAuth";
 import prisma from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { setAuthCookie } from "@/lib/authCookie";
+import { getHomeRoute } from "@/lib/rbac-data";
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,31 +21,49 @@ export async function POST(req: NextRequest) {
 
     const { email, password } = input.data;
 
+    // Use consistent timing to prevent user enumeration
+    const passwordToCompare = "$2b$12$invalidhashpadding000000000000000000000000000000000000";
+    let passwordMatch = await bcrypt.compare(password, passwordToCompare);
+
     const user = await prisma.user.findUnique({
       where: { email },
       select: {
         id: true,
-        name: true,
         email: true,
-        password: true,
-        photoUrl: true,
+        name: true,
+        collegeId: true,
+        roleId: true,
         role: true,
-        emailVerified: true,
+        password: true,
+        userRole: { select: { name: true } },
       },
     });
 
-    // Use consistent timing to prevent user enumeration
-    const passwordToCompare = user?.password ?? "$2b$12$invalidhashpadding000000000000000000000000000000000000";
-    const passwordMatch = await bcrypt.compare(password, passwordToCompare);
-
-    if (!user || !user.password || !passwordMatch) {
+    if (!user?.password) {
       return NextResponse.json(
         { success: false, error: { message: "Invalid email or password." } },
         { status: 401 }
       );
     }
 
-    await setAuthCookie({ id: user.id, email: user.email, role: user.role });
+    passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return NextResponse.json(
+        { success: false, error: { message: "Invalid email or password." } },
+        { status: 401 }
+      );
+    }
+
+    const role = user.userRole?.name ?? user.role;
+    const home = getHomeRoute(role);
+
+    await setAuthCookie({
+      id: user.id,
+      email: user.email,
+      role,
+      collegeId: user.collegeId,
+      roleId: user.roleId,
+    });
 
     return NextResponse.json({
       success: true,
@@ -53,8 +72,9 @@ export async function POST(req: NextRequest) {
           id: user.id,
           name: user.name,
           email: user.email,
-          photoUrl: user.photoUrl,
-          role: user.role,
+          photoUrl: null,
+          role,
+          home,
         },
       },
     });

@@ -7,6 +7,8 @@ export type AuthPayload = {
   id: string;
   email: string;
   role: string;
+  collegeId?: string | null;
+  roleId?: string | null;
 };
 
 const COOKIE_NAME = "auth_token";

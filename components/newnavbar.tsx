@@ -228,7 +228,7 @@ const NavBar = () => {
                                 <>
                                     <NavigationMenuItem>
                                         <Link
-                                            href={"/register/getallregister"}
+                                            href={"/dashboard"}
                                             legacyBehavior
                                             passHref
                                         >

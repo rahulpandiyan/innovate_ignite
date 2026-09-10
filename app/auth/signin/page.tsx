@@ -65,12 +65,11 @@ export default function SignIn() {
         toast.success("Login successful!", {
           description: "Welcome back!",
         });
-        const role = response.data.data?.user?.role;
-        if (role === "SUPER_ADMIN") {
-          router.push("/adminDashboard");
-        } else {
-          router.push("/register/firstEventSelection");
-        }
+        const user = response.data.data?.user;
+        const home = user?.home ?? (user?.role === "SUPER_ADMIN"
+          ? "/admin"
+          : "/dashboard");
+        router.push(home);
       } else {
         form.setError("email", { type: "manual", message: "Invalid credentials" });
         form.setError("password", { type: "manual", message: "Invalid credentials" });

@@ -1,9 +1,8 @@
 import React from "react";
-import Navbar from "../components/Navbar";
-import Footer from ".././components/Footer";
 import "./globals.css";
 import AuthContextProvider from "@/contexts/auth-context";
 import { ThemeProvider } from "@/contexts/theme-provider";
+import { SiteChrome } from "@/components/SiteChrome";
 import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -70,12 +69,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <body className="font-body text-gat-charcoal bg-white antialiased">
         <ThemeProvider>
           <AuthContextProvider>
-            <Navbar />
-            <main className="min-h-screen">
-              {children}
-              <Analytics />
-              <SpeedInsights />
-            </main>
+            <SiteChrome>{children}</SiteChrome>
+            <Analytics />
+            <SpeedInsights />
             <Toaster
               theme="light"
               toastOptions={{
@@ -86,7 +82,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 },
               }}
             />
-            <Footer />
           </AuthContextProvider>
         </ThemeProvider>
       </body>

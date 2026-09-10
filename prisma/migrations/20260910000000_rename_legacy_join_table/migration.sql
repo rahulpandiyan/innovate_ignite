@@ -1,0 +1,1 @@
+ALTER TABLE "_EventRegistrations" RENAME TO "_EventsToRegistrants";

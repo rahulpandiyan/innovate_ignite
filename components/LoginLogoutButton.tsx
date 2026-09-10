@@ -13,7 +13,7 @@ const LoginLogoutButton = () => {
 
   const handleLogout = async () => {
     try {
-      const res = await fetch("/api/logout", {
+      const res = await fetch("/api/auth/logout", {
         method: "POST",
       });
       const data = await res.json();
@@ -45,7 +45,7 @@ const LoginLogoutButton = () => {
     <div className="flex items-center gap-2">
       {isLoggedIn ? (
         <>
-          <Link id="dashboard-link" href="/register/getallregister" className={baseBtn}>
+          <Link id="dashboard-link" href="/dashboard" className={baseBtn}>
             Dashboard
           </Link>
           <Link id="logout-link" href="/auth/logout" className={primaryBtn}>
