@@ -156,11 +156,9 @@
 /* ─────────────────────────────────────────────
    HOME PAGE STYLES
 ───────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
-
-.font-display  { font-family: 'Syne', sans-serif; }
-.font-body-out { font-family: 'Outfit', sans-serif; }
-.font-mono-jb  { font-family: 'JetBrains Mono', monospace; }
+.font-display  { font-family: 'Google Sans', 'Product Sans', Arial, sans-serif; }
+.font-body-out { font-family: 'Google Sans', 'Product Sans', Arial, sans-serif; }
+.font-mono-jb  { font-family: 'Google Sans', 'Product Sans', Arial, sans-serif; }
 
 /* dot-grid overlay */
 .dot-grid {
@@ -182,7 +180,7 @@
   border: 1px solid hsl(var(--secondary) / 0.4);
   background: hsl(var(--secondary) / 0.08);
   color: hsl(var(--foreground));
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Google Sans', 'Product Sans', Arial, sans-serif;
 }
 .pill-badge::before {
   content: '';
@@ -244,7 +242,7 @@
   background: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
   border: none; cursor: pointer; text-decoration: none;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Google Sans', 'Product Sans', Arial, sans-serif;
   transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
   box-shadow: 0 4px 18px hsl(var(--primary) / 0.3);
 }
@@ -262,7 +260,7 @@
   background: hsl(var(--secondary));
   color: hsl(var(--secondary-foreground));
   border: none; cursor: pointer; text-decoration: none;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Google Sans', 'Product Sans', Arial, sans-serif;
   transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
   box-shadow: 0 4px 18px hsl(var(--secondary) / 0.35);
 }
@@ -281,7 +279,7 @@
   color: hsl(var(--foreground));
   border: 1.5px solid hsl(var(--border));
   cursor: pointer; text-decoration: none;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Google Sans', 'Product Sans', Arial, sans-serif;
   transition: border-color 0.2s, background 0.2s, transform 0.15s;
 }
 .btn-ghost:hover {

@@ -87,7 +87,7 @@ function ResetPasswordContent() {
           radial-gradient(ellipse 45% 45% at 5% 85%, hsl(var(--secondary) / 0.07) 0%, transparent 55%),
           hsl(var(--background))
         `,
-        fontFamily: "'Outfit', sans-serif",
+        fontFamily: "'Google Sans', 'Product Sans', Arial, sans-serif",
       }}
     >
       <div className="dot-grid absolute inset-0 pointer-events-none opacity-100" />

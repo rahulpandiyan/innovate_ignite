@@ -14,7 +14,7 @@ export default function SpocsPage() {
       style={{
         background: "hsl(var(--background))",
         color: "hsl(var(--foreground))",
-        fontFamily: "'Outfit', sans-serif",
+        fontFamily: "'Google Sans', 'Product Sans', Arial, sans-serif",
       }}
     >
       {/* Background gradients and particles */}

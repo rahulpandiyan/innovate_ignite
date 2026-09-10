@@ -100,7 +100,7 @@ export default function SignIn() {
           radial-gradient(ellipse 45% 45% at 5% 85%,  hsl(var(--secondary) / 0.07) 0%, transparent 55%),
           hsl(var(--background))
         `,
-        fontFamily: "'Outfit', sans-serif",
+        fontFamily: "'Google Sans', 'Product Sans', Arial, sans-serif",
       }}
     >
       {/* dot grid */}

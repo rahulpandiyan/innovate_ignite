@@ -75,10 +75,10 @@ export default withUt({
         },
       },
       fontFamily: {
-        display: ["var(--font-playfair)", "Georgia", "serif"],
-        heading: ["var(--font-rajdhani)", "sans-serif"],
-        body: ["var(--font-dm-sans)", "sans-serif"],
-        mono: ["var(--font-jetbrains-mono)", "monospace"],
+        display: ["Google Sans", "Product Sans", "Arial", "sans-serif"],
+        heading: ["Google Sans", "Product Sans", "Arial", "sans-serif"],
+        body: ["Google Sans", "Product Sans", "Arial", "sans-serif"],
+        mono: ["Google Sans", "Product Sans", "Arial", "sans-serif"],
       },
       boxShadow: {
         gold: "0 4px 24px rgba(243,195,23,0.18)",
