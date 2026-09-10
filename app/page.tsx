@@ -128,7 +128,7 @@ export default function Home() {
             radial-gradient(ellipse 45% 45% at 5% 85%,  hsl(var(--secondary) / 0.07) 0%, transparent 55%),
             hsl(var(--background))
           `,
-          fontFamily: "'Google Sans', 'Product Sans', Arial, sans-serif",
+          fontFamily: "'Outfit', sans-serif",
         }}
       >
         {/* dot grid */}
@@ -274,7 +274,7 @@ export default function Home() {
       {/* ══ CATEGORIES ═══════════════════════════════════════════════════ */}
       <section
         className="py-28"
-        style={{ background: "hsl(var(--card))", fontFamily: "'Google Sans', 'Product Sans', Arial, sans-serif" }}
+        style={{ background: "hsl(var(--card))", fontFamily: "'Outfit', sans-serif" }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* section header */}
@@ -370,7 +370,7 @@ export default function Home() {
       {/* ══ SCHEDULE ═════════════════════════════════════════════════════ */}
       <section
         className="py-28 relative overflow-hidden"
-        style={{ background: "hsl(var(--background))", fontFamily: "'Google Sans', 'Product Sans', Arial, sans-serif" }}
+        style={{ background: "hsl(var(--background))", fontFamily: "'Outfit', sans-serif" }}
       >
         {/* ghost watermark */}
         <div
@@ -441,7 +441,7 @@ export default function Home() {
             radial-gradient(ellipse 80% 80% at 50% 50%, hsl(var(--primary) / 0.12) 0%, transparent 70%),
             hsl(var(--accent))
           `,
-          fontFamily: "'Google Sans', 'Product Sans', Arial, sans-serif",
+          fontFamily: "'Outfit', sans-serif",
         }}
       >
         <div className="relative z-10 max-w-2xl mx-auto px-6 text-center">
@@ -489,7 +489,7 @@ export default function Home() {
                 border: "1.5px solid hsl(var(--accent-foreground) / 0.2)",
                 cursor: "pointer",
                 textDecoration: "none",
-                fontFamily: "'Google Sans', 'Product Sans', Arial, sans-serif",
+                fontFamily: "'Outfit', sans-serif",
                 transition: "border-color 0.2s, background 0.2s",
               }}
             >

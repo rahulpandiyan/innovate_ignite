@@ -6,6 +6,13 @@ import { SiteChrome } from "@/components/SiteChrome";
 import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Playfair_Display, Rajdhani, DM_Sans, JetBrains_Mono } from "next/font/google";
+
+const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
+const rajdhani = Rajdhani({ weight: ["400", "500", "600", "700"], subsets: ["latin"], variable: "--font-rajdhani" });
+const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" });
+const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono" });
+
 export const metadata = {
   metadataBase: new URL("https://www.vvitinnovateignite.com"),
   title: {
@@ -59,7 +66,7 @@ export const metadata = {
 // Global layout for pages
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${playfair.variable} ${rajdhani.variable} ${dmSans.variable} ${jetbrainsMono.variable}`}>
       <body className="font-body text-gat-charcoal bg-white antialiased">
         <ThemeProvider>
           <AuthContextProvider>
