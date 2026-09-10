@@ -56,6 +56,25 @@ export function ScanBox() {
     async function startScanner() {
       try {
         if (cancelled || !videoContainerRef.current) return;
+        if (
+          !window.isSecureContext &&
+          window.location.hostname !== "localhost" &&
+          window.location.hostname !== "127.0.0.1"
+        ) {
+          throw new Error("Camera access requires HTTPS or localhost");
+        }
+
+        if (!navigator.mediaDevices?.getUserMedia) {
+          throw new Error("This browser does not support camera access");
+        }
+
+        // Request permission explicitly before the QR library creates its video stream.
+        const permissionStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" },
+          audio: false,
+        });
+        permissionStream.getTracks().forEach((track) => track.stop());
+        if (cancelled || !videoContainerRef.current) return;
 
         const scanner = new Html5Qrcode(videoContainerRef.current.id);
         html5QrCodeRef.current = scanner;
@@ -80,6 +99,8 @@ export function ScanBox() {
           setError("Camera access denied. Please allow camera permissions in your browser.");
         } else if (err.name === "NotFoundError") {
           setError("No camera found on this device.");
+        } else if (err.message?.includes("HTTPS") || err.message?.includes("support camera")) {
+          setError(err.message);
         } else {
           setError(`Camera error: ${err.message || "Please check permissions and try again."}`);
         }
