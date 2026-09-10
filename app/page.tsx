@@ -121,41 +121,39 @@ export default function Home() {
 
       {/* ══ HERO ══════════════════════════════════════════════════════════ */}
       <section
-        className="relative overflow-hidden min-h-screen flex flex-col justify-center pt-24 pb-32"
+        className="relative overflow-hidden min-h-[760px] flex flex-col justify-center pt-28 pb-24"
         style={{
           background: `
-            radial-gradient(ellipse 65% 55% at 60% 35%, hsl(var(--primary) / 0.09) 0%, transparent 65%),
-            radial-gradient(ellipse 45% 45% at 5% 85%,  hsl(var(--secondary) / 0.07) 0%, transparent 55%),
-            hsl(var(--background))
+            radial-gradient(ellipse 65% 80% at 78% 42%, hsl(var(--primary) / 0.42) 0%, transparent 68%),
+            radial-gradient(ellipse 42% 70% at 8% 92%, hsl(var(--secondary) / 0.14) 0%, transparent 64%),
+            hsl(var(--accent))
           `,
           fontFamily: "'Outfit', sans-serif",
         }}
       >
         {/* dot grid */}
-        <div className="dot-grid absolute inset-0 pointer-events-none opacity-100" />
+        <div className="dot-grid absolute inset-0 pointer-events-none opacity-30" />
 
-        {/* ghost year watermark */}
+        {/* Event mark */}
         <div
-          className="absolute top-[12%] select-none pointer-events-none transition-all duration-500 max-[550px]:left-1/2 max-[550px]:-translate-x-1/2 max-[550px]:opacity-[0.05] min-[551px]:right-[-2%] min-[551px]:opacity-[0.9]"
-          style={{ width: "clamp(280px, 40vw, 700px)" }}
+          className="absolute right-[5%] top-1/2 hidden -translate-y-1/2 select-none pointer-events-none md:block"
+          style={{ width: "clamp(280px, 34vw, 520px)" }}
           aria-hidden
         >
-          <Image
-            src={innovateIgniteLogo}
-                alt="VVIT Innovate Ignite Logo Watermark"
-            className="w-full h-auto object-contain"
-            priority
-          />
+          <div className="hero-mark-frame">
+            <Image src={innovateIgniteLogo} alt="VVIT Innovate Ignite" className="w-full h-auto object-contain" priority />
+            <span className="hero-mark-label">VVIT / 2026</span>
+          </div>
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-14 w-full">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-14 w-full md:max-w-[92rem]">
           {/* badge */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45 }}
           >
-            <span className="pill-badge mb-8 inline-flex">
+            <span className="pill-badge pill-badge-dark mb-8 inline-flex">
               Vijaya Vittala Institute Of Technology Presents
             </span>
           </motion.div>
@@ -163,39 +161,27 @@ export default function Home() {
           {/* headline */}
           <motion.h1
             className="font-display leading-[0.92] mb-5"
-            style={{
-              // Reduced from clamp(2.5rem, 8vw, 6.5rem)
-              fontSize: "clamp(2rem, 6vw, 5rem)",
-              letterSpacing: "-0.02em",
-              color: "hsl(var(--foreground))",
-            }}
+            style={{ fontSize: "clamp(3.25rem, 9vw, 8.5rem)", letterSpacing: "-0.06em", color: "#fff" }}
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            NATIONAL LEVEL
+            INNOVATE
             <br />
-            <span style={{ color: "hsl(var(--primary))" }}>INTER-COLLEGIATE</span>
+            <span style={{ color: "hsl(var(--secondary))" }}>IGNITE</span>
             <br />
-            <span
-              style={{
-                WebkitTextStroke: "1.5px hsl(var(--secondary))", // Slightly thinner stroke for smaller text
-                color: "transparent",
-              }}
-            >
-              EVENTS 2026
-            </span>
+            <span className="hero-subtitle">National inter-collegiate festival · 2026</span>
           </motion.h1>
 
           {/* tagline */}
           <motion.p
             className="font-mono-jb text-sm uppercase tracking-[0.28em] mb-12"
-            style={{ color: "hsl(var(--muted))" }}
+            style={{ color: "hsl(var(--accent-foreground) / 0.64)" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.45, delay: 0.3 }}
           >
-            Inter-collegiate Event <br /> Registration Portal
+            A three-day collision of ideas, craft, code, culture, and competition.
           </motion.p>
 
           {/* stats */}
@@ -217,7 +203,7 @@ export default function Home() {
               </span>
               <span
                 className="text-xs uppercase tracking-[0.22em] font-semibold"
-                style={{ color: "hsl(var(--muted))" }}
+                style={{ color: "hsl(var(--accent-foreground) / 0.64)" }}
               >
                 Prize Pool
               </span>
@@ -259,7 +245,7 @@ export default function Home() {
               style={{ color: "hsl(var(--muted))" }}
             >
               <MapPin size={12} />
-              VVIT Campus, Bengaluru
+              VVIT Campus · Bengaluru
             </span>
           </motion.div>
         </div>
