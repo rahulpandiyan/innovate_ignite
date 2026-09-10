@@ -156,7 +156,7 @@ export default function Home() {
             transition={{ duration: 0.45 }}
           >
             <span className="pill-badge mb-8 inline-flex">
-              VVIT Innovate Ignite Presents
+              Vijaya Vittala Institute Of Technology Presents
             </span>
           </motion.div>
 
