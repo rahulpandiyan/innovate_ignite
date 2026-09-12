@@ -2,6 +2,7 @@ import type { AuthConfig } from "@auth/core";
 import { connect, type ConnectProfile } from "@vercel/connect/authjs";
 import prisma from "@/lib/db";
 import { setAuthCookie } from "@/lib/authCookie";
+import { avatarUrlFor } from "@/lib/avatar";
 
 export const authConfig: AuthConfig = {
   trustHost: true,
@@ -52,7 +53,7 @@ export const authConfig: AuthConfig = {
             roleId: roleRow?.id,
             password: null,
             emailVerified: true,
-            photoUrl: photo,
+            photoUrl: photo ?? avatarUrlFor(email),
           },
           update: { name, photoUrl: photo, emailVerified: true },
         });

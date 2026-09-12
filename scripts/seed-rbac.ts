@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
 import { ALL_PERMISSIONS, ROLE_PERMISSIONS, ROLES } from "../lib/rbac-data";
+import { avatarUrlFor } from "../lib/avatar";
 
 const prisma = new PrismaClient();
 
@@ -64,6 +65,7 @@ async function upsertUser(data: {
       email: data.email,
       phone: data.phone,
       collegeName: data.collegeName,
+      photoUrl: avatarUrlFor(data.email),
       password,
       emailVerified: true,
       role: data.roleName === "SUPER_ADMIN" ? "SUPER_ADMIN" : "PARTICIPANT",

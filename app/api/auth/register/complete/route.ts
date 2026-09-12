@@ -3,6 +3,7 @@ import { registerCompleteSchema } from "@/lib/schemas/newAuth";
 import prisma from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { setAuthCookie } from "@/lib/authCookie";
+import { avatarUrlFor } from "@/lib/avatar";
 import { randomUUID } from "crypto";
 
 const COMPLETION_WINDOW_MS =
@@ -116,7 +117,7 @@ export async function POST(req: NextRequest) {
         collegeIdNumber,
         aadharNumber: aadhaarNumber,
         password: hashedPassword,
-        photoUrl,
+          photoUrl: photoUrl?.trim() ? photoUrl : avatarUrlFor(email),
         emailVerified: true,
         role: "PARTICIPANT",
       },

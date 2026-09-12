@@ -9,7 +9,10 @@
     "lint": "eslint .",
     "generate": "prisma generate",
     "generate-admin": "node scripts/generate-admin-hash.js",
-    "seed:admins": "tsx scripts/seed-admin-users.ts"
+    "seed:admins": "tsx scripts/seed-admin-users.ts",
+    "seed": "tsx scripts/seed-rbac.ts",
+    "seed:prod": "tsx scripts/seed-prod.ts",
+    "seed:rbac": "tsx scripts/seed-rbac.ts"
   },
   "dependencies": {
     "@auth/core": "^0.41.3",
@@ -120,5 +123,8 @@
     "tailwindcss": "^3.4.19",
     "tsx": "^4.23.13",
     "typescript": "^5.9.3"
+  },
+  "prisma": {
+    "seed": "tsx scripts/seed-rbac.ts"
   }
 }

@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { randomBytes } from "crypto";
 import { ALL_PERMISSIONS, ROLE_PERMISSIONS, ROLES } from "../lib/rbac-data";
+import { avatarUrlFor } from "../lib/avatar";
 
 const prisma = new PrismaClient();
 
@@ -62,6 +63,7 @@ async function seedSuperAdmin() {
       name: "Super Admin",
       email,
       phone: "",
+      photoUrl: avatarUrlFor(email),
       collegeName: "Platform Admin",
       password: hash,
       emailVerified: true,
