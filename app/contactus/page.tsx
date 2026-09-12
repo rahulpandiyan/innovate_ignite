@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import React from "react";
-import bgImage from "../../components/images/GATBGIMG.png";
 
 // Define the interface for the form fields
 interface IContactForm {
@@ -45,14 +44,7 @@ const ContactUs: React.FC = () => {
 
   return (
     <div
-      className="overflow-hidden pt-20 pb-12 lg:pt-[120px] lg:pb-[90px] text-[#bbc5c6]"
-      style={{
-        backgroundImage: `url(${bgImage.src})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        backgroundAttachment: "fixed",
-      }}
+      className="overflow-hidden pt-20 pb-12 lg:pt-[120px] lg:pb-[90px] text-[#bbc5c6] bg-gat-midnight"
     >
       <div className="container mx-auto">
         <div className="md:px-12 xl:px-6">

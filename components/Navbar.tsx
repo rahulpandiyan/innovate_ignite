@@ -6,8 +6,8 @@ import Image from "next/image";
 import { Menu, X, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import gatLogo from "@/public/gat-logos/GAT_Linear Logo.png";
-import innovateIgniteLogo from "@/public/gat-logos/VVIT-Innovate-Ignite.png";
+import gatLogo from "@/public/gat-logos/college-logo.png";
+import innovateIgniteLogo from "@/public/gat-logos/innovate-ignite.png";
 import LoginLogoutButton from "./LoginLogoutButton";
 
 const navLinks = [

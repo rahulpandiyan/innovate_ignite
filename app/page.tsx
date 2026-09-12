@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import innovateIgniteLogo from "@/public/gat-logos/VVIT-Innovate-Ignite.png";
+import innovateIgniteLogo from "@/public/gat-logos/innovate-ignite.png";
 import { ArrowRight, MapPin, Calendar } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { categories, marqueeItems } from "@/data/homeData";

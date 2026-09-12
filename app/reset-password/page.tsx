@@ -22,8 +22,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import gatLogo from "@/public/images/gat-logo.png";
-import innovateIgniteLogo from "@/public/gat-logos/VVIT-Innovate-Ignite.png";
+import gatLogo from "@/public/gat-logos/college-logo.png";
+import innovateIgniteLogo from "@/public/gat-logos/innovate-ignite.png";
 
 const schema = z.object({
   newPassword: z

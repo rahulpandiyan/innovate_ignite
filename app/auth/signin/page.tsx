@@ -34,9 +34,11 @@ import { Eye, EyeOff, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 // Import logos and background image – paths unchanged
-import gatLogo from "@/public/images/gat-logo.png";
-import innovateIgniteLogo from "@/public/gat-logos/VVIT-Innovate-Ignite.png";
+import gatLogo from "@/public/gat-logos/college-logo.png";
+import innovateIgniteLogo from "@/public/gat-logos/innovate-ignite.png";
 import MagneticButton from "@/components/ui/MagneticButton";
+import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
+import { signInWithGoogle } from "@/app/auth/googleActions";
 
 export default function SignIn() {
   const router = useRouter();
@@ -343,6 +345,16 @@ export default function SignIn() {
               </form>
             </Form>
           </div>
+
+                    <div className="relative flex items-center gap-4 my-1" aria-hidden="true">
+            <div className="h-px flex-1" style={{ background: "hsl(var(--border))" }} />
+            <span className="text-[10px] font-semibold tracking-[0.22em] uppercase" style={{ color: "hsl(var(--muted-foreground))", fontFamily: "'JetBrains Mono',monospace" }}>or continue with Google</span>
+            <div className="h-px flex-1" style={{ background: "hsl(var(--border))" }} />
+          </div>
+
+          <form action={signInWithGoogle}>
+            <GoogleSignInButton />
+          </form>
 
           {/* Card footer note */}
           <div

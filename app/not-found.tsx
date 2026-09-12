@@ -1,19 +1,9 @@
 import Link from 'next/link';
 import React from 'react';
 
-import bgImage from "../components/images/GATBGIMG.png"; 
 const NotFoundPage = () => {
   return (
-    <div
-      className="flex items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat"
-      style={{
-        backgroundImage: `url(${bgImage.src})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        backgroundAttachment: "fixed",
-    }}
-    >
+    <div className="flex items-center justify-center min-h-screen">
       <div className="max-w-2xl h-full mx-auto text-center bg-white bg-opacity-90 p-8 rounded-lg shadow-lg">
         <div className="text-9xl font-bold text-indigo-600 mb-4">404</div>
         <h1 className="text-4xl font-bold text-gray-800 mb-6">Oops! Page Not Found</h1>

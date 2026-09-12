@@ -3,7 +3,7 @@
 Status of the PRD v2 rebuild. Foundation, RBAC, Super Admin dashboard and the participant dashboard are done.
 Remaining slices are ordered by dependency. Every slice is permission-gated via `lib/rbac.ts` (`assertPermission` / `assertEventScope`).
 
-## Done (Slices 0–6)
+## Done (Slices 0–7)
 
 - Single `User` identity model; legacy Users/Registrants/Events/EventRegistrations schema removed.
 - Only session mechanism is `auth_token` (`lib/authCookie.ts`).
@@ -18,10 +18,8 @@ Remaining slices are ordered by dependency. Every slice is permission-gated via 
 - Payments v2 live at `/payments` (FINANCE_ADMIN workspace): ledger of orders + per-registration payments, summary stats (collected/awaiting/successful/refunded), verify (`POST /api/payments/[orderId]/verify`, `payments.verify`) and reject (`POST /api/payments/[orderId]/reject` with reason, `payments.manage`). Order verification extracted to `lib/orderVerification.ts`, shared by the legacy `/api/admin/orders/[orderId]/verify` route; verifying auto-creates CONFIRMED registration + attendee + QRPass + SUCCESS payment. `FINANCE_ADMIN` home → `/payments`.
 - Identity/QR service `lib/participantService.ts` — admin verify creates Payment + Participant + Attendee + QRPass per registration.
 - Route guarding via `middleware.ts` + page guards; role homes verified; public navbar/footer hidden on all app shells (incl. `/certificates`, `/payments`).
-
-## Slice 7 — College admin dashboard
-
-- College code meet access, participant roster management, document/eligibility verification.
+- College admin live at `/college-admin`: participant roster with masked Aadhaar/USN/college ID, registrations & eligibility table (registration/payment/attendee status, QR token, checked-in today), per-attendee Verify/Flag (`POST /api/college-admin/attendee/:id/eligibility`, sets `VERIFIED`/`INELIGIBLE`, college-scoped, audits `REGISTRATION_UPDATED`); `COLLEGE_ADMIN` home → `/college-admin`.
+- Attendance scanning: staff scan QR by camera (`html5-qrcode`, camera permission handling + manual token fallback) at `/attendance`.
 
 ## Open follow-ups
 

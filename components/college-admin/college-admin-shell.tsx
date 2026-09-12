@@ -3,6 +3,8 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
+import dashboardLogo from "@/public/gat-logos/dashboard-logo.webp";
 import { ShieldCheck, LogOut, EllipsisVertical, School, UsersRound } from "lucide-react";
 import {
   Sidebar,
@@ -120,8 +122,14 @@ export function CollegeAdminShell({
             <SidebarMenuItem>
               <SidebarMenuButton size="lg" asChild>
                 <Link href="/college-admin">
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                    <School className="size-4" />
+                  <div className="flex aspect-square size-8 items-center justify-center overflow-hidden rounded-lg">
+                    <Image
+                      src={dashboardLogo}
+                      alt="Innovate Ignite"
+                      width={32}
+                      height={32}
+                      className="size-8 object-contain"
+                    />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">{collegeName}</span>
