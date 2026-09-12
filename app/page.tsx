@@ -1,501 +1,402 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import innovateIgniteLogo from "@/public/gat-logos/innovate-ignite.png";
-import { ArrowRight, MapPin, Calendar } from "lucide-react";
-import { motion, useInView } from "framer-motion";
-import { categories, marqueeItems } from "@/data/homeData";
-import ParticlesBackground from "@/components/ParticlesBackground";
+import { ArrowRight, Calendar, MapPin, Clock, ArrowUpRight, Check } from "lucide-react";
+import { motion } from "framer-motion";
+import { categories } from "@/data/homeData";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
-/* ─────────────────────────────────────────────
-    COUNT-UP HOOK
-───────────────────────────────────────────── */
-function useCountUp(target: number, duration = 1600) {
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+const totalEvents = categories.reduce((a, c) => a + c.count, 0);
 
-  useEffect(() => {
-    if (!inView) return;
-    let start: number | null = null;
-    const ease = (t: number) => 1 - Math.pow(1 - t, 4);
-    const step = (ts: number) => {
-      if (!start) start = ts;
-      const p = Math.min((ts - start) / duration, 1);
-      setCount(Math.floor(ease(p) * target));
-      if (p < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, [inView, target, duration]);
+// signature: program index numbers — real data, not decoration
+const program = categories.map((c, i) => ({
+  n: String(i + 1).padStart(2, "0"),
+  ...c,
+}));
 
-  return { count, ref };
-}
-
-function StatItem({
-  to,
-  label,
-  prefix = "",
-  suffix = "+",
-}: {
-  to: number;
-  label: string;
-  prefix?: string;
-  suffix?: string;
-}) {
-  const { count, ref } = useCountUp(to);
-  return (
-    <div className="flex flex-col gap-1">
-      <span
-        ref={ref}
-        className="font-display text-5xl md:text-6xl font-extrabold leading-none"
-        style={{ color: "hsl(var(--secondary))" }}
-      >
-        {prefix}
-        {count}
-        {suffix}
-      </span>
-      <span
-        className="text-xs uppercase tracking-[0.22em] font-semibold"
-        style={{ color: "hsl(var(--muted))" }}
-      >
-        {label}
-      </span>
-    </div>
-  );
-}
-
-function Marquee() {
-  const repeated = [...marqueeItems, ...marqueeItems];
-  return (
-    <div
-      className="overflow-hidden py-3 border-y"
-      style={{
-        borderColor: "hsl(var(--border))",
-        background: "hsl(var(--secondary) / 0.05)",
-      }}
-    >
-      <ParticlesBackground />
-      <style>{`
-        @keyframes marquee-scroll {
-          from { transform: translateX(0); }
-          to   { transform: translateX(-50%); }
-        }
-        .marquee-track {
-          animation: marquee-scroll 26s linear infinite;
-          display: flex;
-          width: max-content;
-        }
-        .marquee-track:hover { animation-play-state: paused; }
-      `}</style>
-      <div className="marquee-track">
-        {repeated.map((item, i) => (
-          <span key={i} className="flex items-center gap-3 px-6">
-            <span
-              className="text-xs font-bold uppercase tracking-[0.18em]"
-              style={{ color: "hsl(var(--foreground) / 0.5)" }}
-            >
-              {item}
-            </span>
-            <span style={{ color: "hsl(var(--secondary))", fontSize: 9 }}>◆</span>
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────
-    PAGE
-───────────────────────────────────────────── */
 export default function Home() {
   return (
-    <div
-      className="min-h-screen"
-      style={{
-        background: "hsl(var(--background))",
-        color: "hsl(var(--foreground))",
-      }}
-    >
-
-      {/* ══ HERO ══════════════════════════════════════════════════════════ */}
-      <section
-        className="relative overflow-hidden min-h-screen flex flex-col justify-center pt-24 pb-32"
-        style={{
-          background: `
-            radial-gradient(ellipse 65% 55% at 60% 35%, hsl(var(--primary) / 0.09) 0%, transparent 65%),
-            radial-gradient(ellipse 45% 45% at 5% 85%,  hsl(var(--secondary) / 0.07) 0%, transparent 55%),
-            hsl(var(--background))
-          `,
-          fontFamily: "'Outfit', sans-serif",
-        }}
-      >
-        {/* dot grid */}
-        <div className="dot-grid absolute inset-0 pointer-events-none opacity-100" />
-
-        {/* ghost year watermark */}
-        <div
-          className="absolute top-[12%] select-none pointer-events-none transition-all duration-500 max-[550px]:left-1/2 max-[550px]:-translate-x-1/2 max-[550px]:opacity-[0.05] min-[551px]:right-[-2%] min-[551px]:opacity-[0.9]"
-          style={{ width: "clamp(280px, 40vw, 700px)" }}
-          aria-hidden
-        >
-          <Image
-            src={innovateIgniteLogo}
-                alt="VVIT Innovate Ignite Logo Watermark"
-            className="w-full h-auto object-contain"
-            priority
-          />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-14 w-full">
-          {/* badge */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45 }}
-          >
-            <span className="pill-badge mb-8 inline-flex">
-              Vijaya Vittala Institute Of Technology Presents
-            </span>
-          </motion.div>
-
-          {/* headline */}
-          <motion.h1
-            className="font-display leading-[0.92] mb-5"
-            style={{
-              // Reduced from clamp(2.5rem, 8vw, 6.5rem)
-              fontSize: "clamp(2rem, 6vw, 5rem)",
-              letterSpacing: "-0.02em",
-              color: "hsl(var(--foreground))",
-            }}
-            initial={{ opacity: 0, y: 32 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            NATIONAL LEVEL
-            <br />
-            <span style={{ color: "hsl(var(--primary))" }}>INTER-COLLEGIATE</span>
-            <br />
-            <span
-              style={{
-                WebkitTextStroke: "1.5px hsl(var(--secondary))", // Slightly thinner stroke for smaller text
-                color: "transparent",
-              }}
-            >
-              EVENTS 2026
-            </span>
-          </motion.h1>
-
-          {/* tagline */}
-          <motion.p
-            className="font-mono-jb text-sm uppercase tracking-[0.28em] mb-12"
-            style={{ color: "hsl(var(--muted))" }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.45, delay: 0.3 }}
-          >
-            Inter-collegiate Event <br /> Registration Portal
-          </motion.p>
-
-          {/* stats */}
-          <motion.div
-            className="stats-row flex flex-wrap gap-y-8 mb-12"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            <StatItem to={categories.reduce((acc, c) => acc + c.count, 0)} label="Events" />
-            <StatItem to={3} label="Days" />
-            <StatItem to={1000} label="Participants" />
-            {/* <div className="flex flex-col gap-1">
-              <span
-                className="font-display text-5xl md:text-4xl font-extrabold leading-none"
-                style={{ color: "hsl(var(--secondary))" }}
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground">
+      {/* ── HERO — POSTER + PROGRAM INDEX ─────────────────────────────── */}
+      <section className="relative border-b border-border">
+        {/* hairline top accent */}
+        <div className="absolute inset-x-0 top-0 h-px bg-border" />
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-12 gap-0 lg:gap-6">
+            {/* LEFT — POSTER */}
+            <div className="col-span-12 lg:col-span-7 pt-28 pb-10 lg:py-16 lg:pr-6">
+              {/* eyebrow — real info, mono */}
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="flex flex-wrap items-center gap-3 text-[11px] font-mono tracking-[0.18em] uppercase text-muted-foreground"
               >
-                ₹2L+
-              </span>
-              <span
-                className="text-xs uppercase tracking-[0.22em] font-semibold"
-                style={{ color: "hsl(var(--muted))" }}
+                <span className="inline-flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-secondary animate-pulse" />
+                  Registration open
+                </span>
+                <span className="h-3 w-px bg-border hidden sm:block" />
+                <span>VVIT Bengaluru</span>
+                <span className="h-1 w-1 rounded-full bg-border hidden sm:block" />
+                <span>May 13–15 · 2026</span>
+              </motion.div>
+
+              {/* headline — Playfair + Rajdhani, tight */}
+              <motion.h1
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+                className="mt-6 font-display leading-[0.88] tracking-[-0.04em]"
               >
-                Prize Pool
-              </span>
-            </div> */}
-          </motion.div>
+                <span className="block text-[clamp(44px,8vw,84px)] font-black">
+                  INNOVATE
+                </span>
+                <span className="block text-[clamp(44px,8vw,84px)] font-black text-primary">
+                  IGNITE
+                </span>
+                <span className="flex items-baseline gap-3">
+                  <span
+                    className="font-display text-[clamp(44px,8vw,84px)] font-black"
+                    style={{ WebkitTextStroke: "1.4px hsl(var(--border))", color: "transparent" }}
+                  >
+                    &apos;26
+                  </span>
+                  <span className="hidden sm:inline-flex font-mono text-[11px] tracking-[0.2em] uppercase text-muted-foreground border border-border rounded-full px-3 py-1">
+                    National level · Inter-collegiate
+                  </span>
+                </span>
+              </motion.h1>
 
-          {/* CTAs */}
-          <motion.div
-            className="flex flex-wrap gap-3 mb-10"
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.52 }}
-          >
-            <Link href="/events" className="btn-primary">
-              Explore Events <ArrowRight size={16} />
-            </Link>
-          </motion.div>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.22, duration: 0.4 }}
+                className="mt-5 max-w-xl text-[15px] leading-6 text-muted-foreground font-body"
+              >
+                Three days of theatre, dance, music, fashion, lit and fine arts — staged as a
+                single programme. No filler events. Every slot is curated, judged, and published.
+              </motion.p>
 
-          {/* meta */}
-          <motion.div
-            className="flex flex-wrap items-center gap-5"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.68 }}
-          >
-            <span
-              className="font-mono-jb text-xs flex items-center gap-2"
-              style={{ color: "hsl(var(--muted))" }}
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.32, duration: 0.4 }}
+                className="mt-7 flex flex-wrap items-center gap-3"
+              >
+                <Button asChild size="lg" className="rounded-full px-6 h-11 text-[13px] tracking-wide">
+                  <Link href="/events">
+                    Explore events <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="rounded-full px-6 h-11 text-[13px]">
+                  <Link href="#program">View programme</Link>
+                </Button>
+                <span className="font-mono text-[11px] tracking-[0.12em] uppercase text-muted-foreground ml-1 hidden sm:inline">
+                  {totalEvents} events · {categories.length} domains · 3 days
+                </span>
+              </motion.div>
+
+              {/* micro-meta — replaces count-up stats with useful facts */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.42 }}
+                className="mt-8 flex flex-wrap gap-5 border-t border-border pt-5"
+              >
+                <span className="inline-flex items-center gap-2 font-mono text-xs text-muted-foreground">
+                  <Calendar className="h-3.5 w-3.5" /> May 13–15, 2026
+                </span>
+                <span className="inline-flex items-center gap-2 font-mono text-xs text-muted-foreground">
+                  <MapPin className="h-3.5 w-3.5" /> VVIT Campus, Bengaluru
+                </span>
+                <span className="inline-flex items-center gap-2 font-mono text-xs text-muted-foreground">
+                  <Clock className="h-3.5 w-3.5" /> Registrations close Nov 10
+                </span>
+              </motion.div>
+            </div>
+
+            {/* RIGHT — PROGRAM INDEX (signature) */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.18 }}
+              className="col-span-12 lg:col-span-5 lg:py-12"
             >
-              <Calendar size={12} />
-              May 13–15, 2026
-            </span>
-            <span
-              className="w-px h-3"
-              style={{ background: "hsl(var(--border))" }}
-            />
-            <span
-              className="font-mono-jb text-xs flex items-center gap-2"
-              style={{ color: "hsl(var(--muted))" }}
-            >
-              <MapPin size={12} />
-              VVIT Campus, Bengaluru
-            </span>
-          </motion.div>
+              <div className="relative overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+                {/* perforated left edge */}
+                <div
+                  className="pointer-events-none absolute left-0 top-0 bottom-0 w-4 hidden lg:block"
+                  style={{
+                    background: `radial-gradient(circle at 0 8px, transparent 7px, hsl(var(--card)) 7.5px)`,
+                    backgroundSize: "16px 16px",
+                    backgroundRepeat: "repeat-y",
+                    marginLeft: "-8px",
+                  }}
+                  aria-hidden
+                />
+                <div className="p-6 sm:p-7">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-secondary">Programme Index</p>
+                      <p className="mt-1 font-body text-sm text-muted-foreground">
+                        Every domain, event count, and venue — as printed. Tap to filter.
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="font-mono text-[10px] tracking-widest uppercase shrink-0">
+                      2026
+                    </Badge>
+                  </div>
+
+                  <Separator className="my-5" />
+
+                  <div className="space-y-1">
+                    {program.map((cat) => {
+                      const Icon = cat.icon;
+                      return (
+                        <Link
+                          key={cat.name}
+                          href={`/events?category=${cat.name.toLowerCase()}`}
+                          className="group flex items-center gap-3 rounded-lg px-2 py-2.5 -mx-2 hover:bg-accent/50 transition-colors"
+                        >
+                          <span className="font-mono text-[11px] tracking-widest text-muted-foreground w-7">
+                            {cat.n}
+                          </span>
+                          <span
+                            className="flex h-8 w-8 items-center justify-center rounded-md border text-[13px] shrink-0"
+                            style={{ borderColor: cat.accentBorder, color: cat.accent, background: cat.accentLight }}
+                          >
+                            <Icon className="h-4 w-4" />
+                          </span>
+                          <span className="flex-1 min-w-0">
+                            <span className="flex items-baseline gap-2">
+                              <span className="font-display text-[15px] font-semibold tracking-tight">
+                                {cat.name}
+                              </span>
+                              <span className="font-mono text-[11px] text-muted-foreground">
+                                — {cat.count}
+                              </span>
+                            </span>
+                            <span className="mt-1 flex flex-wrap gap-1.5">
+                              {cat.tags.slice(0, 3).map((t) => (
+                                <span
+                                  key={t}
+                                  className="inline-flex rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] tracking-wide text-muted-foreground"
+                                >
+                                  {t}
+                                </span>
+                              ))}
+                            </span>
+                          </span>
+                          <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                        </Link>
+                      );
+                    })}
+                  </div>
+
+                  <div className="mt-6 rounded-lg border border-dashed p-3 flex items-center justify-between">
+                    <span className="font-mono text-[11px] tracking-[0.14em] uppercase text-muted-foreground">
+                      Full timetable
+                    </span>
+                    <span className="font-mono text-xs text-muted-foreground">Coming soon · Notify me</span>
+                  </div>
+
+                  <p className="mt-4 font-mono text-[10px] leading-4 text-muted-foreground/70">
+                    Printed programme · Subject to venue capacity. Final schedule released week of May 4.
+                  </p>
+                </div>
+              </div>
+
+              {/* small stat bar — not count-up, just facts */}
+              <div className="mt-3 grid grid-cols-3 gap-3">
+                <div className="rounded-lg border border-border bg-card px-3 py-3 text-center">
+                  <div className="font-display text-xl font-bold leading-none">{totalEvents}</div>
+                  <div className="mt-1 font-mono text-[10px] tracking-[0.16em] uppercase text-muted-foreground">
+                    Events
+                  </div>
+                </div>
+                <div className="rounded-lg border border-border bg-card px-3 py-3 text-center">
+                  <div className="font-display text-xl font-bold leading-none">3</div>
+                  <div className="mt-1 font-mono text-[10px] tracking-[0.16em] uppercase text-muted-foreground">Days</div>
+                </div>
+                <div className="rounded-lg border border-border bg-card px-3 py-3 text-center">
+                  <div className="font-display text-xl font-bold leading-none">1000+</div>
+                  <div className="mt-1 font-mono text-[10px] tracking-[0.16em] uppercase text-muted-foreground">Participants</div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
-
-        {/* diagonal cut to next section */}
-        <div className="hero-cut" />
       </section>
 
-      {/* ══ MARQUEE ══════════════════════════════════════════════════════ */}
-      <Marquee />
-
-      {/* ══ CATEGORIES ═══════════════════════════════════════════════════ */}
-      <section
-        className="py-28"
-        style={{ background: "hsl(var(--card))", fontFamily: "'Outfit', sans-serif" }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* section header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-14">
+      {/* ── PROGRAM — structured rows, not cards ──────────────────────────── */}
+      <section id="program" className="py-14 sm:py-16 bg-card border-b border-border">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
             <div>
-              <span className="eyebrow">{categories.reduce((acc, c) => acc + c.count, 0)} events across {categories.length} domains</span>
-              <h2
-                className="font-display text-5xl md:text-6xl font-black leading-[0.95]"
-                style={{ color: "hsl(var(--foreground))" }}
-              >
-                CHOOSE YOUR
-                <br />
-                <span style={{ color: "hsl(var(--primary))" }}>DOMAIN</span>
+              <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-secondary">Programme</p>
+              <h2 className="mt-2 font-display text-3xl sm:text-4xl font-bold tracking-tight">
+                Domains, in order.
               </h2>
             </div>
-            <p
-              className="text-base leading-relaxed md:max-w-xs"
-              style={{ color: "hsl(var(--muted-foreground))" }}
-            >
-              From high-stakes hackathons to mesmerizing musical performances — find your stage.
+            <p className="max-w-md font-body text-sm leading-6 text-muted-foreground">
+              Seven domains. {totalEvents} events. Each row shows what&apos;s inside — filter by domain to see
+              the actual stage.
             </p>
           </div>
 
-          {/* cards grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {categories.map((cat, i) => {
+          <div className="mt-8 divide-y divide-border border-y border-border overflow-hidden rounded-xl bg-background">
+            {program.map((cat, i) => {
               const Icon = cat.icon;
               return (
                 <motion.div
                   key={cat.name}
-                  initial={{ opacity: 0, y: 22 }}
+                  initial={{ opacity: 0, y: 6 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{ delay: i * 0.08, duration: 0.42 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ delay: i * 0.04, duration: 0.35 }}
                 >
                   <Link
                     href={`/events?category=${cat.name.toLowerCase()}`}
-                    className="cat-card group block rounded-[var(--radius)] p-6"
-                    style={{
-                      background: "hsl(var(--background))",
-                      border: `1px solid ${cat.accentBorder}`,
-                      textDecoration: "none",
-                    }}
+                    className="group flex items-center gap-4 px-4 sm:px-6 py-5 hover:bg-muted/40 transition-colors"
                   >
-                    {/* icon box */}
-                    <div
-                      className="w-12 h-12 rounded-lg flex items-center justify-center mb-5"
-                      style={{ background: cat.accentLight, color: cat.accent }}
+                    <span className="hidden sm:inline font-mono text-xs tracking-widest text-muted-foreground w-8">
+                      {cat.n}
+                    </span>
+                    <span
+                      className="flex h-9 w-9 items-center justify-center rounded-md border shrink-0"
+                      style={{ background: cat.accentLight, borderColor: cat.accentBorder, color: cat.accent }}
                     >
-                      <Icon size={22} />
-                    </div>
-
-                    {/* name */}
-                    <h3
-                      className="font-display text-2xl font-bold mb-1 tracking-tight"
-                      style={{ color: "hsl(var(--foreground))" }}
-                    >
-                      {cat.name}
-                    </h3>
-
-                    {/* count */}
-                    <p
-                      className="font-mono-jb text-xs mb-4"
-                      style={{ color: cat.accent, fontWeight: 500 }}
-                    >
-                      {cat.count} events
-                    </p>
-
-                    {/* tags */}
-                    <div className="flex flex-wrap gap-1.5">
-                      {cat.tags.map((t) => (
-                        <span key={t} className="tag-chip">
-                          {t}
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                        <span className="font-display text-[17px] font-semibold tracking-tight">{cat.name}</span>
+                        <span className="font-mono text-xs text-muted-foreground">
+                          {cat.count} events · {cat.tags.join(" · ")}
                         </span>
-                      ))}
-                    </div>
-
-                    {/* arrow reveal */}
-                    <div
-                      className="flex items-center gap-1 mt-5 text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                      style={{ color: cat.accent }}
-                    >
-                      Browse events <ArrowRight size={12} />
-                    </div>
+                      </span>
+                    </span>
+                    <span className="hidden sm:inline-flex items-center gap-2 font-mono text-xs text-muted-foreground group-hover:text-foreground transition-colors shrink-0">
+                      Browse <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                    </span>
+                    <span className="sm:hidden text-muted-foreground">
+                      <ArrowRight className="h-4 w-4" />
+                    </span>
                   </Link>
                 </motion.div>
               );
             })}
           </div>
-        </div>
-      </section>
 
-      {/* ══ SCHEDULE ═════════════════════════════════════════════════════ */}
-      <section
-        className="py-28 relative overflow-hidden"
-        style={{ background: "hsl(var(--background))", fontFamily: "'Outfit', sans-serif" }}
-      >
-        {/* ghost watermark */}
-        <div
-          className="font-display absolute left-[-2%] bottom-[4%] font-black leading-none select-none pointer-events-none"
-          style={{
-            fontSize: "clamp(90px,14vw,170px)",
-            color: "hsl(var(--primary) / 0.1)",
-            letterSpacing: "-0.02em",
-          }}
-          aria-hidden
-        >
-          VVIT Innovate Ignite
-        </div>
-        {/* ghost watermark */}
-        <div
-          className="font-display absolute right-[-2%] top-[4%] font-black leading-none select-none pointer-events-none"
-          style={{
-            fontSize: "clamp(90px,14vw,170px)",
-            color: "hsl(var(--primary) / 0.1)",
-            letterSpacing: "-0.02em",
-          }}
-          aria-hidden
-        >
-          2K26
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-16 items-start">
-
-            {/* left col — sticky */}
-            <div className="lg:sticky lg:top-28">
-              <span className="eyebrow">The Itinerary</span>
-              <h2
-                className="font-display text-5xl md:text-6xl font-black leading-[0.93] mb-6"
-                style={{ color: "hsl(var(--foreground))" }}
-              >
-                3 DAYS.
-                <br />
-                {categories.reduce((acc, c) => acc + c.count, 0)}+ EVENTS.
-                <br />
-                <span style={{ color: "hsl(var(--primary))" }}>YOUR CALL.</span>
-              </h2>
-              <p
-                className="text-base leading-relaxed mb-8 max-w-sm"
-                style={{ color: "hsl(var(--muted-foreground))" }}
-              >
-                Plan your days ahead to make the most of VVIT Innovate Ignite. Every slot is a story — pick yours.
-              </p>
-              <button
-                disabled
-                className="btn-primary"
-                style={{ opacity: 1, cursor: "not-allowed", pointerEvents: "none" }}
-              >
-                Full Schedule  ( Coming Soon... )
-              </button>
-
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* ══ BOTTOM CTA ═══════════════════════════════════════════════════ */}
-      <section
-        className="py-20 relative overflow-hidden"
-        style={{
-          background: `
-            radial-gradient(ellipse 80% 80% at 50% 50%, hsl(var(--primary) / 0.12) 0%, transparent 70%),
-            hsl(var(--accent))
-          `,
-          fontFamily: "'Outfit', sans-serif",
-        }}
-      >
-        <div className="relative z-10 max-w-2xl mx-auto px-6 text-center">
-          <span
-            className="font-mono-jb text-xs uppercase tracking-[0.22em] mb-4 block"
-            style={{ color: "hsl(var(--secondary))" }}
-          >
-            Registration are Live Now.
-          </span>
-          <h2
-            className="font-display text-4xl md:text-6xl font-black leading-[0.93] mb-6"
-            style={{ color: "hsl(var(--accent-foreground))" }}
-          >
-            READY TO
-            <br />
-            <span style={{ color: "hsl(var(--secondary))" }}>VVIT Innovate Ignite?</span>
-          </h2>
-          <p
-            className="text-base leading-relaxed mb-8"
-            style={{ color: "hsl(var(--accent-foreground) / 0.6)" }}
-          >
-            Join 1000+ students across {categories.reduce((acc, c) => acc + c.count, 0)}+ events. Just bring your best game.
-          </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <button
-              disabled
-              className="btn-gold"
-              style={{ opacity: 1, cursor: "not-allowed", pointerEvents: "none" }}
-            >
-              Register Now ( Coming Soon... )
-            </button>
-            <Link
-              href="/events"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "13px 28px",
-                fontSize: 14,
-                fontWeight: 600,
-                letterSpacing: "0.04em",
-                borderRadius: "var(--radius)",
-                background: "transparent",
-                color: "hsl(var(--accent-foreground) / 0.8)",
-                border: "1.5px solid hsl(var(--accent-foreground) / 0.2)",
-                cursor: "pointer",
-                textDecoration: "none",
-                fontFamily: "'Outfit', sans-serif",
-                transition: "border-color 0.2s, background 0.2s",
-              }}
-            >
-              Browse All Events
+          <div className="mt-4 flex justify-end">
+            <Link href="/events" className="font-mono text-xs tracking-wide text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
+              View all {totalEvents} events <ArrowUpRight className="h-3 w-3" />
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* ── SCHEDULE — timetable, not ghost text ─────────────────────────── */}
+      <section className="py-14 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-12 gap-8">
+            <div className="col-span-12 lg:col-span-4">
+              <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-secondary">Itinerary</p>
+              <h2 className="mt-2 font-display text-3xl font-bold leading-none tracking-tight">
+                3 days.
+                <br />
+                <span className="text-primary">One programme.</span>
+              </h2>
+              <p className="mt-3 max-w-sm font-body text-sm leading-6 text-muted-foreground">
+                Doors 9:00. Every venue published in advance — no last-minute room changes. Full timetable drops
+                week of May 4.
+              </p>
+              <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 font-mono text-[11px] tracking-wide text-muted-foreground">
+                <span className="h-2 w-2 rounded-full bg-secondary animate-pulse" />
+                Schedule in preparation
+              </div>
+            </div>
+
+            <div className="col-span-12 lg:col-span-8">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {[
+                  { day: "Day 1", date: "May 13 · Tue", items: ["Theatre prelims", "Dance solos", "Literary heats"], accent: "primary" },
+                  { day: "Day 2", date: "May 14 · Wed", items: ["Music & Fashion", "Fine arts live", "Quiz & Cooking"], accent: "secondary" },
+                  { day: "Day 3", date: "May 15 · Thu", items: ["Finals", "Showcase", "Valedictory"], accent: "accent" },
+                ].map((col) => (
+                  <div key={col.day} className="rounded-xl border border-border bg-card p-5">
+                    <div className="flex items-center justify-between">
+                      <span className="font-display text-sm font-bold tracking-wide">{col.day}</span>
+                      <span className="font-mono text-[11px] tracking-wide text-muted-foreground">{col.date}</span>
+                    </div>
+                    <Separator className="my-4" />
+                    <ul className="space-y-2.5">
+                      {col.items.map((t) => (
+                        <li key={t} className="flex items-center gap-2 font-body text-sm">
+                          <Check className="h-3.5 w-3.5 text-primary shrink-0" />
+                          <span className="text-foreground/90">{t}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="mt-4 font-mono text-[11px] text-muted-foreground">Venue map → published with schedule</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4 rounded-lg border border-dashed bg-muted/30 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+                <span className="font-mono text-xs text-muted-foreground">Get notified when the full timetable is out</span>
+                <Button asChild size="sm" variant="outline" className="rounded-full">
+                  <Link href="/events">Browse events now</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA — ticket stub, not navy radial ───────────────────────────── */}
+      <section className="pb-16 pt-2">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="relative overflow-hidden rounded-2xl border border-border bg-card">
+            {/* top perforation */}
+            <div
+              className="absolute inset-x-0 top-0 h-4 pointer-events-none"
+              style={{
+                background: `radial-gradient(circle at 8px 0, transparent 7px, hsl(var(--border)) 7.5px, hsl(var(--card)) 8px)`,
+                backgroundSize: "16px 16px",
+                backgroundRepeat: "repeat-x",
+                opacity: 0.9,
+              }}
+              aria-hidden
+            />
+            <div className="px-6 sm:px-10 py-10 sm:py-12 text-center">
+              <p className="font-mono text-[11px] tracking-[0.22em] uppercase text-secondary">Registration live</p>
+              <h2 className="mt-3 font-display text-3xl sm:text-4xl font-black tracking-tight">
+                Bring your best. <span className="text-primary">We&apos;ll bring the stage.</span>
+              </h2>
+              <p className="mx-auto mt-3 max-w-xl font-body text-sm leading-6 text-muted-foreground">
+                Join 1000+ students across {totalEvents} events. One portal, one pass, all venues on campus.
+              </p>
+              <div className="mt-7 flex flex-wrap justify-center gap-3">
+                <Button asChild size="lg" className="rounded-full px-7 h-11">
+                  <Link href="/events">
+                    Register your team <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="rounded-full px-7 h-11">
+                  <Link href="/about">How it works</Link>
+                </Button>
+              </div>
+              <p className="mt-4 font-mono text-[11px] text-muted-foreground">No fee until you confirm. Edit your lineup until Nov 10.</p>
+            </div>
+          </div>
+
+          <p className="mt-6 text-center font-mono text-[11px] tracking-wide text-muted-foreground">
+            © 2026 VVIT · Innovate Ignite · Bengaluru — Printed programme, digitally.
+          </p>
         </div>
       </section>
     </div>
