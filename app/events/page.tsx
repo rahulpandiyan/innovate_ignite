@@ -6,7 +6,7 @@ import { eventCategories } from "@/data/eventCategories";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Helper to assign brand colors to categories
+// Helper to assign brand colors to categories — covers 10 real events
 const getColorForCategory = (category: string) => {
   const map: Record<string, { bg: string, text: string, border: string }> = {
     THEATRE: { bg: "bg-gat-blue", text: "text-gat-blue", border: "border-gat-blue" },
@@ -16,6 +16,9 @@ const getColorForCategory = (category: string) => {
     LITERARY: { bg: "bg-gat-dark-gold", text: "text-gat-dark-gold", border: "border-gat-dark-gold" },
     FINE_ARTS: { bg: "bg-gat-blue", text: "text-gat-blue", border: "border-gat-blue" },
     GENERAL_EVENTS: { bg: "bg-gat-gold", text: "text-gat-gold", border: "border-gat-gold" },
+    GENERAL: { bg: "bg-gat-gold", text: "text-gat-gold", border: "border-gat-gold" },
+    TECHNICAL: { bg: "bg-gat-cobalt", text: "text-gat-cobalt", border: "border-gat-cobalt" },
+    GAMING: { bg: "bg-gat-navy", text: "text-gat-navy", border: "border-gat-navy" },
   };
   return map[category] || { bg: "bg-gat-charcoal", text: "text-gat-charcoal", border: "border-gat-charcoal" };
 };
