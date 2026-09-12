@@ -19,11 +19,17 @@ export const registerCompleteSchema = z.object({
   collegeIdNumber: z.string().min(1, "College ID number is required"),
   aadhaarNumber: z
     .string()
-    .regex(/^\d{12}$/, "Aadhaar number must be exactly 12 digits"),
+    .regex(/^\d{12}$/, "Aadhaar number must be exactly 12 digits")
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
   password: z
     .string()
     .min(6, "Password must be at least 6 characters"),
-  photoUrl: z.string().url("A valid profile photo URL is required"),
+  photoUrl: z
+    .string()
+    .url("A valid profile photo URL is required")
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
 });
 
 export const newLoginSchema = z.object({

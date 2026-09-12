@@ -69,11 +69,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check for duplicate fields in parallel
+    // Check for duplicate fields in parallel (Aadhaar is optional, so only
+    // query it when a value was actually provided)
     const [dupEmail, dupPhone, dupAadhaar] = await Promise.all([
       prisma.user.findUnique({ where: { email } }),
       prisma.user.findUnique({ where: { phone } }),
-      prisma.user.findUnique({ where: { aadharNumber: aadhaarNumber } }),
+      aadhaarNumber
+        ? prisma.user.findUnique({ where: { aadharNumber: aadhaarNumber } })
+        : null,
     ]);
 
     if (dupEmail) {
