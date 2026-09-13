@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -23,7 +23,7 @@ import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 import { signInWithGoogle } from "@/app/auth/googleActions";
 import { sendOtpSchema, verifyOtpSchema, registerCompleteSchema } from "@/lib/schemas/newAuth";
 
-export default function SignUp() {
+function SignUpContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const eventId = searchParams.get("eventId");
@@ -316,5 +316,13 @@ export default function SignUp() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+export default function SignUp() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#FFFBEB] pt-20" />}>
+      <SignUpContent />
+    </Suspense>
   );
 }
