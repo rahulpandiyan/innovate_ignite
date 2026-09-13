@@ -30,7 +30,7 @@ export default function EventDetailClient({ category, details }: Props) {
   const [open, setOpen] = useState<string>("guidelines");
 
   return (
-    <div className="min-h-screen bg-[#FFFBEB] pt-20">
+    <div className="min-h-screen bg-[#FFFBEB] pt-20 pb-20 md:pb-0">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600&display=swap');`}</style>
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -216,7 +216,7 @@ export default function EventDetailClient({ category, details }: Props) {
                   title="VVIT Location"
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3887.5!2d77.6659382!3d13.0768697!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae175698c94741%3A0xd4c7cb9f6754d302!2sVijaya%20Vittala%20Institute%20of%20Technology!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
                   width="100%"
-                  height="260"
+                  height="260" className="w-full"
                   style={{ border: 0 }}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"

@@ -37,7 +37,7 @@ export default function EventPage() {
   }, [searchQuery, activeCategory]);
 
   return (
-    <div className="min-h-screen bg-[#FFFBEB] pt-20">
+    <div className="min-h-screen bg-[#FFFBEB] pt-20 pb-20 md:pb-0">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600&display=swap');`}</style>
 
       {/* ── HEADER ────────────────────────────────────────────── */}
@@ -76,7 +76,7 @@ export default function EventPage() {
                 placeholder="Search Techninja, BGMI, Dance Elite…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-12 w-full rounded-full border border-[#0F172A]/10 bg-white pl-11 pr-4 text-sm font-medium text-[#0F172A] placeholder:text-[#0F172A]/40 focus:border-[#2362EC]/30 focus:outline-none focus:ring-4 focus:ring-[#2362EC]/10"
+                className="h-12 w-full rounded-full border border-[#0F172A]/10 bg-white pl-11 pr-4 text-[16px] sm:text-sm font-medium text-[#0F172A] placeholder:text-[#0F172A]/40 focus:border-[#2362EC]/30 focus:outline-none focus:ring-4 focus:ring-[#2362EC]/10"
               />
             </div>
             {/* category pills — like header nav */}

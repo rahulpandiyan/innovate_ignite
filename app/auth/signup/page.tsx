@@ -94,11 +94,11 @@ export default function SignUp() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FFFBEB] pt-20">
+    <div className="min-h-screen bg-[#FFFBEB] pt-20 pb-24 md:pb-8">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600&display=swap');`}</style>
 
       <div className="overflow-hidden border-y border-[#0F172A]/10 bg-[#0F172A] py-2">
-        <div className="flex animate-[marquee_22s_linear_infinite] whitespace-nowrap font-mono text-[11px] tracking-[0.16em] uppercase text-white">
+        <div className="flex animate-[marquee_22s_linear_infinite] whitespace-nowrap font-mono text-[10px] sm:text-[11px] tracking-[0.16em] uppercase text-white">
           <span className="mx-6">JOIN 1000+ STUDENTS · 10 STAGES · 6 DOMAINS · VVIT BENGALURU · MAY 13–15</span>
           <span className="mx-6" aria-hidden>JOIN 1000+ STUDENTS · 10 STAGES · 6 DOMAINS · VVIT BENGALURU · MAY 13–15</span>
         </div>
@@ -172,7 +172,7 @@ export default function SignUp() {
                     <FormField control={emailForm.control} name="email" render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">College Email</FormLabel>
-                        <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 focus:bg-white" placeholder="you@college.edu" type="email" {...field} /></FormControl>
+                        <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 text-[16px] sm:text-sm focus:bg-white" placeholder="you@college.edu" type="email" {...field} /></FormControl>
                         <FormMessage className="text-xs" />
                       </FormItem>
                     )} />
@@ -193,7 +193,7 @@ export default function SignUp() {
                       <FormField control={otpForm.control} name="otp" render={({ field }) => (
                         <FormItem>
                           <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">6-digit code sent to {email}</FormLabel>
-                          <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 text-center font-mono text-lg tracking-[0.35em] focus:bg-white" placeholder="••••••" inputMode="numeric" maxLength={6} {...field} /></FormControl>
+                          <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 text-center text-[16px] sm:text-sm font-mono text-lg tracking-[0.35em] focus:bg-white" placeholder="••••••" inputMode="numeric" maxLength={6} {...field} /></FormControl>
                           <FormMessage className="text-xs" />
                         </FormItem>
                       )} />
@@ -215,28 +215,28 @@ export default function SignUp() {
                     <FormField control={completeForm.control} name="name" render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">Full Name</FormLabel>
-                        <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 focus:bg-white" placeholder="Your name" {...field} /></FormControl>
+                        <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 text-[16px] sm:text-sm focus:bg-white" placeholder="Your name" {...field} /></FormControl>
                         <FormMessage className="text-xs" />
                       </FormItem>
                     )} />
                     <FormField control={completeForm.control} name="phone" render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">Phone</FormLabel>
-                        <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 focus:bg-white" placeholder="10-digit mobile" inputMode="numeric" maxLength={10} {...field} /></FormControl>
+                        <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 text-[16px] sm:text-sm focus:bg-white" placeholder="10-digit mobile" inputMode="numeric" maxLength={10} {...field} /></FormControl>
                         <FormMessage className="text-xs" />
                       </FormItem>
                     )} />
                     <FormField control={completeForm.control} name="collegeName" render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">College Name</FormLabel>
-                        <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 focus:bg-white" placeholder="e.g. VVIT, Bengaluru" {...field} /></FormControl>
+                        <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 text-[16px] sm:text-sm focus:bg-white" placeholder="e.g. VVIT, Bengaluru" {...field} /></FormControl>
                         <FormMessage className="text-xs" />
                       </FormItem>
                     )} />
                     <FormField control={completeForm.control} name="collegeIdNumber" render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">College ID Number</FormLabel>
-                        <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 focus:bg-white" placeholder="USN / ID" {...field} /></FormControl>
+                        <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 text-[16px] sm:text-sm focus:bg-white" placeholder="USN / ID" {...field} /></FormControl>
                         <FormMessage className="text-xs" />
                       </FormItem>
                     )} />
@@ -245,7 +245,7 @@ export default function SignUp() {
                         <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">Password</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 pr-10 focus:bg-white" type={visibility ? "text" : "password"} placeholder="Min 6 characters" {...field} />
+                            <Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 pr-10 text-[16px] sm:text-sm focus:bg-white" type={visibility ? "text" : "password"} placeholder="Min 6 characters" {...field} />
                             <button type="button" onClick={() => setVisibility((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#0F172A]/40 hover:text-[#0F172A]">
                               {visibility ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </button>

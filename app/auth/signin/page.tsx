@@ -65,12 +65,12 @@ export default function SignIn() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FFFBEB] pt-20">
+    <div className="min-h-screen bg-[#FFFBEB] pt-20 pb-24 md:pb-8">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600&display=swap');`}</style>
 
       {/* ticker */}
       <div className="overflow-hidden border-y border-[#0F172A]/10 bg-[#0F172A] py-2">
-        <div className="flex animate-[marquee_22s_linear_infinite] whitespace-nowrap font-mono text-[11px] tracking-[0.16em] uppercase text-white">
+        <div className="flex animate-[marquee_22s_linear_infinite] whitespace-nowrap font-mono text-[10px] sm:text-[11px] tracking-[0.16em] uppercase text-white">
           <span className="mx-6">TECHNINJA ◆ VV CARE ◆ COOKING WITHOUT FIRE ◆ TALENT MANIA ◆ COLLAGE ◆ ICEBREAKER ◆ DUMB CHARADES ◆ CODE CONFLUX ◆ DANCE ELITE ◆ BGMI</span>
           <span className="mx-6" aria-hidden>TECHNINJA ◆ VV CARE ◆ COOKING WITHOUT FIRE ◆ TALENT MANIA ◆ COLLAGE ◆ ICEBREAKER ◆ DUMB CHARADES ◆ CODE CONFLUX ◆ DANCE ELITE ◆ BGMI</span>
         </div>
@@ -154,7 +154,7 @@ export default function SignIn() {
                       <FormItem>
                         <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">Registered Email ID</FormLabel>
                         <FormControl>
-                          <Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 focus:bg-white" placeholder="you@college.edu" {...field} />
+                          <Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 text-[16px] sm:text-sm focus:bg-white" placeholder="you@college.edu" {...field} />
                         </FormControl>
                         <FormMessage className="text-xs" />
                       </FormItem>
@@ -168,7 +168,7 @@ export default function SignIn() {
                         <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">Password</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 pr-10 focus:bg-white" type={visibility ? "text" : "password"} placeholder="••••••••" {...field} />
+                            <Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 pr-10 text-[16px] sm:text-sm focus:bg-white" type={visibility ? "text" : "password"} placeholder="••••••••" {...field} />
                             <button type="button" onClick={() => setVisibility((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#0F172A]/40 hover:text-[#0F172A]">
                               {visibility ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </button>

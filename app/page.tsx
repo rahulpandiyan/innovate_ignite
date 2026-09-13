@@ -14,7 +14,7 @@ const totalEvents = categories.reduce((a, c) => a + c.count, 0);
 // Fest poster palette — warm paper, ink, VVIT blue/gold + fest pop
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#FFFBEB] text-[#0F172A] selection:bg-[#2362EC] selection:text-white">
+    <div className="min-h-screen bg-[#FFFBEB] pb-20 md:pb-0 text-[#0F172A] selection:bg-[#2362EC] selection:text-white">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600&display=swap');`}</style>
 
       {/* ── HERO — CAMPUS CARNIVAL POSTER ─────────────────────────── */}
@@ -120,7 +120,7 @@ export default function Home() {
                 {/* main polaroid */}
                 <div className="relative rotate-[-1.2deg] rounded-2xl border border-[#0F172A]/10 bg-white p-3 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
                   <div className="overflow-hidden rounded-xl bg-[#0F172A]">
-                    <Image src={innovateLogo} alt="Innovate Ignite" className="h-[280px] w-full object-contain bg-white p-6" priority />
+                    <Image src={innovateLogo} alt="Innovate Ignite" className="h-[240px] sm:h-[280px] w-full object-contain bg-white p-6" priority />
                   </div>
                   <div className="flex items-center justify-between px-1 pt-3">
                     <span className="font-mono text-[11px] tracking-[0.16em] uppercase text-[#0F172A]/60">VVIT · 13—15 MAY</span>
@@ -132,21 +132,21 @@ export default function Home() {
                 </div>
 
                 {/* floating stickers */}
-                <div className="absolute -left-2 sm:-left-6 top-10 rotate-[-6deg] rounded-xl border border-[#0F172A]/10 bg-white px-3 py-2 shadow-md">
+                <div className="absolute -left-2 sm:-left-6 top-10 hidden sm:flex rotate-[-6deg] rounded-xl border border-[#0F172A]/10 bg-white px-3 py-2 shadow-md">
                   <div className="flex items-center gap-2">
                     <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#E11D48] text-white"><Music className="h-3.5 w-3.5" /></span>
                     <span className="font-heading text-xs font-bold tracking-wide">DANCE ELITE</span>
                     <span className="font-mono text-[10px] text-[#0F172A]/60">Main Stage</span>
                   </div>
                 </div>
-                <div className="absolute -right-1 sm:-right-4 bottom-10 rotate-[5deg] rounded-xl border border-[#0F172A]/10 bg-[#0F172A] px-3 py-2 shadow-md">
+                <div className="absolute -right-1 sm:-right-4 bottom-10 hidden sm:flex rotate-[5deg] rounded-xl border border-[#0F172A]/10 bg-[#0F172A] px-3 py-2 shadow-md">
                   <div className="flex items-center gap-2 text-white">
                     <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#F3C317] text-[#0F172A]"><Gamepad2 className="h-4 w-4" /></span>
                     <span className="font-heading text-xs font-bold tracking-wide">BGMI</span>
                     <span className="font-mono text-[10px] text-white/70">E-Sports Arena</span>
                   </div>
                 </div>
-                <div className="absolute left-1/2 bottom-2 hidden -translate-x-1/2 rotate-[-1deg] rounded-full border border-[#0F172A]/10 bg-white px-4 py-2 shadow sm:flex items-center gap-2">
+                <div className="absolute left-1/2 bottom-2 hidden -translate-x-1/2 sm:flex rotate-[-1deg] rounded-full border border-[#0F172A]/10 bg-white px-4 py-2 shadow sm:flex items-center gap-2">
                   <span className="font-mono text-[11px] tracking-[0.16em] uppercase">No fee till you confirm</span>
                   <span className="h-1 w-1 rounded-full bg-[#0F172A]/30" />
                   <span className="font-mono text-[11px]">Edit till Nov 10</span>

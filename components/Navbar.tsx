@@ -45,7 +45,7 @@ export default function Navbar() {
               alt="VVIT"
               width={120}
               height={68}
-              className="h-7 w-auto object-contain sm:h-8"
+              className="h-6 w-auto object-contain sm:h-8"
               priority
             />
             <span className="hidden sm:block h-6 w-px bg-[#0F172A]/10" />
@@ -135,7 +135,7 @@ export default function Navbar() {
       </header>
 
       {/* ── MOBILE BOTTOM PILL (fest style) ───────────────────── */}
-      <nav className="fixed bottom-3 inset-x-3 z-50 flex justify-center md:hidden pointer-events-none">
+      <nav className="fixed bottom-3 inset-x-3 z-50 flex justify-center md:hidden pb-[env(safe-area-inset-bottom)] pointer-events-none">
         <div className="pointer-events-auto flex items-center gap-1 rounded-full border border-[#0F172A]/10 bg-white/90 p-1.5 shadow-[0_12px_32px_rgba(0,0,0,0.14)] backdrop-blur-xl">
           {navLinks.map((link) => {
             const active = pathname === link.href;
