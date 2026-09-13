@@ -11,7 +11,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ eve
 
   const event = await prisma.event.findUnique({
     where: { id: eventId },
-    select: { id: true, isActive: true, name: true, type: true, status: true },
+    select: { id: true, isActive: true, name: true, type: true, status: true, price: true },
   });
   if (!event || !event.isActive) return errorResponse("Event not found or not open.", 404);
   if (event.status !== "OPEN") return errorResponse("Registrations closed for this event.", 400);
@@ -64,5 +64,18 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ eve
     },
   });
 
-  return successResponse({ registration }, 201);
+  // For paid events, create a PENDING payment so dashboard shows pending until paid
+  const price = Number(event.price ?? 0);
+  let payment: any = null;
+  if (price > 0) {
+    payment = await prisma.payment.create({
+      data: {
+        registrationId: registration.id,
+        amount: event.price,
+        status: "PENDING",
+      },
+    });
+  }
+
+  return successResponse({ registration, payment, isPaidEvent: price > 0, price }, 201);
 }

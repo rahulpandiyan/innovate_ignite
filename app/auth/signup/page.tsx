@@ -88,13 +88,19 @@ export default function SignUp() {
       if (r.data.success) {
         if (eventId) {
           try {
-            await axios.post(`/api/events/${eventId}/register`);
-            toast.success("Account created & registered!", { description: "You are registered for the event. Check dashboard." });
+            const regRes = await axios.post(`/api/events/${eventId}/register`);
+            const isPaid = regRes.data?.data?.isPaidEvent;
+            if (isPaid) {
+              toast.success("Account created & registered — payment pending", { description: "Complete payment in dashboard to confirm. Registration shows as pending until paid." });
+            } else {
+              toast.success("Account created & registered!", { description: "You are registered for the event. Check dashboard." });
+            }
           } catch (e: unknown) {
             if (axios.isAxiosError(e) && e.response?.status === 409) {
               toast.success("Account created!", { description: "You were already registered for that event." });
             } else {
-              toast.success("Account created!", { description: "Welcome aboard! Please confirm your event registration in dashboard." });
+              const msg = axios.isAxiosError(e) ? e.response?.data?.error?.message : undefined;
+              toast.success("Account created!", { description: msg || "Welcome aboard! Please confirm your event registration in dashboard." });
             }
           }
           router.push("/dashboard/registrations");

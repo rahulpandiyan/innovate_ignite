@@ -45,8 +45,13 @@ export default function SignIn() {
         setIsLoggedIn(true);
         if (eventId) {
           try {
-            await axios.post(`/api/events/${eventId}/register`);
-            toast.success("Logged in & registered!", { description: "You are registered for the event." });
+            const regRes = await axios.post(`/api/events/${eventId}/register`);
+            const isPaid = regRes.data?.data?.isPaidEvent;
+            if (isPaid) {
+              toast.success("Logged in & registered — payment pending", { description: "Complete payment in dashboard to confirm." });
+            } else {
+              toast.success("Logged in & registered!", { description: "You are registered for the event." });
+            }
             router.push("/dashboard/registrations");
             return;
           } catch (e: unknown) {

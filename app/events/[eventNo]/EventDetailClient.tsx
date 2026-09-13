@@ -73,7 +73,12 @@ export default function EventDetailClient({ category, details }: Props) {
     try {
       const res = await axios.post(`/api/events/${dbEvent.id}/register`);
       if (res.data.success) {
-        toast.success("Registered!", { description: `You are registered for ${category.eventName}.` });
+        const isPaid = res.data.data?.isPaidEvent;
+        if (isPaid) {
+          toast.success("Registered — payment pending", { description: `You are registered for ${category.eventName}. Complete payment in dashboard to confirm.` });
+        } else {
+          toast.success("Registered!", { description: `You are registered for ${category.eventName}.` });
+        }
         setShowConfirm(false);
         router.push("/dashboard/registrations");
       } else {
@@ -305,8 +310,9 @@ export default function EventDetailClient({ category, details }: Props) {
               Confirm registration?
             </DialogTitle>
             <DialogDescription className="text-sm leading-6">
-              You will be registered for <strong>{category.eventName}</strong> ({category.category.replace(/_/g, " ")}). 
-              {category.maxParticipant > 1 ? " You can form your team later in dashboard." : ""} This cannot be undone without contacting SPOC.
+              You will be registered for <strong>{category.eventName}</strong> ({category.category.replace(/_/g, " ")}) — {category.amount ? `₹${category.amount}` : "Free"}.
+              {category.amount ? " Registration will show as pending until payment is completed in dashboard." : " Free event — registration is immediate."}
+              {category.maxParticipant > 1 ? " You can form your team later in dashboard." : ""}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0">
