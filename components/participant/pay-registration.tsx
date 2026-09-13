@@ -2,13 +2,14 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { Inbox } from "lucide-react";
+import { Copy, ExternalLink, Inbox, Check } from "lucide-react";
 
 export function PayRegistrationButton({ registrationId, amount }: { registrationId: string; amount: number }) {
   const router = useRouter();
@@ -16,6 +17,21 @@ export function PayRegistrationButton({ registrationId, amount }: { registration
   const [upiId, setUpiId] = React.useState("");
   const [screenshotUrl, setScreenshotUrl] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);
+
+  const upiHandle = "rahulpandiyan@ptyes";
+  const upiLink = `upi://pay?pa=${upiHandle}&pn=Rahul%20Pandiyan&am=${amount}&cu=INR&tn=InnovateIgnite-${registrationId.slice(0,8)}`;
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(upiHandle);
+      setCopied(true);
+      toast.success("UPI ID copied");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Copy failed");
+    }
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -45,27 +61,62 @@ export function PayRegistrationButton({ registrationId, amount }: { registration
           Pay ₹{amount}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md rounded-2xl">
+      <DialogContent className="sm:max-w-md rounded-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Submit payment</DialogTitle>
-          <DialogDescription>Pay ₹{amount} via UPI and share the transaction ID + screenshot. Finance will verify before confirmation.</DialogDescription>
+          <DialogTitle>Pay via UPI</DialogTitle>
+          <DialogDescription>Scan QR or tap pay — ₹{amount} to confirm your registration.</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Alert className="text-xs">
+
+        {/* QR + UPI */}
+        <div className="space-y-4">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0F172A] via-[#1a1a1e] to-[#E11D48]/40 p-3">
+            <div className="rounded-2xl bg-white p-3 shadow-inner">
+              <div className="overflow-hidden rounded-xl border-2 border-black">
+                <Image src="/images/upi-qr.png" alt="UPI QR" width={400} height={400} className="h-auto w-full object-contain" />
+              </div>
+            </div>
+            <p className="mt-2 text-center font-mono text-[10px] tracking-widest text-white/70">Scan with any UPI app • GPay • PhonePe • Paytm</p>
+          </div>
+
+          <div className="rounded-xl border border-[#0F172A]/10 bg-[#FFFBEB] p-3">
+            <p className="font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/50">UPI ID</p>
+            <div className="mt-1 flex items-center justify-between gap-2">
+              <span className="font-mono text-sm font-bold tracking-wide text-[#0F172A]">{upiHandle}</span>
+              <Button type="button" variant="outline" size="sm" onClick={handleCopy} className="h-7 rounded-full px-3 text-xs">
+                {copied ? <Check className="mr-1 h-3 w-3" /> : <Copy className="mr-1 h-3 w-3" />}
+                {copied ? "Copied" : "Copy"}
+              </Button>
+            </div>
+            <a
+              href={upiLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-[#0F172A] px-4 py-2.5 text-sm font-bold text-white hover:bg-black transition-colors"
+            >
+              Pay ₹{amount} via UPI app <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+            <p className="mt-1.5 text-center font-mono text-[10px] text-[#0F172A]/40">Opens GPay / PhonePe / Paytm / BHIM</p>
+          </div>
+
+          <Alert className="text-xs bg-amber-50 border-amber-200">
             <Inbox className="h-4 w-4" />
-            <AlertTitle>Manual verification</AlertTitle>
-            <AlertDescription>Your registration stays pending until finance verifies the payment. You’ll get the QR pass after confirmation.</AlertDescription>
+            <AlertTitle className="text-amber-900">Manual verification</AlertTitle>
+            <AlertDescription className="text-amber-800">After paying, enter the UPI transaction ID and screenshot URL below. Your registration stays <strong>pending</strong> until finance verifies. You’ll get the QR pass after confirmation.</AlertDescription>
           </Alert>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor={`upi-${registrationId}`}>UPI transaction ID</Label>
-            <Input id={`upi-${registrationId}`} value={upiId} onChange={(e) => setUpiId(e.target.value)} placeholder="e.g. 4239XYZ123" />
+            <Label htmlFor={`upi-${registrationId}`}>UPI transaction ID *</Label>
+            <Input id={`upi-${registrationId}`} value={upiId} onChange={(e) => setUpiId(e.target.value)} placeholder="e.g. 4239XYZ123456" required />
           </div>
           <div className="space-y-2">
-            <Label htmlFor={`shot-${registrationId}`}>Screenshot URL</Label>
-            <Input id={`shot-${registrationId}`} value={screenshotUrl} onChange={(e) => setScreenshotUrl(e.target.value)} placeholder="https://…/payment.png" type="url" />
+            <Label htmlFor={`shot-${registrationId}`}>Screenshot URL *</Label>
+            <Input id={`shot-${registrationId}`} value={screenshotUrl} onChange={(e) => setScreenshotUrl(e.target.value)} placeholder="https://…/payment.png" type="url" required />
+            <p className="font-mono text-[10px] text-[#0F172A]/40">Upload to drive/imgur and paste link — finance uses this to verify</p>
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={loading || !upiId.trim() || !screenshotUrl.trim()} className="rounded-full">
+            <Button type="submit" disabled={loading || !upiId.trim() || !screenshotUrl.trim()} className="rounded-full w-full sm:w-auto">
               {loading ? "Submitting…" : "Submit for verification"}
             </Button>
           </DialogFooter>
