@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,8 @@ import { sendOtpSchema, verifyOtpSchema, registerCompleteSchema } from "@/lib/sc
 
 export default function SignUp() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const eventId = searchParams.get("eventId");
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [email, setEmail] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -84,8 +86,22 @@ export default function SignUp() {
     try {
       const r = await axios.post("/api/auth/register/complete", values);
       if (r.data.success) {
-        toast.success("Account created!", { description: "Welcome aboard!" });
-        router.push("/dashboard");
+        if (eventId) {
+          try {
+            await axios.post(`/api/events/${eventId}/register`);
+            toast.success("Account created & registered!", { description: "You are registered for the event. Check dashboard." });
+          } catch (e: unknown) {
+            if (axios.isAxiosError(e) && e.response?.status === 409) {
+              toast.success("Account created!", { description: "You were already registered for that event." });
+            } else {
+              toast.success("Account created!", { description: "Welcome aboard! Please confirm your event registration in dashboard." });
+            }
+          }
+          router.push("/dashboard/registrations");
+        } else {
+          toast.success("Account created!", { description: "Welcome aboard!" });
+          router.push("/dashboard");
+        }
       } else setError(r.data.error?.message ?? "Could not complete registration.");
     } catch (e: unknown) {
       if (axios.isAxiosError(e) && e.response?.data?.error?.message) setError(e.response.data.error.message);
@@ -165,6 +181,11 @@ export default function SignUp() {
                   {step === 3 && <><User className="h-3 w-3" /> STEP 3</>}
                 </span>
               </div>
+              {eventId && (
+                <div className="mt-4 rounded-xl border border-[#2362EC]/20 bg-[#EFF6FF] px-3 py-2.5 font-mono text-xs leading-5 text-[#0F172A]">
+                  <span className="font-bold">You&apos;ll be registered for this event right after account creation.</span> Just complete the steps — confirmation dialog is handled for you.
+                </div>
+              )}
 
               {step === 1 && (
                 <Form {...emailForm}>
@@ -275,7 +296,10 @@ export default function SignUp() {
 
               <p className="mt-6 text-center font-mono text-xs text-[#0F172A]/50">
                 Already have an account?{" "}
-                <Link href="/auth/signin" className="font-bold text-[#0F172A] hover:text-[#2362EC] hover:underline">
+                <Link
+                  href={eventId ? `/auth/signin?eventId=${eventId}` : "/auth/signin"}
+                  className="font-bold text-[#0F172A] hover:text-[#2362EC] hover:underline"
+                >
                   Sign in
                 </Link>
               </p>

@@ -8,6 +8,9 @@ import { ArrowLeft, Users, Phone, MapPin, Calendar, Banknote, ShieldCheck, Chevr
 import { EventCategory } from "@/data/eventCategories";
 import { EventList } from "@/data/eventList";
 import { toast } from "sonner";
+import { useAuthContext } from "@/contexts/auth-context";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   category: EventCategory;
@@ -33,7 +36,9 @@ export default function EventDetailClient({ category, details }: Props) {
   const [open, setOpen] = useState<string>("guidelines");
   const [dbEvent, setDbEvent] = useState<any>(null);
   const [registering, setRegistering] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const router = useRouter();
+  const { isLoggedIn } = useAuthContext();
 
   useEffect(() => {
     async function fetchDbEvent() {
@@ -50,17 +55,27 @@ export default function EventDetailClient({ category, details }: Props) {
   const coordinatorsFromDb: { name: string; mobile?: string }[] =
     dbEvent?.coordinators?.map((c: any) => ({ name: c.user.name, mobile: "" })) || [];
 
-  const handleRegister = async () => {
+  const handleRegister = () => {
     if (!dbEvent?.id) {
       toast.error("Event not ready. Please refresh.");
       return;
     }
+    if (!isLoggedIn) {
+      router.push(`/auth/signup?eventId=${dbEvent.id}`);
+      return;
+    }
+    setShowConfirm(true);
+  };
+
+  const confirmRegister = async () => {
+    if (!dbEvent?.id) return;
     setRegistering(true);
     try {
-      const res = await axios.post("/api/cart", { eventId: dbEvent.id });
+      const res = await axios.post(`/api/events/${dbEvent.id}/register`);
       if (res.data.success) {
-        toast.success("Added to cart!", { description: `${category.eventName} added. Checkout in dashboard.` });
-        router.push("/dashboard");
+        toast.success("Registered!", { description: `You are registered for ${category.eventName}.` });
+        setShowConfirm(false);
+        router.push("/dashboard/registrations");
       } else {
         toast.error(res.data.error?.message || "Could not register");
       }
@@ -69,13 +84,14 @@ export default function EventDetailClient({ category, details }: Props) {
         const status = e.response?.status;
         const msg = e.response?.data?.error?.message || e.response?.data?.message;
         if (status === 401) {
-          toast.error("Please sign in to register");
-          router.push("/auth/signin");
+          toast.error("Please sign in");
+          router.push(`/auth/signin?eventId=${dbEvent.id}`);
           return;
         }
         if (status === 409) {
-          toast.error(msg || "Already in cart or registered");
-          router.push("/dashboard");
+          toast.error(msg || "Already registered");
+          setShowConfirm(false);
+          router.push("/dashboard/registrations");
           return;
         }
         toast.error(msg || "Registration failed");
@@ -281,6 +297,26 @@ export default function EventDetailClient({ category, details }: Props) {
           </div>
         </div>
       </div>
+
+      <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle style={{ fontFamily: "'Bebas Neue', sans-serif" }} className="text-xl tracking-tight">
+              Confirm registration?
+            </DialogTitle>
+            <DialogDescription className="text-sm leading-6">
+              You will be registered for <strong>{category.eventName}</strong> ({category.category.replace(/_/g, " ")}). 
+              {category.maxParticipant > 1 ? " You can form your team later in dashboard." : ""} This cannot be undone without contacting SPOC.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setShowConfirm(false)} className="rounded-full">Cancel</Button>
+            <Button onClick={confirmRegister} disabled={registering} className="rounded-full bg-[#0F172A] text-white hover:bg-black">
+              {registering ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Registering…</> : "Confirm & Register"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

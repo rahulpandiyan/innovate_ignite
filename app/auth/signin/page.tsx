@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,8 @@ import { signInWithGoogle } from "@/app/auth/googleActions";
 
 export default function SignIn() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const eventId = searchParams.get("eventId");
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { setIsLoggedIn } = useAuthContext();
@@ -41,6 +43,20 @@ export default function SignIn() {
       const response = await axios.post("/api/auth/login", { email: values.email, password: values.password });
       if (response.data.success) {
         setIsLoggedIn(true);
+        if (eventId) {
+          try {
+            await axios.post(`/api/events/${eventId}/register`);
+            toast.success("Logged in & registered!", { description: "You are registered for the event." });
+            router.push("/dashboard/registrations");
+            return;
+          } catch (e: unknown) {
+            if (axios.isAxiosError(e) && e.response?.status === 409) {
+              toast.success("Login successful!", { description: "You were already registered for that event." });
+              router.push("/dashboard/registrations");
+              return;
+            }
+          }
+        }
         toast.success("Login successful!", { description: "Welcome back!" });
         const user = response.data.data?.user;
         const home = user?.home ?? (user?.role === "SUPER_ADMIN" ? "/admin" : "/dashboard");
@@ -144,6 +160,11 @@ export default function SignIn() {
                   <Sparkles className="h-3 w-3" /> SECURE
                 </span>
               </div>
+              {eventId && (
+                <div className="mt-4 rounded-xl border border-[#2362EC]/20 bg-[#EFF6FF] px-3 py-2.5 font-mono text-xs leading-5 text-[#0F172A]">
+                  <span className="font-bold">You&apos;ll be registered for this event right after signing in.</span> Just sign in — confirmation is handled.
+                </div>
+              )}
 
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 space-y-4">
@@ -204,7 +225,10 @@ export default function SignIn() {
 
               <p className="mt-6 text-center font-mono text-xs text-[#0F172A]/50">
                 Don&apos;t have an account?{" "}
-                <Link href="/auth/signup" className="font-bold text-[#0F172A] hover:text-[#2362EC] hover:underline">
+                <Link
+                  href={eventId ? `/auth/signup?eventId=${eventId}` : "/auth/signup"}
+                  className="font-bold text-[#0F172A] hover:text-[#2362EC] hover:underline"
+                >
                   Create account
                 </Link>
               </p>
