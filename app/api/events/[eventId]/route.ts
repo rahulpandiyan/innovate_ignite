@@ -39,6 +39,8 @@ export async function GET(req: NextRequest, context: RouteContext) {
         isActive: true,
         createdAt: true,
         updatedAt: true,
+        coordinators: { select: { user: { select: { id: true, name: true, email: true } } } },
+        judges: { select: { user: { select: { id: true, name: true } } } },
       },
     });
 
