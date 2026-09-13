@@ -9,31 +9,14 @@ import Image from "next/image";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { LoadingButton } from "@/components/LoadingButton";
 import { useAuthContext } from "@/contexts/auth-context";
 import { newLoginSchema } from "@/lib/schemas/newAuth";
 import { toast } from "sonner";
 import Link from "next/link";
-import { Eye, EyeOff, Sparkles } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-
-// Import logos and background image – paths unchanged
 import gatLogo from "@/public/gat-logos/college-logo.png";
 import innovateIgniteLogo from "@/public/gat-logos/innovate-ignite.png";
 import MagneticButton from "@/components/ui/MagneticButton";
@@ -49,28 +32,18 @@ export default function SignIn() {
 
   const form = useForm<z.infer<typeof newLoginSchema>>({
     resolver: zodResolver(newLoginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues: { email: "", password: "" },
   });
 
   async function onSubmit(values: z.infer<typeof newLoginSchema>) {
     setIsLoading(true);
     try {
-      const response = await axios.post("/api/auth/login", {
-        email: values.email,
-        password: values.password,
-      });
+      const response = await axios.post("/api/auth/login", { email: values.email, password: values.password });
       if (response.data.success) {
         setIsLoggedIn(true);
-        toast.success("Login successful!", {
-          description: "Welcome back!",
-        });
+        toast.success("Login successful!", { description: "Welcome back!" });
         const user = response.data.data?.user;
-        const home = user?.home ?? (user?.role === "SUPER_ADMIN"
-          ? "/admin"
-          : "/dashboard");
+        const home = user?.home ?? (user?.role === "SUPER_ADMIN" ? "/admin" : "/dashboard");
         router.push(home);
       } else {
         form.setError("email", { type: "manual", message: "Invalid credentials" });
@@ -91,292 +64,155 @@ export default function SignIn() {
     }
   }
 
-  // ── Visual layer ────────────────────────────────────────────────────────────
-
   return (
-    <div
-      className="relative min-h-screen flex items-center justify-center p-4 mt-20 overflow-hidden"
-      style={{
-        background: `
-          radial-gradient(ellipse 65% 55% at 60% 35%, hsl(var(--primary) / 0.09) 0%, transparent 65%),
-          radial-gradient(ellipse 45% 45% at 5% 85%,  hsl(var(--secondary) / 0.07) 0%, transparent 55%),
-          hsl(var(--background))
-        `,
-        fontFamily: "'Outfit', sans-serif",
-      }}
-    >
-      {/* dot grid */}
-      <div className="dot-grid absolute inset-0 pointer-events-none opacity-100" />
+    <div className="min-h-screen bg-[#FFFBEB] pt-20">
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600&display=swap');`}</style>
 
-      {/* Ghost watermark like home page */}
-      <div
-        className="font-display absolute left-[-2%] bottom-[4%] font-black leading-none select-none pointer-events-none"
-        style={{
-          fontSize: "clamp(90px,14vw,170px)",
-          color: "hsl(var(--primary) / 0.1)",
-          letterSpacing: "-0.02em",
-        }}
-        aria-hidden
-      >
-        VVIT Innovate Ignite
-      </div>
-      <div
-        className="font-display absolute right-[-2%] top-[4%] font-black leading-none select-none pointer-events-none"
-        style={{
-          fontSize: "clamp(90px,14vw,170px)",
-          color: "hsl(var(--primary) / 0.1)",
-          letterSpacing: "-0.02em",
-        }}
-        aria-hidden
-      >
-        2K26
-      </div>
-
-      {/* Announcement marquee */}
-      <div
-        className="absolute top-0 left-0 right-0 border-b py-2.5 overflow-hidden z-20"
-        style={{
-          borderColor: "hsl(var(--border))",
-          background: "hsl(var(--secondary) / 0.05)",
-        }}
-      >
-        <style>{`
-          @keyframes marquee-scroll-signin {
-            from { transform: translateX(0); }
-            to   { transform: translateX(-50%); }
-          }
-          .marquee-track-signin {
-            animation: marquee-scroll-signin 26s linear infinite;
-            display: flex;
-            width: max-content;
-          }
-          .marquee-track-signin:hover { animation-play-state: paused; }
-        `}</style>
-        <div className="whitespace-nowrap marquee-track-signin">
-          {[...Array(8)].map((_, i) => (
-            <span
-              key={i}
-              className="text-xs font-bold uppercase tracking-[0.18em] mx-12 flex-shrink-0"
-              style={{ color: "hsl(var(--foreground) / 0.5)" }}
-            >
-              Registrations Starting Soon · Stay tuned for updates · VVIT Innovate Ignite ·
-            </span>
-          ))}
+      {/* ticker */}
+      <div className="overflow-hidden border-y border-[#0F172A]/10 bg-[#0F172A] py-2">
+        <div className="flex animate-[marquee_22s_linear_infinite] whitespace-nowrap font-mono text-[11px] tracking-[0.16em] uppercase text-white">
+          <span className="mx-6">TECHNINJA ◆ VV CARE ◆ COOKING WITHOUT FIRE ◆ TALENT MANIA ◆ COLLAGE ◆ ICEBREAKER ◆ DUMB CHARADES ◆ CODE CONFLUX ◆ DANCE ELITE ◆ BGMI</span>
+          <span className="mx-6" aria-hidden>TECHNINJA ◆ VV CARE ◆ COOKING WITHOUT FIRE ◆ TALENT MANIA ◆ COLLAGE ◆ ICEBREAKER ◆ DUMB CHARADES ◆ CODE CONFLUX ◆ DANCE ELITE ◆ BGMI</span>
         </div>
+        <style>{`@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
       </div>
 
-      {/* ── Sign-in card ──────────────────────────────────────────────────────── */}
-      <motion.div
-        id="signin-card"
-        initial={{ opacity: 0, y: 24, scale: 0.97 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="relative z-10 w-full max-w-md"
-      >
-        {/* Card shell */}
-        <div
-          className="rounded-[var(--radius)] overflow-hidden"
-          style={{
-            background: "hsl(var(--card))",
-            border: "1px solid hsl(var(--border))",
-          }}
+      <div className="mx-auto grid max-w-6xl grid-cols-12 gap-6 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+        {/* LEFT — POSTER */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="col-span-12 lg:col-span-5"
         >
-          {/* Card header */}
-          <div
-            className="px-8 pt-8 pb-6 border-b"
-            style={{ borderColor: "hsl(var(--border))" }}
-          >
-            <div className="flex flex-col items-center text-center gap-3">
-              {/* Logo */}
-              <div className="mb-2 flex items-center justify-center gap-4">
-                <Image
-                  src={gatLogo}
-                  alt="VVIT Logo"
-                  width={52}
-                  height={52}
-                  className="object-contain opacity-100"
-                />
-                <Image
-                  src={innovateIgniteLogo}
-                  alt="VVIT Innovate Ignite Logo"
-                  width={52}
-                  height={52}
-                  className="object-contain opacity-100"
-                />
+          <div className="relative overflow-hidden rounded-2xl border border-[#0F172A]/10 bg-white p-6 shadow-sm sm:p-8">
+            <div className="absolute -left-3 top-6 h-6 w-20 rotate-[-8deg] rounded-sm bg-[#19E3A8]/80 shadow-sm" />
+            <div className="absolute -right-2 top-10 h-6 w-16 rotate-[8deg] rounded-sm bg-[#F3C317] shadow-sm" />
+            <div className="relative">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#0F172A] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-white">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#19E3A8]" /> VVIT · MAY 13–15
               </div>
+              <h1 className="mt-4 leading-[0.86] tracking-[-0.03em]" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+                <span className="block text-[44px] sm:text-[56px]">WELCOME</span>
+                <span className="block text-[44px] sm:text-[56px] text-[#2362EC]">BACK</span>
+              </h1>
+              <p className="mt-3 max-w-sm text-sm leading-6 text-[#0F172A]/60">
+                Your pass to 10 stages. Sign in to register, form teams, and track your lineup. One portal — all venues on campus.
+              </p>
+              <div className="mt-6 flex items-center gap-3">
+                <Image src={gatLogo} alt="VVIT" width={48} height={48} className="h-9 w-auto" />
+                <span className="h-6 w-px bg-[#0F172A]/10" />
+                <Image src={innovateIgniteLogo} alt="Ignite" width={48} height={48} className="h-9 w-auto" />
+              </div>
+              <div className="mt-6 inline-flex -rotate-1 rounded-xl bg-[#FFF1A6] px-3 py-1.5 shadow" style={{ fontFamily: "'Caveat', cursive" }}>
+                <span className="text-sm">Psst — 10 events, 6 domains →</span>
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 grid grid-cols-3 gap-3">
+            <div className="rounded-xl border border-[#0F172A]/10 bg-white px-3 py-3 text-center">
+              <div className="font-heading text-lg font-black">10</div>
+              <div className="font-mono text-[10px] tracking-widest text-[#0F172A]/50">EVENTS</div>
+            </div>
+            <div className="rounded-xl border border-[#0F172A]/10 bg-white px-3 py-3 text-center">
+              <div className="font-heading text-lg font-black">3</div>
+              <div className="font-mono text-[10px] tracking-widest text-[#0F172A]/50">DAYS</div>
+            </div>
+            <div className="rounded-xl border border-[#0F172A]/10 bg-white px-3 py-3 text-center">
+              <div className="font-heading text-lg font-black">6</div>
+              <div className="font-mono text-[10px] tracking-widest text-[#0F172A]/50">DOMAINS</div>
+            </div>
+          </div>
+        </motion.div>
 
-              {/* Title */}
-              <div className="flex items-center gap-2">
-                <h1
-                  className="font-display text-4xl font-black tracking-tighter"
-                  style={{ color: "hsl(var(--foreground))" }}
-                >
-                  VVIT Innovate Ignite
-                </h1>
-                <span
-                  className="font-display text-2xl font-black tracking-tight"
-                  style={{ color: "hsl(var(--primary))" }}
-                >
-                  2K26
+        {/* RIGHT — FORM CARD */}
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, delay: 0.08 }}
+          className="col-span-12 lg:col-span-7"
+        >
+          <div className="relative overflow-hidden rounded-2xl border border-[#0F172A]/10 bg-white shadow-[0_16px_48px_rgba(15,23,42,0.08)]">
+            <div className="absolute left-0 top-0 h-1.5 w-full bg-[#0F172A]" />
+            <div className="p-6 sm:p-8">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="font-heading text-xl font-bold tracking-tight">Sign in</h2>
+                  <p className="mt-1 font-mono text-xs tracking-wide text-[#0F172A]/50">Inter-collegiate registration portal</p>
+                </div>
+                <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-[#19E3A8]/15 px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-[#0F172A]">
+                  <Sparkles className="h-3 w-3" /> SECURE
                 </span>
               </div>
 
-              <p
-                className="font-mono-jb text-xs font-semibold tracking-[0.2em] uppercase"
-                style={{ color: "hsl(var(--muted))" }}
-              >
-                Inter-Department Event Registration Portal
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">Registered Email ID</FormLabel>
+                        <FormControl>
+                          <Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 focus:bg-white" placeholder="you@college.edu" {...field} />
+                        </FormControl>
+                        <FormMessage className="text-xs" />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">Password</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 pr-10 focus:bg-white" type={visibility ? "text" : "password"} placeholder="••••••••" {...field} />
+                            <button type="button" onClick={() => setVisibility((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#0F172A]/40 hover:text-[#0F172A]">
+                              {visibility ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </button>
+                          </div>
+                        </FormControl>
+                        <FormMessage className="text-xs" />
+                        <div className="flex justify-end">
+                          <Link href="/auth/forgotpassword" className="font-mono text-xs text-[#2362EC] hover:underline">
+                            Forgot password?
+                          </Link>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                  {error && <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-center text-xs text-red-600">{error}</div>}
+                  <MagneticButton className="w-full">
+                    <LoadingButton type="submit" loading={isLoading} className="h-11 w-full rounded-full bg-[#0F172A] font-bold text-white hover:bg-black">
+                      Sign in <ArrowRight className="h-4 w-4" />
+                    </LoadingButton>
+                  </MagneticButton>
+                </form>
+              </Form>
+
+              <div className="my-6 flex items-center gap-3">
+                <div className="h-px flex-1 bg-[#0F172A]/10" />
+                <span className="font-mono text-[10px] font-bold tracking-[0.18em] uppercase text-[#0F172A]/30">or continue with</span>
+                <div className="h-px flex-1 bg-[#0F172A]/10" />
+              </div>
+
+              <form action={signInWithGoogle}>
+                <GoogleSignInButton />
+              </form>
+
+              <p className="mt-6 text-center font-mono text-xs text-[#0F172A]/50">
+                Don&apos;t have an account?{" "}
+                <Link href="/auth/signup" className="font-bold text-[#0F172A] hover:text-[#2362EC] hover:underline">
+                  Create account
+                </Link>
               </p>
             </div>
           </div>
-
-          {/* Form */}
-          <div className="px-8 py-7">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                {/* Email */}
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel
-                        className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
-                        style={{ color: "hsl(var(--muted))" }}
-                      >
-                        Registered Email ID
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          className="h-11 transition-all duration-200"
-                          style={{
-                            background: "hsl(var(--background))",
-                            color: "hsl(var(--foreground))",
-                            borderColor: "hsl(var(--border))",
-                            borderRadius: "var(--radius)",
-                          }}
-                          placeholder="Enter your email"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-red-400 text-xs" />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Password */}
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel
-                        className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
-                        style={{ color: "hsl(var(--muted))" }}
-                      >
-                        Password
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input
-                            className="h-11 pr-10 transition-all duration-200"
-                            style={{
-                              background: "hsl(var(--background))",
-                              color: "hsl(var(--foreground))",
-                              borderColor: "hsl(var(--border))",
-                              borderRadius: "var(--radius)",
-                            }}
-                            type={visibility ? "text" : "password"}
-                            placeholder="Enter your password"
-                            {...field}
-                          />
-                          <button
-                            type="button"
-                            id="password-visibility-toggle"
-                            onClick={() => setVisibility((prev) => !prev)}
-                            className="absolute right-3 top-3 transition-colors duration-200"
-                            style={{ color: "hsl(var(--muted))" }}
-                          >
-                            {visibility ? (
-                              <EyeOff className="h-5 w-5" />
-                            ) : (
-                              <Eye className="h-5 w-5" />
-                            )}
-                          </button>
-                        </div>
-                      </FormControl>
-                      <FormMessage className="text-red-400 text-xs" />
-                      <div className="flex justify-end">
-                        <Link
-                          href="/auth/forgotpassword"
-                          className="text-xs hover:underline"
-                          style={{ color: "hsl(var(--primary))" }}
-                        >
-                          Forgot Password?
-                        </Link>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-
-                {/* Inline error */}
-                {error && (
-                  <div className="text-xs text-red-400 text-center bg-red-400/5 border border-red-400/20 rounded-lg px-3 py-2">
-                    {error}
-                  </div>
-                )}
-
-                {/* Submit */}
-                <MagneticButton className="w-full">
-                  <LoadingButton
-                    type="submit"
-                    id="signin-submit-btn"
-                    loading={isLoading}
-                    className="w-full font-bold tracking-wide transition-shadow duration-300 h-11"
-                    style={{
-                      background: "hsl(var(--primary))",
-                      color: "hsl(var(--primary-foreground))",
-                      borderRadius: "calc(var(--radius) - 2px)",
-                    }}
-                  >
-                    Sign In
-                  </LoadingButton>
-                </MagneticButton>
-              </form>
-            </Form>
-          </div>
-
-                    <div className="relative flex items-center gap-4 my-1" aria-hidden="true">
-            <div className="h-px flex-1" style={{ background: "hsl(var(--border))" }} />
-            <span className="text-[10px] font-semibold tracking-[0.22em] uppercase" style={{ color: "hsl(var(--muted-foreground))", fontFamily: "'JetBrains Mono',monospace" }}>or continue with Google</span>
-            <div className="h-px flex-1" style={{ background: "hsl(var(--border))" }} />
-          </div>
-
-          <form action={signInWithGoogle}>
-            <GoogleSignInButton />
-          </form>
-
-          {/* Card footer note */}
-          <div
-            className="px-8 pb-7 border-t pt-5"
-            style={{ borderColor: "hsl(var(--border))" }}
-          >
-            <p
-              className="text-xs text-center"
-              style={{ color: "hsl(var(--muted-foreground))" }}
-            >
-              Don&apos;t have an account?{" "}
-              <Link
-                href="/auth/signup"
-                className="font-semibold hover:underline"
-                style={{ color: "hsl(var(--primary))" }}
-              >
-                Create Account
-              </Link>
-            </p>
-          </div>
-        </div>
-      </motion.div>
+          <p className="mt-3 text-center font-mono text-[11px] text-[#0F172A]/40">Protected by VVIT · One pass for all 10 stages</p>
+        </motion.div>
+      </div>
     </div>
   );
 }

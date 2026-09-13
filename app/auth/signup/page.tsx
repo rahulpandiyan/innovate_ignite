@@ -7,693 +7,282 @@ import * as z from "zod";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import axios from "axios";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { LoadingButton } from "@/components/LoadingButton";
 import { toast } from "sonner";
 import Link from "next/link";
-import { Eye, EyeOff, Sparkles, ArrowRight, KeyRound, User } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, KeyRound, User, Sparkles, Mail, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
-
-// Logos – same imports as signin page
 import gatLogo from "@/public/gat-logos/college-logo.png";
 import innovateIgniteLogo from "@/public/gat-logos/innovate-ignite.png";
 import MagneticButton from "@/components/ui/MagneticButton";
 import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 import { signInWithGoogle } from "@/app/auth/googleActions";
-
-// OTP registration schemas
-import {
-  sendOtpSchema,
-  verifyOtpSchema,
-  registerCompleteSchema,
-} from "@/lib/schemas/newAuth";
+import { sendOtpSchema, verifyOtpSchema, registerCompleteSchema } from "@/lib/schemas/newAuth";
 
 export default function SignUp() {
   const router = useRouter();
-  const [step, setStep] = useState<1 | 2 | 3>(1); // 1 = email → OTP, 2 = verify OTP, 3 = complete profile
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [email, setEmail] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
-  const [visibility, setVisibility] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [visibility, setVisibility] = useState(false);
 
-  // Step 1 – request OTP
   const emailForm = useForm<z.infer<typeof sendOtpSchema>>({
     resolver: zodResolver(sendOtpSchema),
     defaultValues: { email: "" },
   });
-
-  // Step 2 – verify OTP
   const otpForm = useForm<z.infer<typeof verifyOtpSchema>>({
     resolver: zodResolver(verifyOtpSchema),
     defaultValues: { email: "", otp: "" },
   });
-
-  // Step 3 – complete registration (no photo, no Aadhaar)
   const completeForm = useForm<z.infer<typeof registerCompleteSchema>>({
     resolver: zodResolver(registerCompleteSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      collegeName: "",
-      collegeIdNumber: "",
-      password: "",
-    },
+    defaultValues: { name: "", email: "", phone: "", collegeName: "", collegeIdNumber: "", password: "" },
   });
 
   async function handleSendOtp(values: z.infer<typeof sendOtpSchema>) {
     setIsLoading(true);
     setError("");
     try {
-      const response = await axios.post("/api/auth/register/send-otp", values);
-      if (response.data.success) {
+      const r = await axios.post("/api/auth/register/send-otp", values);
+      if (r.data.success) {
         setEmail(values.email);
         otpForm.setValue("email", values.email);
         completeForm.setValue("email", values.email);
         setStep(2);
-        toast.success("OTP sent!", {
-          description: "Check your inbox for the 6-digit code.",
-        });
-      } else {
-        setError(response.data.error?.message ?? "Could not send OTP.");
-      }
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error) && error.response?.data?.error?.message) {
-        setError(error.response.data.error.message);
-      } else {
-        setError("Something went wrong. Please try again.");
-      }
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
+        toast.success("OTP sent!", { description: "Check your inbox for the 6-digit code." });
+      } else setError(r.data.error?.message ?? "Could not send OTP.");
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e) && e.response?.data?.error?.message) setError(e.response.data.error.message);
+      else setError("Something went wrong. Please try again.");
+    } finally { setIsLoading(false); }
   }
-
   async function handleVerifyOtp(values: z.infer<typeof verifyOtpSchema>) {
     setIsLoading(true);
     setError("");
     try {
-      const response = await axios.post("/api/auth/register/verify-otp", values);
-      if (response.data.success) {
+      const r = await axios.post("/api/auth/register/verify-otp", values);
+      if (r.data.success) {
         setStep(3);
-        toast.success("Email verified!", {
-          description: "Now complete your profile.",
-        });
+        toast.success("Email verified!", { description: "Now complete your profile." });
       } else {
-        otpForm.setError("otp", {
-          type: "manual",
-          message: response.data.error?.message ?? "Invalid OTP.",
-        });
-        setError(response.data.error?.message ?? "Invalid OTP.");
+        otpForm.setError("otp", { type: "manual", message: r.data.error?.message ?? "Invalid OTP." });
+        setError(r.data.error?.message ?? "Invalid OTP.");
       }
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error) && error.response?.data?.error?.message) {
-        otpForm.setError("otp", {
-          type: "manual",
-          message: error.response.data.error.message,
-        });
-        setError(error.response.data.error.message);
-      } else {
-        setError("Something went wrong. Please try again.");
-      }
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e) && e.response?.data?.error?.message) {
+        otpForm.setError("otp", { type: "manual", message: e.response.data.error.message });
+        setError(e.response.data.error.message);
+      } else setError("Something went wrong. Please try again.");
+    } finally { setIsLoading(false); }
   }
-
   async function handleComplete(values: z.infer<typeof registerCompleteSchema>) {
     setIsLoading(true);
     setError("");
     try {
-      const response = await axios.post(
-        "/api/auth/register/complete",
-        values
-      );
-      if (response.data.success) {
-        toast.success("Account created!", {
-          description: "Welcome aboard!",
-        });
-        // The API sets the auth cookie – route the user home
+      const r = await axios.post("/api/auth/register/complete", values);
+      if (r.data.success) {
+        toast.success("Account created!", { description: "Welcome aboard!" });
         router.push("/dashboard");
-      } else {
-        setError(
-          response.data.error?.message ??
-            "Could not complete registration. Please try again."
-        );
-      }
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error) && error.response?.data?.error?.message) {
-        setError(error.response.data.error.message);
-      } else {
-        setError("Something went wrong. Please try again.");
-      }
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
+      } else setError(r.data.error?.message ?? "Could not complete registration.");
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e) && e.response?.data?.error?.message) setError(e.response.data.error.message);
+      else setError("Something went wrong. Please try again.");
+    } finally { setIsLoading(false); }
   }
 
-  // ── Visual layer ────────────────────────────────────────────────────────────
-
   return (
-    <div
-      className="relative min-h-screen flex items-center justify-center p-4 mt-20 overflow-hidden"
-      style={{
-        background: `
-          radial-gradient(ellipse 65% 55% at 60% 35%, hsl(var(--primary) / 0.09) 0%, transparent 65%),
-          radial-gradient(ellipse 45% 45% at 5% 85%,  hsl(var(--secondary) / 0.07) 0%, transparent 55%),
-          hsl(var(--background))
-        `,
-        fontFamily: "'Outfit', sans-serif",
-      }}
-    >
-      {/* dot grid */}
-      <div className="dot-grid absolute inset-0 pointer-events-none opacity-100" />
+    <div className="min-h-screen bg-[#FFFBEB] pt-20">
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600&display=swap');`}</style>
 
-      {/* Ghost watermark like home page */}
-      <div
-        className="font-display absolute left-[-2%] bottom-[4%] font-black leading-none select-none pointer-events-none"
-        style={{
-          fontSize: "clamp(90px,14vw,170px)",
-          color: "hsl(var(--primary) / 0.1)",
-          letterSpacing: "-0.02em",
-        }}
-        aria-hidden
-      >
-        VVIT Innovate Ignite
-      </div>
-      <div
-        className="font-display absolute right-[-2%] top-[4%] font-black leading-none select-none pointer-events-none"
-        style={{
-          fontSize: "clamp(90px,14vw,170px)",
-          color: "hsl(var(--primary) / 0.1)",
-          letterSpacing: "-0.02em",
-        }}
-        aria-hidden
-      >
-        2K26
-      </div>
-
-      {/* Announcement marquee */}
-      <div
-        className="absolute top-0 left-0 right-0 border-b py-2.5 overflow-hidden z-20"
-        style={{
-          borderColor: "hsl(var(--border))",
-          background: "hsl(var(--secondary) / 0.05)",
-        }}
-      >
-        <style>{`
-          @keyframes marquee-scroll-signup {
-            from { transform: translateX(0); }
-            to   { transform: translateX(-50%); }
-          }
-          .marquee-track-signup {
-            animation: marquee-scroll-signup 26s linear infinite;
-            display: flex;
-            width: max-content;
-          }
-          .marquee-track-signup:hover { animation-play-state: paused; }
-        `}</style>
-        <div className="whitespace-nowrap marquee-track-signup">
-          {[...Array(8)].map((_, i) => (
-            <span
-              key={i}
-              className="text-xs font-bold uppercase tracking-[0.18em] mx-12 flex-shrink-0"
-              style={{ color: "hsl(var(--foreground) / 0.5)" }}
-            >
-              Registrations Starting Soon · Stay tuned for updates · VVIT Innovate Ignite ·
-            </span>
-          ))}
+      <div className="overflow-hidden border-y border-[#0F172A]/10 bg-[#0F172A] py-2">
+        <div className="flex animate-[marquee_22s_linear_infinite] whitespace-nowrap font-mono text-[11px] tracking-[0.16em] uppercase text-white">
+          <span className="mx-6">JOIN 1000+ STUDENTS · 10 STAGES · 6 DOMAINS · VVIT BENGALURU · MAY 13–15</span>
+          <span className="mx-6" aria-hidden>JOIN 1000+ STUDENTS · 10 STAGES · 6 DOMAINS · VVIT BENGALURU · MAY 13–15</span>
         </div>
+        <style>{`@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
       </div>
 
-      {/* ── Registration card ─────────────────────────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0, y: 24, scale: 0.97 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="relative z-10 w-full max-w-md"
-      >
-        <div
-          className="rounded-[var(--radius)] overflow-hidden"
-          style={{
-            background: "hsl(var(--card))",
-            border: "1px solid hsl(var(--border))",
-          }}
-        >
-          {/* Header */}
-          <div
-            className="px-8 pt-8 pb-6 border-b"
-            style={{ borderColor: "hsl(var(--border))" }}
-          >
-            <div className="flex flex-col items-center text-center gap-3">
-              {/* Logo */}
-              <div className="mb-2 flex items-center justify-center gap-4">
-                <Image
-                  src={gatLogo}
-                  alt="VVIT Logo"
-                  width={52}
-                  height={52}
-                  className="object-contain opacity-100"
-                />
-                <Image
-                  src={innovateIgniteLogo}
-                  alt="VVIT Innovate Ignite Logo"
-                  width={52}
-                  height={52}
-                  className="object-contain opacity-100"
-                />
+      <div className="mx-auto grid max-w-6xl grid-cols-12 gap-6 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+        {/* LEFT — POSTER */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="col-span-12 lg:col-span-5">
+          <div className="relative overflow-hidden rounded-2xl border border-[#0F172A]/10 bg-white p-6 shadow-sm sm:p-8">
+            <div className="absolute -left-3 top-6 h-6 w-20 rotate-[-8deg] rounded-sm bg-[#F3C317]/80 shadow-sm" />
+            <div className="absolute -right-2 top-10 h-6 w-16 rotate-[8deg] rounded-sm bg-[#19E3A8]/80 shadow-sm" />
+            <div className="relative">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#0F172A] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-white">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#19E3A8]" />
+                STEP {step} OF 3
               </div>
-
-              {/* Title */}
-              <div className="flex items-center gap-2">
-                <h1
-                  className="font-display text-4xl font-black tracking-tighter"
-                  style={{ color: "hsl(var(--foreground))" }}
-                >
-                  Create Account
-                </h1>
-              </div>
-
-              {/* Step indicator */}
-              <div className="flex items-center gap-2">
+              <h1 className="mt-4 leading-[0.86] tracking-[-0.03em]" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+                <span className="block text-[44px] sm:text-[52px]">CREATE</span>
+                <span className="block text-[44px] sm:text-[52px] text-[#2362EC]">ACCOUNT</span>
+              </h1>
+              <p className="mt-3 max-w-sm text-sm leading-6 text-[#0F172A]/60">
+                One pass for all 10 stages. Verify your email, then complete your profile. No spam — just your lineup.
+              </p>
+              <div className="mt-5 flex items-center gap-1.5">
                 {[1, 2, 3].map((s) => (
-                  <div
-                    key={s}
-                    className="h-1 rounded-full transition-all duration-300"
-                    style={{
-                      width: s === step ? 28 : 10,
-                      background:
-                        s <= step
-                          ? "hsl(var(--primary))"
-                          : "hsl(var(--border))",
-                    }}
-                  />
+                  <div key={s} className={`h-1.5 rounded-full transition-all duration-300 ${s === step ? "w-8 bg-[#0F172A]" : s < step ? "w-8 bg-[#19E3A8]" : "w-6 bg-[#0F172A]/10"}`} />
                 ))}
+                <span className="ml-2 font-mono text-xs text-[#0F172A]/50">
+                  {step === 1 ? "Email" : step === 2 ? "Verify OTP" : "Profile"}
+                </span>
+              </div>
+              <div className="mt-6 flex items-center gap-3">
+                <Image src={gatLogo} alt="VVIT" width={40} height={40} className="h-8 w-auto" />
+                <span className="h-6 w-px bg-[#0F172A]/10" />
+                <Image src={innovateIgniteLogo} alt="Ignite" width={40} height={40} className="h-8 w-auto" />
               </div>
             </div>
           </div>
+          <div className="mt-4 rounded-xl border border-dashed border-[#0F172A]/15 bg-white p-4">
+            <p className="flex items-center gap-1.5 font-mono text-[11px] font-bold tracking-widest text-[#0F172A]/60">
+              <ShieldCheck className="h-3.5 w-3.5" /> WHAT YOU NEED
+            </p>
+            <ul className="mt-2 space-y-1.5 font-mono text-xs leading-5 text-[#0F172A]/60">
+              <li className="flex items-center gap-2"><span className="h-1 w-1 rounded-full bg-[#0F172A]/30" /> College email (OTP in ~30s)</li>
+              <li className="flex items-center gap-2"><span className="h-1 w-1 rounded-full bg-[#0F172A]/30" /> Phone + College ID</li>
+              <li className="flex items-center gap-2"><span className="h-1 w-1 rounded-full bg-[#0F172A]/30" /> Password (min 6 chars)</li>
+            </ul>
+          </div>
+        </motion.div>
 
-          <div className="px-8 py-7">
-            {/* STEP 1 – Email */}
-            {step === 1 && (
-              <Form {...emailForm}>
-                <form
-                  onSubmit={emailForm.handleSubmit(handleSendOtp)}
-                  className="space-y-5"
-                >
-                  <FormField
-                    control={emailForm.control}
-                    name="email"
-                    render={({ field }) => (
+        {/* RIGHT — FORM */}
+        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.08 }} className="col-span-12 lg:col-span-7">
+          <div className="relative overflow-hidden rounded-2xl border border-[#0F172A]/10 bg-white shadow-[0_16px_48px_rgba(15,23,42,0.08)]">
+            <div className="absolute left-0 top-0 h-1.5 w-full bg-[#0F172A]" />
+            <div className="p-6 sm:p-8">
+              <div className="flex items-center justify-between">
+                <h2 className="font-heading text-base font-bold">
+                  {step === 1 ? "Verify your email" : step === 2 ? "Enter OTP" : "Complete profile"}
+                </h2>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FFFBEB] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest border border-[#0F172A]/10">
+                  {step === 1 && <><Mail className="h-3 w-3" /> STEP 1</>}
+                  {step === 2 && <><KeyRound className="h-3 w-3" /> STEP 2</>}
+                  {step === 3 && <><User className="h-3 w-3" /> STEP 3</>}
+                </span>
+              </div>
+
+              {step === 1 && (
+                <Form {...emailForm}>
+                  <form onSubmit={emailForm.handleSubmit(handleSendOtp)} className="mt-6 space-y-4">
+                    <FormField control={emailForm.control} name="email" render={({ field }) => (
                       <FormItem>
-                        <FormLabel
-                          className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
-                          style={{ color: "hsl(var(--muted))" }}
-                        >
-                          Registered Email ID
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            className="h-11 transition-all duration-200"
-                            style={{
-                              background: "hsl(var(--background))",
-                              color: "hsl(var(--foreground))",
-                              borderColor: "hsl(var(--border))",
-                              borderRadius: "var(--radius)",
-                            }}
-                            placeholder="Enter your email"
-                            type="email"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-400 text-xs" />
+                        <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">College Email</FormLabel>
+                        <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 focus:bg-white" placeholder="you@college.edu" type="email" {...field} /></FormControl>
+                        <FormMessage className="text-xs" />
                       </FormItem>
-                    )}
-                  />
-
-                  {error && (
-                    <div className="text-xs text-red-400 text-center bg-red-400/5 border border-red-400/20 rounded-lg px-3 py-2">
-                      {error}
-                    </div>
-                  )}
-
-                  <MagneticButton className="w-full">
-                    <LoadingButton
-                      type="submit"
-                      loading={isLoading}
-                      className="w-full font-bold tracking-wide h-11"
-                      style={{
-                        background: "hsl(var(--primary))",
-                        color: "hsl(var(--primary-foreground))",
-                        borderRadius: "calc(var(--radius) - 2px)",
-                      }}
-                    >
-                      Send OTP <ArrowRight className="h-4 w-4" />
-                    </LoadingButton>
-                  </MagneticButton>
-                </form>
-              </Form>
-            )}
-
-            {/* STEP 2 – OTP */}
-            {step === 2 && (
-              <>
-                <Form {...otpForm}>
-                  <form
-                    onSubmit={otpForm.handleSubmit(handleVerifyOtp)}
-                    className="space-y-5"
-                  >
-                    <FormField
-                      control={otpForm.control}
-                      name="otp"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel
-                            className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
-                            style={{ color: "hsl(var(--muted))" }}
-                          >
-                            Enter OTP
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              className="h-11 text-center font-mono-jb text-lg tracking-[0.4em] transition-all duration-200"
-                              style={{
-                                background: "hsl(var(--background))",
-                                color: "hsl(var(--foreground))",
-                                borderColor: "hsl(var(--border))",
-                                borderRadius: "var(--radius)",
-                              }}
-                              placeholder="••••••"
-                              inputMode="numeric"
-                              maxLength={6}
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage className="text-red-400 text-xs" />
-                        </FormItem>
-                      )}
-                    />
-
-                    {error && (
-                      <div className="text-xs text-red-400 text-center bg-red-400/5 border border-red-400/20 rounded-lg px-3 py-2">
-                        {error}
-                      </div>
-                    )}
-
+                    )} />
+                    {error && <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-center text-xs text-red-600">{error}</div>}
                     <MagneticButton className="w-full">
-                      <LoadingButton
-                        type="submit"
-                        loading={isLoading}
-                        className="w-full font-bold tracking-wide h-11"
-                        style={{
-                          background: "hsl(var(--primary))",
-                          color: "hsl(var(--primary-foreground))",
-                          borderRadius: "calc(var(--radius) - 2px)",
-                        }}
-                      >
-                        Verify OTP <KeyRound className="h-4 w-4" />
+                      <LoadingButton type="submit" loading={isLoading} className="h-11 w-full rounded-full bg-[#0F172A] font-bold text-white hover:bg-black">
+                        Send OTP <ArrowRight className="h-4 w-4" />
                       </LoadingButton>
                     </MagneticButton>
                   </form>
                 </Form>
+              )}
 
-                <button
-                  type="button"
-                  className="mt-4 w-full text-center text-xs hover:underline"
-                  style={{ color: "hsl(var(--muted-foreground))" }}
-                  onClick={() => {
-                    setStep(1);
-                    setError("");
-                  }}
-                >
-                  ← Change email / re-send OTP
-                </button>
-              </>
-            )}
+              {step === 2 && (
+                <>
+                  <Form {...otpForm}>
+                    <form onSubmit={otpForm.handleSubmit(handleVerifyOtp)} className="mt-6 space-y-4">
+                      <FormField control={otpForm.control} name="otp" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">6-digit code sent to {email}</FormLabel>
+                          <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 text-center font-mono text-lg tracking-[0.35em] focus:bg-white" placeholder="••••••" inputMode="numeric" maxLength={6} {...field} /></FormControl>
+                          <FormMessage className="text-xs" />
+                        </FormItem>
+                      )} />
+                      {error && <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-center text-xs text-red-600">{error}</div>}
+                      <MagneticButton className="w-full">
+                        <LoadingButton type="submit" loading={isLoading} className="h-11 w-full rounded-full bg-[#0F172A] font-bold text-white hover:bg-black">
+                          Verify OTP <KeyRound className="h-4 w-4" />
+                        </LoadingButton>
+                      </MagneticButton>
+                    </form>
+                  </Form>
+                  <button onClick={() => { setStep(1); setError(""); }} className="mt-4 w-full text-center font-mono text-xs text-[#0F172A]/50 hover:text-[#0F172A] hover:underline">← Change email</button>
+                </>
+              )}
 
-            {/* STEP 3 – Complete profile (no photo, no Aadhaar) */}
-            {step === 3 && (
-              <Form {...completeForm}>
-                <form
-                  onSubmit={completeForm.handleSubmit(handleComplete)}
-                  className="space-y-5"
-                >
-                  <FormField
-                    control={completeForm.control}
-                    name="name"
-                    render={({ field }) => (
+              {step === 3 && (
+                <Form {...completeForm}>
+                  <form onSubmit={completeForm.handleSubmit(handleComplete)} className="mt-6 space-y-4">
+                    <FormField control={completeForm.control} name="name" render={({ field }) => (
                       <FormItem>
-                        <FormLabel
-                          className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
-                          style={{ color: "hsl(var(--muted))" }}
-                        >
-                          Full Name
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            className="h-11 transition-all duration-200"
-                            style={{
-                              background: "hsl(var(--background))",
-                              color: "hsl(var(--foreground))",
-                              borderColor: "hsl(var(--border))",
-                              borderRadius: "var(--radius)",
-                            }}
-                            placeholder="Enter your full name"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-400 text-xs" />
+                        <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">Full Name</FormLabel>
+                        <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 focus:bg-white" placeholder="Your name" {...field} /></FormControl>
+                        <FormMessage className="text-xs" />
                       </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={completeForm.control}
-                    name="phone"
-                    render={({ field }) => (
+                    )} />
+                    <FormField control={completeForm.control} name="phone" render={({ field }) => (
                       <FormItem>
-                        <FormLabel
-                          className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
-                          style={{ color: "hsl(var(--muted))" }}
-                        >
-                          Phone Number
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            className="h-11 transition-all duration-200"
-                            style={{
-                              background: "hsl(var(--background))",
-                              color: "hsl(var(--foreground))",
-                              borderColor: "hsl(var(--border))",
-                              borderRadius: "var(--radius)",
-                            }}
-                            placeholder="10-digit mobile number"
-                            inputMode="numeric"
-                            maxLength={10}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-400 text-xs" />
+                        <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">Phone</FormLabel>
+                        <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 focus:bg-white" placeholder="10-digit mobile" inputMode="numeric" maxLength={10} {...field} /></FormControl>
+                        <FormMessage className="text-xs" />
                       </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={completeForm.control}
-                    name="collegeName"
-                    render={({ field }) => (
+                    )} />
+                    <FormField control={completeForm.control} name="collegeName" render={({ field }) => (
                       <FormItem>
-                        <FormLabel
-                          className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
-                          style={{ color: "hsl(var(--muted))" }}
-                        >
-                          College Name
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            className="h-11 transition-all duration-200"
-                            style={{
-                              background: "hsl(var(--background))",
-                              color: "hsl(var(--foreground))",
-                              borderColor: "hsl(var(--border))",
-                              borderRadius: "var(--radius)",
-                            }}
-                            placeholder="Enter your college name"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-400 text-xs" />
+                        <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">College Name</FormLabel>
+                        <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 focus:bg-white" placeholder="e.g. VVIT, Bengaluru" {...field} /></FormControl>
+                        <FormMessage className="text-xs" />
                       </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={completeForm.control}
-                    name="collegeIdNumber"
-                    render={({ field }) => (
+                    )} />
+                    <FormField control={completeForm.control} name="collegeIdNumber" render={({ field }) => (
                       <FormItem>
-                        <FormLabel
-                          className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
-                          style={{ color: "hsl(var(--muted))" }}
-                        >
-                          College ID Number
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            className="h-11 transition-all duration-200"
-                            style={{
-                              background: "hsl(var(--background))",
-                              color: "hsl(var(--foreground))",
-                              borderColor: "hsl(var(--border))",
-                              borderRadius: "var(--radius)",
-                            }}
-                            placeholder="Enter your college ID number"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-400 text-xs" />
+                        <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">College ID Number</FormLabel>
+                        <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 focus:bg-white" placeholder="USN / ID" {...field} /></FormControl>
+                        <FormMessage className="text-xs" />
                       </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={completeForm.control}
-                    name="password"
-                    render={({ field }) => (
+                    )} />
+                    <FormField control={completeForm.control} name="password" render={({ field }) => (
                       <FormItem>
-                        <FormLabel
-                          className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
-                          style={{ color: "hsl(var(--muted))" }}
-                        >
-                          Password
-                        </FormLabel>
+                        <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">Password</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input
-                              className="h-11 pr-10 transition-all duration-200"
-                              style={{
-                                background: "hsl(var(--background))",
-                                color: "hsl(var(--foreground))",
-                                borderColor: "hsl(var(--border))",
-                                borderRadius: "var(--radius)",
-                              }}
-                              type={visibility ? "text" : "password"}
-                              placeholder="Create a password (min 6 chars)"
-                              {...field}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setVisibility((prev) => !prev)}
-                              className="absolute right-3 top-3 transition-colors duration-200"
-                              style={{ color: "hsl(var(--muted))" }}
-                            >
-                              {visibility ? (
-                                <EyeOff className="h-5 w-5" />
-                              ) : (
-                                <Eye className="h-5 w-5" />
-                              )}
+                            <Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 pr-10 focus:bg-white" type={visibility ? "text" : "password"} placeholder="Min 6 characters" {...field} />
+                            <button type="button" onClick={() => setVisibility((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#0F172A]/40 hover:text-[#0F172A]">
+                              {visibility ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </button>
                           </div>
                         </FormControl>
-                        <FormMessage className="text-red-400 text-xs" />
+                        <FormMessage className="text-xs" />
                       </FormItem>
-                    )}
-                  />
+                    )} />
+                    {error && <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-center text-xs text-red-600">{error}</div>}
+                    <MagneticButton className="w-full">
+                      <LoadingButton type="submit" loading={isLoading} className="h-11 w-full rounded-full bg-[#0F172A] font-bold text-white hover:bg-black">
+                        Create account <User className="h-4 w-4" />
+                      </LoadingButton>
+                    </MagneticButton>
+                  </form>
+                </Form>
+              )}
 
-                  {error && (
-                    <div className="text-xs text-red-400 text-center bg-red-400/5 border border-red-400/20 rounded-lg px-3 py-2">
-                      {error}
-                    </div>
-                  )}
+              <div className="my-6 flex items-center gap-3">
+                <div className="h-px flex-1 bg-[#0F172A]/10" />
+                <span className="font-mono text-[10px] font-bold tracking-[0.18em] uppercase text-[#0F172A]/30">or continue with</span>
+                <div className="h-px flex-1 bg-[#0F172A]/10" />
+              </div>
+              <form action={signInWithGoogle}>
+                <GoogleSignInButton />
+              </form>
 
-                  <MagneticButton className="w-full">
-                    <LoadingButton
-                      type="submit"
-                      loading={isLoading}
-                      className="w-full font-bold tracking-wide h-11"
-                      style={{
-                        background: "hsl(var(--primary))",
-                        color: "hsl(var(--primary-foreground))",
-                        borderRadius: "calc(var(--radius) - 2px)",
-                      }}
-                    >
-                      Create Account <User className="h-4 w-4" />
-                    </LoadingButton>
-                  </MagneticButton>
-                </form>
-              </Form>
-            )}
-
-            {/* Divider */}
-            <div
-              className="relative flex items-center gap-4 my-1"
-              aria-hidden="true"
-            >
-              <div
-                className="h-px flex-1"
-                style={{ background: "hsl(var(--border))" }}
-              />
-              <span
-                className="text-[10px] font-semibold tracking-[0.22em] uppercase"
-                style={{
-                  color: "hsl(var(--muted-foreground))",
-                  fontFamily: "'JetBrains Mono',monospace",
-                }}
-              >
-                or continue with Google
-              </span>
-              <div
-                className="h-px flex-1"
-                style={{ background: "hsl(var(--border))" }}
-              />
+              <p className="mt-6 text-center font-mono text-xs text-[#0F172A]/50">
+                Already have an account?{" "}
+                <Link href="/auth/signin" className="font-bold text-[#0F172A] hover:text-[#2362EC] hover:underline">
+                  Sign in
+                </Link>
+              </p>
             </div>
-
-            <form action={signInWithGoogle}>
-              <GoogleSignInButton />
-            </form>
           </div>
-
-          {/* Footer */}
-          <div
-            className="px-8 py-6 border-t text-center"
-            style={{ borderColor: "hsl(var(--border))" }}
-          >
-            <p
-              className="text-xs"
-              style={{ color: "hsl(var(--muted-foreground))" }}
-            >
-              Already have an account?{" "}
-              <Link
-                href="/auth/signin"
-                className="font-semibold hover:underline"
-                style={{ color: "hsl(var(--primary))" }}
-              >
-                Sign in
-              </Link>
-            </p>
-          </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 }
