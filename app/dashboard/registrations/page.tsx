@@ -13,6 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { QrPassButton } from "@/components/participant/qr-pass-button";
+import { PayRegistrationButton } from "@/components/participant/pay-registration";
 import { format } from "date-fns";
 
 const STATUS_STYLE: Record<string, string> = {
@@ -125,14 +126,17 @@ export default async function RegistrationsPage() {
                     </TableCell>
                     <TableCell className="text-sm">
                       {reg.payment ? (
-                        <div>
+                        <div className="flex items-center gap-2">
                           <span className={reg.payment.status === "SUCCESS" ? "text-green-700" : "text-amber-600"}>
                             {reg.payment.status}
                           </span>
-                          <span className="ml-1 text-muted-foreground">
-                            ₹{reg.payment.amount.toString()}
-                          </span>
+                          <span className="text-muted-foreground">₹{reg.payment.amount.toString()}</span>
+                          {reg.payment.status !== "SUCCESS" && reg.status === "PENDING" && (
+                            <PayRegistrationButton registrationId={reg.id} amount={Number(reg.payment.amount)} />
+                          )}
                         </div>
+                      ) : reg.status === "PENDING" && Number(reg.event.price) > 0 ? (
+                        <PayRegistrationButton registrationId={reg.id} amount={Number(reg.event.price)} />
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
@@ -148,10 +152,10 @@ export default async function RegistrationsPage() {
                             token: reg.qrToken,
                           }}
                         />
+                      ) : reg.status === "CONFIRMED" ? (
+                        <span className="text-xs text-amber-600">Generating pass… refresh</span>
                       ) : (
-                        <span className="text-xs text-muted-foreground">
-                          Pass after confirmation
-                        </span>
+                        <span className="text-xs text-muted-foreground">Pass after confirmation</span>
                       )}
                     </TableCell>
                   </TableRow>
