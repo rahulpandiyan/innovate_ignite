@@ -59,7 +59,7 @@ export default function Navbar() {
             />
             <span className="hidden lg:inline-flex items-center gap-1.5 rounded-full bg-[#0F172A] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-white">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#19E3A8]" />
-              MAY 13–15
+              OCT 9–10
             </span>
           </Link>
 

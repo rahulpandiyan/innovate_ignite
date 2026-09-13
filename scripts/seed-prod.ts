@@ -89,7 +89,7 @@ async function seedEvents(superAdminId: string) {
       maxTeamSize: 4,
       status: "OPEN" as const,
       venue: "VVIT Campus - Lab Block",
-      date: new Date("2026-05-13T09:00:00.000Z"),
+      date: new Date("2026-10-09T09:00:00.000Z"),
       rules: "Faculty: M G Kousar | Students: Sam Goldwin, Rahul",
     },
     {
@@ -101,7 +101,7 @@ async function seedEvents(superAdminId: string) {
       maxTeamSize: 5,
       status: "OPEN" as const,
       venue: "VVIT Campus - Open Ground",
-      date: new Date("2026-05-13T10:00:00.000Z"),
+      date: new Date("2026-10-09T10:00:00.000Z"),
       rules: "Faculty: Rajani M, M G Kousar | Students: Shrishty, Lalitha",
     },
     {
@@ -113,7 +113,7 @@ async function seedEvents(superAdminId: string) {
       maxTeamSize: 3,
       status: "OPEN" as const,
       venue: "VVIT Campus - Food Court",
-      date: new Date("2026-05-13T11:00:00.000Z"),
+      date: new Date("2026-10-09T11:00:00.000Z"),
       rules: "Faculty: Rashmi Rani Samantaray | Students: Anushka S (+91 81971 97536), Arshiya (+91 90081 50803)",
     },
     {
@@ -125,7 +125,7 @@ async function seedEvents(superAdminId: string) {
       maxTeamSize: 1,
       status: "OPEN" as const,
       venue: "Main Auditorium",
-      date: new Date("2026-05-14T09:00:00.000Z"),
+      date: new Date("2026-10-09T09:00:00.000Z"),
       rules: "Faculty: Kavyashree J | Students: Shree Kyathi, Harshitha",
     },
     {
@@ -137,7 +137,7 @@ async function seedEvents(superAdminId: string) {
       maxTeamSize: 4,
       status: "OPEN" as const,
       venue: "Seminar Hall 1",
-      date: new Date("2026-05-14T10:00:00.000Z"),
+      date: new Date("2026-10-09T10:00:00.000Z"),
       rules: "Faculty: Sushma B M, Bharathi J | Students: Harish (9901709596), Divya C (8074142405)",
     },
     {
@@ -149,7 +149,7 @@ async function seedEvents(superAdminId: string) {
       maxTeamSize: 6,
       status: "OPEN" as const,
       venue: "Open Air Theatre",
-      date: new Date("2026-05-14T11:00:00.000Z"),
+      date: new Date("2026-10-10T09:00:00.000Z"),
       rules: "Faculty: Swetha/Harini | Students: Lokhapradeep (9632425042), Harish P (9901709596), Deekshitha A (7892563979)",
     },
     {
@@ -161,7 +161,7 @@ async function seedEvents(superAdminId: string) {
       maxTeamSize: 5,
       status: "OPEN" as const,
       venue: "Seminar Hall 2",
-      date: new Date("2026-05-15T09:00:00.000Z"),
+      date: new Date("2026-10-10T09:00:00.000Z"),
       rules: "Faculty: Supriya | Students: Dhikshitha A (7892563979), Divya C (8792354155)",
     },
     {
@@ -173,7 +173,7 @@ async function seedEvents(superAdminId: string) {
       maxTeamSize: 3,
       status: "OPEN" as const,
       venue: "Central Computing Lab",
-      date: new Date("2026-05-15T10:00:00.000Z"),
+      date: new Date("2026-10-10T10:00:00.000Z"),
       rules: "Faculty: V Vanitha, Rashmi Rani | Students: Anushka (8197197536), Mohammed Ghouse, Daniel (9380987187)",
     },
     {
@@ -185,7 +185,7 @@ async function seedEvents(superAdminId: string) {
       maxTeamSize: 10,
       status: "OPEN" as const,
       venue: "Main Auditorium",
-      date: new Date("2026-05-15T11:00:00.000Z"),
+      date: new Date("2026-10-10T11:00:00.000Z"),
       rules: "Faculty: J Bharathi | Students: Krishnaveni H K (9743116619), Lahari M (8884084501), Bhoomika (7975535763)",
     },
     {
@@ -197,7 +197,7 @@ async function seedEvents(superAdminId: string) {
       maxTeamSize: 4,
       status: "OPEN" as const,
       venue: "E-Sports Arena",
-      date: new Date("2026-05-15T12:00:00.000Z"),
+      date: new Date("2026-10-10T12:00:00.000Z"),
       rules: "Faculty: Subhrajit Sengupta | Students: Arshad (7795811494), Charan (6362348311)",
     },
   ];

@@ -165,7 +165,7 @@ export default function EventPage() {
                             View details <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                           </span>
                           <span className="hidden sm:inline-flex items-center gap-1 font-mono text-[10px] tracking-[0.16em] uppercase text-[#0F172A]/30">
-                            VVIT · May 13–15
+                            VVIT · Oct 9–10
                           </span>
                         </div>
 
@@ -199,7 +199,7 @@ export default function EventPage() {
 
         <div className="mt-8 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#0F172A]/10 bg-white px-4 py-3 sm:px-6">
           <span className="font-mono text-xs tracking-wide text-[#0F172A]/60">
-            Showing {filteredEvents.length} of {eventCategories.length} stages · VVIT Campus · May 13–15, 2026
+            Showing {filteredEvents.length} of {eventCategories.length} stages · VVIT Campus · Oct 9–10, 2026
           </span>
           <Link href="/" className="inline-flex items-center gap-1 font-mono text-xs font-bold tracking-wide text-[#0F172A] hover:text-[#2362EC]">
             Back to home <ArrowRight className="h-3.5 w-3.5" />

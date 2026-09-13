@@ -39,7 +39,7 @@ export default function Home() {
               VVIT Bengaluru · National level · Inter-collegiate
             </span>
             <span className="inline-flex items-center gap-2 text-[#0F172A]/60">
-              <Calendar className="h-3.5 w-3.5" /> May 13–15, 2026
+              <Calendar className="h-3.5 w-3.5" /> Oct 9–10, 2026
               <span className="hidden sm:inline">· Registrations open → close Nov 10</span>
             </span>
           </motion.div>
@@ -250,22 +250,21 @@ export default function Home() {
             <div className="col-span-12 lg:col-span-4">
               <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#19E3A8]">Festival timetable</p>
               <h2 className="mt-2 text-3xl font-black leading-none tracking-tight" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
-                3 DAYS.<br />10 STAGES.<br />
+                2 DAYS.<br />10 STAGES.<br />
                 <span className="text-[#F3C317]">NONSTOP.</span>
               </h2>
               <p className="mt-3 max-w-sm text-sm leading-6 text-white/70">
-                Doors 9:00. Every venue published in advance — no last-minute room changes. Final times drop week of May 4.
+                Doors 9:00. Every venue published in advance — no last-minute room changes. Final times drop week of Oct 4.
               </p>
               <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1.5 font-mono text-[11px] tracking-wide text-white/80">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-[#F3C317]" /> Schedule in preparation
+                <span className="h-2 w-2 animate-pulse rounded-full bg-[#F3C317]" /> 2 days · Oct 9–10
               </div>
             </div>
             <div className="col-span-12 lg:col-span-8">
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {[
-                  { day: "DAY 1 — MAY 13", items: ["Techninja", "VV care", "Cooking Without Fire"], dot: "bg-[#19E3A8]" },
-                  { day: "DAY 2 — MAY 14", items: ["Talent mania", "Collage", "ICEBREAKER"], dot: "bg-[#F3C317]" },
-                  { day: "DAY 3 — MAY 15", items: ["Dumb charades", "Code Conflux", "Dance Elite", "BGMI"], dot: "bg-[#E11D48]" },
+                  { day: "DAY 1 — OCT 9", items: ["Techninja", "VV care", "Cooking Without Fire", "Talent mania", "Collage (Best out of waste)"], dot: "bg-[#19E3A8]" },
+                  { day: "DAY 2 — OCT 10", items: ["ICEBREAKER", "Dumb charades", "Code Conflux", "Dance Elite", "BGMI"], dot: "bg-[#F3C317]" },
                 ].map((col) => (
                   <div key={col.day} className="rounded-2xl border border-white/10 bg-white/[0.06] p-5 backdrop-blur">
                     <p className="font-mono text-[11px] tracking-[0.16em] text-white/70">{col.day}</p>
@@ -316,7 +315,7 @@ export default function Home() {
             <div className="mt-6 flex flex-wrap justify-center gap-2 font-mono text-[11px] tracking-wide text-[#0F172A]/50">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 px-3 py-1"><span className="h-1.5 w-1.5 rounded-full bg-[#19E3A8]" /> Free to browse</span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 px-3 py-1"><span className="h-1.5 w-1.5 rounded-full bg-[#F3C317]" /> Pay only on confirm</span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 px-3 py-1"><span className="h-1.5 w-1.5 rounded-full bg-[#2362EC]" /> Campus only · May 13–15</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 px-3 py-1"><span className="h-1.5 w-1.5 rounded-full bg-[#2362EC]" /> Campus only · Oct 9–10</span>
             </div>
           </div>
           <p className="mt-6 text-center font-mono text-[11px] tracking-wide text-[#0F172A]/40">

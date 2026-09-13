@@ -29,7 +29,7 @@ export default function Footer() {
           <div className="col-span-12 lg:col-span-5">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[11px] tracking-[0.16em] uppercase text-white/70">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#19E3A8]" />
-              VVIT · Bengaluru · May 13–15, 2026
+              VVIT · Bengaluru · Oct 9–10, 2026
             </div>
             <h3 className="mt-4 max-w-md font-heading text-2xl font-bold leading-tight tracking-tight text-white">
               A campus carnival

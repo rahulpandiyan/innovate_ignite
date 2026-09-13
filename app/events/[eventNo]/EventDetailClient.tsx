@@ -40,7 +40,7 @@ export default function EventDetailClient({ category, details }: Props) {
             <ArrowLeft className="h-3.5 w-3.5" /> Back to lineup
           </Link>
           <span className="hidden sm:inline-flex items-center gap-2 text-[#0F172A]/40">
-            VVIT · May 13–15 · Bengaluru
+            VVIT · Oct 9–10 · Bengaluru
           </span>
         </div>
 
@@ -78,7 +78,7 @@ export default function EventDetailClient({ category, details }: Props) {
                   <Users className="h-3.5 w-3.5" /> {category.maxParticipant} max
                 </span>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 bg-white px-3 py-1.5 font-mono text-xs">
-                  <Calendar className="h-3.5 w-3.5" /> May 13–15
+                  <Calendar className="h-3.5 w-3.5" /> Oct 9–10
                 </span>
               </div>
             </div>
