@@ -17,35 +17,47 @@ export default async function TeamsPage() {
   const session = await getAuthSession();
   if (!session) redirect("/auth/signin");
 
-  const [memberships, teamEvents] = await Promise.all([
-    prisma.teamMember.findMany({
-      where: { userId: session.id },
-      include: {
-        team: {
-          include: {
-            event: { select: { id: true, name: true, type: true, price: true } },
-            leader: { select: { id: true, name: true, email: true } },
-            members: {
-              include: {
-                user: { select: { id: true, name: true, email: true } },
-              },
+  const memberships = await prisma.teamMember.findMany({
+    where: { userId: session.id },
+    include: {
+      team: {
+        include: {
+          event: { select: { id: true, name: true, type: true, price: true } },
+          leader: { select: { id: true, name: true, email: true } },
+          members: {
+            include: {
+              user: { select: { id: true, name: true, email: true } },
             },
-            registration: { select: { id: true, status: true } },
           },
+          registration: { select: { id: true, status: true } },
         },
       },
-      orderBy: { joinedAt: "desc" },
-    }),
-    prisma.event
-      .findMany({
-        where: { type: "TEAM", isActive: true, status: "OPEN" },
-        select: { id: true, name: true, price: true, maxTeamSize: true },
-        orderBy: { createdAt: "asc" },
-      })
-      .then((rows) =>
-        rows.map((r) => ({ id: r.id, name: r.name, price: Number(r.price), maxTeamSize: r.maxTeamSize }))
-      ),
-  ]);
+    },
+    orderBy: { joinedAt: "desc" },
+  });
+
+  // Critical fix: only show TEAM events the user has actually registered for and isn't already in a team for
+  const registeredTeamEventIds = await prisma.registration
+    .findMany({
+      where: { userId: session.id, event: { type: "TEAM", isActive: true, status: "OPEN" } },
+      select: { eventId: true },
+    })
+    .then((rows) => rows.map((r) => r.eventId));
+
+  const alreadyInTeamEventIds = new Set(memberships.map((m) => m.team.event.id));
+
+  const availableEventIds = registeredTeamEventIds.filter((id) => !alreadyInTeamEventIds.has(id));
+
+  const teamEvents =
+    availableEventIds.length > 0
+      ? await prisma.event
+          .findMany({
+            where: { id: { in: availableEventIds } },
+            select: { id: true, name: true, price: true, maxTeamSize: true },
+            orderBy: { createdAt: "asc" },
+          })
+          .then((rows) => rows.map((r) => ({ id: r.id, name: r.name, price: Number(r.price), maxTeamSize: r.maxTeamSize })))
+      : [];
 
   const teams = memberships.map((m) => ({ ...m.team, myRole: m.role }));
 
