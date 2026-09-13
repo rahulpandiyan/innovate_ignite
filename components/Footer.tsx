@@ -96,7 +96,7 @@ export default function Footer() {
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <span className="rounded-full bg-[#2362EC] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-white">10 EVENTS</span>
-                <span className="rounded-full bg-[#F3C317] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-[#0F172A]">MAY 13–15</span>
+                <span className="rounded-full bg-[#F3C317] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-[#0F172A]">OCT 9–10</span>
               </div>
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
