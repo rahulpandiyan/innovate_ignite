@@ -77,13 +77,13 @@ export default function SignIn() {
         <style>{`@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
       </div>
 
-      <div className="mx-auto grid max-w-6xl grid-cols-12 gap-6 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-        {/* LEFT — POSTER */}
+      <div className="mx-auto grid max-w-6xl grid-cols-12 gap-6 px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+        {/* LEFT — POSTER — hidden on mobile so form is immediate */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="col-span-12 lg:col-span-5"
+          className="hidden lg:block lg:col-span-5"
         >
           <div className="relative overflow-hidden rounded-2xl border border-[#0F172A]/10 bg-white p-6 shadow-sm sm:p-8">
             <div className="absolute -left-3 top-6 h-6 w-20 rotate-[-8deg] rounded-sm bg-[#19E3A8]/80 shadow-sm" />
