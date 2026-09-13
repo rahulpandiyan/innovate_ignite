@@ -34,7 +34,7 @@ export default function About() {
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#19E3A8]" /> VVIT · Bengaluru
             </span>
             <span className="h-3 w-px bg-[#0F172A]/10 hidden sm:block" />
-            <span>Est. 2001 · Silver Jubilee 2026</span>
+            <span>Est. 1 Jan 2009 · Sri Vijaya Vittala Charitable and Educational Trust</span>
             <span className="hidden sm:inline-flex ml-2 items-center gap-1.5 rounded-full bg-[#0F172A] px-2.5 py-1 text-[10px] font-bold tracking-widest text-white">
               <MapPin className="h-3 w-3" /> 13.07687, 77.665938
             </span>
@@ -107,8 +107,9 @@ export default function About() {
                 <span className="text-[#2362EC]">IS DISCOVERY.</span>
               </h2>
               <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#0F172A]/10 bg-white px-3 py-1.5 font-mono text-[11px] tracking-wide text-[#0F172A]/60">
-                <Sparkles className="h-3.5 w-3.5 text-[#F3C317]" /> Since 2001 · Silver Jubilee
+                <Sparkles className="h-3.5 w-3.5 text-[#F3C317]" /> Since 1 Jan 2009
               </div>
+              <p className="mt-2 font-mono text-[10px] leading-4 text-[#0F172A]/40">Official accreditation: 1 January 2009 · Sri Vijaya Vittala Charitable and Educational Trust, Bengaluru</p>
             </div>
             <div className="col-span-12 lg:col-span-8">
               <div className="rounded-2xl border border-[#0F172A]/10 bg-white p-6 sm:p-8 shadow-sm">
@@ -154,7 +155,7 @@ export default function About() {
 
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
             {[
-              { img: affiliationImg, title: "University Affiliation", desc: 'Affiliated with Visvesvaraya Technological University (VTU), Belagavi since 2001. Curriculum meets modern industry standards.' },
+              { img: affiliationImg, title: "University Affiliation", desc: 'Affiliated with Visvesvaraya Technological University (VTU), Belagavi since 2009. Curriculum meets modern industry standards.' },
               { img: aicteImg, title: "Approved by AICTE", desc: "All programs approved by the All India Council for Technical Education, ensuring adherence to high education standards." },
               { img: recognizedImg, title: "Govt. Recognized", desc: "Programs recognized by the Government of Karnataka, guaranteeing national benchmarks." },
             ].map((c, i) => (
