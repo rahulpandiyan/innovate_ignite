@@ -105,7 +105,7 @@ export default function Home() {
               <div className="mt-6 flex flex-wrap items-center gap-4 font-mono text-xs text-[#0F172A]/60">
                 <span className="inline-flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> VVIT Campus, Bengaluru</span>
                 <span className="h-3 w-px bg-[#0F172A]/10 hidden sm:block" />
-                <span className="inline-flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5" /> 1000+ students · One ticket, all venues</span>
+                <span className="inline-flex items-center gap-1.5"><GraduationCap className="h-3.5 w-3.5" /> Organized by Department of CSE</span>
               </div>
             </div>
 

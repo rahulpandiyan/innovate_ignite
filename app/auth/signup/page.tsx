@@ -27,6 +27,7 @@ function SignUpContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const eventId = searchParams.get("eventId");
+  const redirect = searchParams.get("redirect");
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [email, setEmail] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -105,7 +106,7 @@ function SignUpContent() {
               toast.success("Account created!", { description: msg || "Welcome aboard! Please confirm your event registration in dashboard." });
             }
           }
-          router.push("/dashboard/registrations");
+          router.push(redirect || "/dashboard/registrations");
         } else {
           toast.success("Account created!", { description: "Welcome aboard!" });
           router.push("/dashboard");

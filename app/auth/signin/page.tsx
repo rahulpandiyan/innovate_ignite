@@ -29,6 +29,7 @@ function SignInContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const eventId = searchParams.get("eventId");
+  const redirect = searchParams.get("redirect");
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { setIsLoggedIn } = useAuthContext();
@@ -54,12 +55,12 @@ function SignInContent() {
             } else {
               toast.success("Logged in & registered!", { description: "You are registered for the event." });
             }
-            router.push("/dashboard/registrations");
+            router.push(redirect || "/dashboard/registrations");
             return;
           } catch (e: unknown) {
             if (axios.isAxiosError(e) && e.response?.status === 409) {
               toast.success("Login successful!", { description: "You were already registered for that event." });
-              router.push("/dashboard/registrations");
+              router.push(redirect || "/dashboard/registrations");
               return;
             }
           }

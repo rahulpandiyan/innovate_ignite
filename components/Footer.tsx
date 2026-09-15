@@ -31,6 +31,9 @@ export default function Footer() {
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#19E3A8]" />
               VVIT · Bengaluru · Oct 9–10, 2026
             </div>
+            <p className="mt-3 font-mono text-[11px] tracking-[0.14em] uppercase text-[#F3C317]">
+              Organized by Department of CSE
+            </p>
             <h3 className="mt-4 max-w-md font-heading text-2xl font-bold leading-tight tracking-tight text-white">
               A campus carnival
               <br />

@@ -61,7 +61,7 @@ export default function EventDetailClient({ category, details }: Props) {
       return;
     }
     if (!isLoggedIn) {
-      router.push(`/auth/signup?eventId=${dbEvent.id}`);
+      router.push(`/auth/signup?eventId=${dbEvent.id}&redirect=${encodeURIComponent(`/events/${category.eventNo}`)}`);
       return;
     }
     setShowConfirm(true);
