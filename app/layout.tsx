@@ -14,6 +14,11 @@ const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" });
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono" });
 
 export const metadata = {
+  icons: {
+    icon: "/gat-logos/dashboard-logo.webp",
+    shortcut: "/gat-logos/dashboard-logo.webp",
+    apple: "/gat-logos/dashboard-logo.webp",
+  },
   metadataBase: new URL("https://www.vvitinnovateignite.com"),
   title: {
     default: "Home - VVIT Innovate Ignite",
