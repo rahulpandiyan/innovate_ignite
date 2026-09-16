@@ -220,6 +220,10 @@ export default async function EventsPage() {
             assignedJudges={ev.judges.map((j) => j.user.name)}
             registrationCount={ev._count.registrations}
             teamCount={ev._count.teams}
+            onAssign={async (input) => {
+              "use server";
+              await assignEventUsers(input);
+            }}
           />
         ))}
       </div>

@@ -48,6 +48,7 @@ interface Props {
   assignedJudges: string[];
   registrationCount: number;
   teamCount: number;
+  onAssign: (input: { eventId: string; coordinatorId?: string; judgeId?: string; unassignCoordinator?: boolean; unassignJudge?: boolean }) => Promise<void>;
 }
 
 export function EventEditForm({
@@ -58,6 +59,7 @@ export function EventEditForm({
   assignedJudges,
   registrationCount,
   teamCount,
+  onAssign,
 }: Props) {
   const [editing, setEditing] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
@@ -198,46 +200,77 @@ export function EventEditForm({
 
         {/* Assign coordinator & judge — always visible */}
         <div className="flex flex-wrap items-end gap-3 border-t pt-4">
-          <form
-            className="flex items-center gap-2 flex-wrap"
-            action={async (formData) => {
-              "use server";
-              const { assignEventUsers } = await import("@/app/admin/actions");
-              await assignEventUsers({
-                eventId: event.id,
-                coordinatorId: String(formData.get("coordinatorId") ?? "") || undefined,
-                judgeId: String(formData.get("judgeId") ?? "") || undefined,
-                unassignCoordinator: formData.get("clearCoordinator") === "on",
-                unassignJudge: formData.get("clearJudge") === "on",
-              });
-            }}
-          >
-            <Select name="coordinatorId">
-              <SelectTrigger className="h-8 w-[180px] text-xs">
-                <SelectValue placeholder="Assign coordinator" />
-              </SelectTrigger>
-              <SelectContent>
-                {coordinators.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select name="judgeId">
-              <SelectTrigger className="h-8 w-[180px] text-xs">
-                <SelectValue placeholder="Assign judge" />
-              </SelectTrigger>
-              <SelectContent>
-                {judges.map((j) => (
-                  <SelectItem key={j.id} value={j.id}>{j.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button type="submit" size="sm" variant="outline">
-              Assign
-            </Button>
-          </form>
+          <AssignForm
+            eventId={event.id}
+            coordinators={coordinators}
+            judges={judges}
+            onAssign={onAssign}
+          />
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function AssignForm({
+  eventId,
+  coordinators,
+  judges,
+  onAssign,
+}: {
+  eventId: string;
+  coordinators: { id: string; name: string }[];
+  judges: { id: string; name: string }[];
+  onAssign: (input: { eventId: string; coordinatorId?: string; judgeId?: string }) => Promise<void>;
+}) {
+  const [coordId, setCoordId] = React.useState("");
+  const [judgeId, setJudgeId] = React.useState("");
+  const [busy, setBusy] = React.useState(false);
+  const router = useRouter();
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    try {
+      await onAssign({
+        eventId,
+        coordinatorId: coordId || undefined,
+        judgeId: judgeId || undefined,
+      });
+      toast.success("Assigned successfully");
+      router.refresh();
+    } catch {
+      toast.error("Assignment failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex items-center gap-2 flex-wrap">
+      <Select value={coordId} onValueChange={setCoordId}>
+        <SelectTrigger className="h-8 w-[180px] text-xs">
+          <SelectValue placeholder="Assign coordinator" />
+        </SelectTrigger>
+        <SelectContent>
+          {coordinators.map((c) => (
+            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <Select value={judgeId} onValueChange={setJudgeId}>
+        <SelectTrigger className="h-8 w-[180px] text-xs">
+          <SelectValue placeholder="Assign judge" />
+        </SelectTrigger>
+        <SelectContent>
+          {judges.map((j) => (
+            <SelectItem key={j.id} value={j.id}>{j.name}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <Button type="submit" size="sm" variant="outline" disabled={busy}>
+        {busy ? "Assigning…" : "Assign"}
+      </Button>
+    </form>
   );
 }
