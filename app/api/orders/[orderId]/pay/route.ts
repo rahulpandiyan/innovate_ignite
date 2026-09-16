@@ -21,7 +21,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
     const parsed = await parseBody(req, submitPaymentSchema);
     if (parsed.error) return parsed.error;
 
-    const { upiTransactionId, paymentScreenshotUrl } = parsed.data;
+    const { upiTransactionId, paymentScreenshotUrl, paymentMethod } = parsed.data;
 
     const order = await prisma.order.findUnique({
       where: { id: orderId },
@@ -70,11 +70,13 @@ export async function POST(req: NextRequest, context: RouteContext) {
       }
     }
 
+    const isOffline = paymentMethod === "offline";
+
     const updated = await prisma.order.update({
       where: { id: orderId },
       data: {
-        upiTransactionId,
-        paymentScreenshotUrl,
+        upiTransactionId: isOffline ? "OFFLINE" : upiTransactionId,
+        paymentScreenshotUrl: isOffline ? null : paymentScreenshotUrl,
         paymentSubmittedAt: new Date(),
         status: "PAYMENT_SUBMITTED",
       },

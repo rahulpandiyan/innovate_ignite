@@ -12,13 +12,8 @@ const nextConfig: NextConfig = {
         remotePatterns: [
             {
                 protocol: "https",
-                hostname: `${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}.ufs.sh`,
-                pathname: "/f/*",
-            },
-            {
-                protocol: "https",
-                hostname: "utfs.io",
-                pathname: "/f/*",
+                hostname: "pmbiutabpnlupcukjgzx.supabase.co",
+                pathname: "/storage/v1/object/public/**",
             },
         ],
     },

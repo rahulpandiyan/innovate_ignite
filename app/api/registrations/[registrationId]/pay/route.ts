@@ -3,10 +3,20 @@ import prisma from "@/lib/db";
 import { requireAuth, successResponse, errorResponse } from "@/lib/apiHelpers";
 import { z } from "zod";
 
-const paySchema = z.object({
-  upiTransactionId: z.string().min(1, "UPI transaction ID is required"),
-  paymentScreenshotUrl: z.string().url("A valid screenshot URL is required"),
-});
+const paySchema = z
+  .object({
+    paymentMethod: z.enum(["upi", "offline"]).default("upi"),
+    upiTransactionId: z.string().optional(),
+    paymentScreenshotUrl: z.string().optional(),
+  })
+  .refine(
+    (d) => d.paymentMethod !== "upi" || (d.upiTransactionId && d.upiTransactionId.length > 0),
+    { message: "UPI transaction ID is required for UPI payments" }
+  )
+  .refine(
+    (d) => d.paymentMethod !== "upi" || (d.paymentScreenshotUrl && d.paymentScreenshotUrl.length > 0),
+    { message: "Screenshot is required for UPI payments" }
+  );
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ registrationId: string }> }) {
   const auth = await requireAuth();
@@ -18,7 +28,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ reg
   if (!parsed.success) {
     return errorResponse(parsed.error.issues[0]?.message ?? "Invalid input", 400);
   }
-  const { upiTransactionId, paymentScreenshotUrl } = parsed.data;
+  const { upiTransactionId, paymentScreenshotUrl, paymentMethod } = parsed.data;
 
   const registration = await prisma.registration.findUnique({
     where: { id: registrationId },
@@ -36,16 +46,15 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ reg
     return errorResponse(`Payment already ${registration.payment.status.toLowerCase()}.`, 400);
   }
 
-  // Store UPI + screenshot and keep payment as PENDING for finance to verify
-  // We keep PENDING but attach transaction details; registration stays PENDING
+  const isOffline = paymentMethod === "offline";
+
   if (registration.payment) {
     await prisma.payment.update({
       where: { registrationId: registration.id },
       data: {
-        transactionId: upiTransactionId,
-        receiptUrl: paymentScreenshotUrl,
-        // keep PENDING, set gatewayRef for audit
-        gatewayRef: paymentScreenshotUrl,
+        transactionId: isOffline ? "OFFLINE" : upiTransactionId,
+        receiptUrl: isOffline ? null : paymentScreenshotUrl,
+        gatewayRef: isOffline ? "OFFLINE" : paymentScreenshotUrl,
       },
     });
   } else {
@@ -54,9 +63,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ reg
         registrationId: registration.id,
         amount: registration.event.price,
         status: "PENDING",
-        transactionId: upiTransactionId,
-        receiptUrl: paymentScreenshotUrl,
-        gatewayRef: paymentScreenshotUrl,
+        transactionId: isOffline ? "OFFLINE" : upiTransactionId,
+        receiptUrl: isOffline ? null : paymentScreenshotUrl,
+        gatewayRef: isOffline ? "OFFLINE" : paymentScreenshotUrl,
       },
     });
   }
