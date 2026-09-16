@@ -18,7 +18,7 @@ export function ScreenshotFileField({
   onChange: (url: string) => void;
 }) {
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const [uploading, setUploading] = React.useState(falsevine);
+  const [uploading, setUploading] = React.useState(false);
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];

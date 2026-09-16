@@ -61,7 +61,7 @@ export default function EventDetailClient({ category, details }: Props) {
       return;
     }
     if (!isLoggedIn) {
-      router.push(`/auth/signup?eventId=${dbEvent.id}&redirect=${encodeURIComponent(`/events/${category.eventNo}`)}`);
+      router.push(`/auth/signup?eventId=${dbEvent.id}&redirect=${encodeURIComponent(`/events/${category.slug}`)}`);
       return;
     }
     setShowConfirm(true);
@@ -108,14 +108,13 @@ export default function EventDetailClient({ category, details }: Props) {
 
   return (
     <div className="min-h-screen bg-[#FFFBEB] pt-20 pb-20 md:pb-0">
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600&display=swap');`}</style>
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between py-4 font-mono text-[11px] tracking-[0.14em] uppercase">
           <Link href="/events" className="inline-flex items-center gap-2 text-[#0F172A]/60 hover:text-[#0F172A]">
             <ArrowLeft className="h-3.5 w-3.5" /> Back to lineup
           </Link>
-          <span className="hidden sm:inline-flex items-center gap-2 text-[#0F172A]/40">VVIT · Oct 9–10 · Bengaluru</span>
+          <span className="hidden sm:inline-flex items-center gap-2 text-[#0F172A]/40">VVIT · Oct 8–9 · Bengaluru</span>
         </div>
 
         <div className="relative overflow-hidden rounded-2xl border border-[#0F172A]/10 bg-white shadow-sm">
@@ -131,11 +130,11 @@ export default function EventDetailClient({ category, details }: Props) {
                   {category.maxParticipant > 1 ? `Team · up to ${category.maxParticipant}` : "Solo"}
                 </span>
                 <span className="rounded-full bg-[#0F172A] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-white">
-                  #{String(category.eventNo).padStart(2, "0")}
+                  {category.category.replace(/_/g, " ")}
                 </span>
               </div>
 
-              <h1 className="mt-4 text-3xl font-black leading-[0.9] tracking-tight sm:text-4xl" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+              <h1 className="mt-4 text-3xl font-black leading-[0.9] tracking-tight sm:text-4xl">
                 {category.eventName}
               </h1>
               <p className="mt-2 font-mono text-xs tracking-wide text-[#0F172A]/50">Part of {category.category.replace(/_/g, " ")} · VVIT Innovate Ignite &apos;26</p>
@@ -148,7 +147,7 @@ export default function EventDetailClient({ category, details }: Props) {
                   <Users className="h-3.5 w-3.5" /> {category.maxParticipant} max
                 </span>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 bg-white px-3 py-1.5 font-mono text-xs">
-                  <Calendar className="h-3.5 w-3.5" /> Oct 9–10
+                  <Calendar className="h-3.5 w-3.5" /> Oct 8–9
                 </span>
               </div>
             </div>
@@ -306,7 +305,7 @@ export default function EventDetailClient({ category, details }: Props) {
       <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
-            <DialogTitle style={{ fontFamily: "'Bebas Neue', sans-serif" }} className="text-xl tracking-tight">
+            <DialogTitle className="text-xl tracking-tight">
               Confirm registration?
             </DialogTitle>
             <DialogDescription className="text-sm leading-6">

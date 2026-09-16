@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   LogOut,
   EllipsisVertical,
+  HandCoins,
 } from "lucide-react";
 import {
   Sidebar,
@@ -166,6 +167,18 @@ export function CoordinatorShell({
                     <Link href="/coordinator">
                       <LayoutDashboard />
                       <span>My events</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === "/coordinator/payments"}
+                    tooltip="Collect payments"
+                  >
+                    <Link href="/coordinator/payments">
+                      <HandCoins />
+                      <span>Payments</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

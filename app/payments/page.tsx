@@ -36,6 +36,7 @@ export default async function PaymentsPage() {
           },
         },
         verifier: { select: { name: true } },
+        collector: { select: { name: true } },
       },
       orderBy: { confirmedAt: "desc" },
       take: 100,
@@ -51,6 +52,8 @@ export default async function PaymentsPage() {
   const pendingVerification = orders.filter((o) => o.status === "PAYMENT_SUBMITTED").length;
   const collectedCount = payments.filter((p) => p.status === "SUCCESS").length;
   const pendingRegPayments = payments.filter((p) => p.status === "PENDING").length;
+  const coordinatorCollected = payments.filter((p) => p.status === "COORDINATOR_COLLECTED");
+  const coordinatorCollectedCount = coordinatorCollected.length;
 
   return (
     <div className="space-y-6">
@@ -85,6 +88,14 @@ export default async function PaymentsPage() {
               <FileClock className="h-3 w-3" /> Reg. payments pending
             </CardDescription>
             <CardTitle className="text-2xl">{pendingRegPayments}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription className="text-xs flex items-center gap-1">
+              <IndianRupee className="h-3 w-3" /> Coordinator collected
+            </CardDescription>
+            <CardTitle className="text-2xl">{coordinatorCollectedCount}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
@@ -204,6 +215,7 @@ export default async function PaymentsPage() {
                 <th className="px-4 py-2 font-medium">Method</th>
                 <th className="px-4 py-2 font-medium">Status</th>
                 <th className="px-4 py-2 font-medium">Confirmed</th>
+                <th className="px-4 py-2 font-medium">Collected by</th>
                 <th className="px-4 py-2 font-medium">Verified by</th>
                 <th className="px-4 py-2 font-medium">Actions</th>
               </tr>
@@ -243,15 +255,16 @@ export default async function PaymentsPage() {
                       )}
                     </td>
                     <td className="px-4 py-2">
-                      <Badge variant={p.status === "SUCCESS" ? "default" : "outline"}>{p.status}</Badge>
+                      <Badge variant={p.status === "SUCCESS" ? "default" : p.status === "COORDINATOR_COLLECTED" ? "secondary" : "outline"}>{p.status}</Badge>
                     </td>
                     <td className="px-4 py-2 text-muted-foreground">
                       {p.confirmedAt ? format(p.confirmedAt, "MMM d, h:mm a") : "—"}
                     </td>
+                    <td className="px-4 py-2">{p.collector?.name ?? "—"}</td>
                     <td className="px-4 py-2">{p.verifier?.name ?? "—"}</td>
                     <td className="px-4 py-2">
-                      {p.status === "PENDING" ? (
-                        <RegistrationActions registrationId={p.registrationId} paymentId={p.id} />
+                      {(p.status === "PENDING" || p.status === "COORDINATOR_COLLECTED") ? (
+                        <RegistrationActions registrationId={p.registrationId} paymentId={p.id} paymentStatus={p.status} />
                       ) : (
                         <span className="text-xs text-muted-foreground">—</span>
                       )}

@@ -13,6 +13,7 @@ export const PERMISSIONS = {
   PAYMENTS_VIEW: "payments.view",
   PAYMENTS_MANAGE: "payments.manage",
   PAYMENTS_VERIFY: "payments.verify",
+  PAYMENTS_COLLECT: "payments.collect",
   ATTENDANCE_VIEW: "attendance.view",
   ATTENDANCE_MANAGE: "attendance.manage",
   RESULTS_VIEW: "results.view",
@@ -69,6 +70,18 @@ export const ROLE_PERMISSIONS: Record<string, PermissionName[]> = {
   EVENT_COORDINATOR: [
     PERMISSIONS.EVENTS_VIEW,
     PERMISSIONS.REGISTRATIONS_VIEW,
+    PERMISSIONS.PAYMENTS_COLLECT,
+    PERMISSIONS.ATTENDANCE_VIEW,
+    PERMISSIONS.ATTENDANCE_MANAGE,
+    PERMISSIONS.RESULTS_MANAGE,
+    PERMISSIONS.ANNOUNCEMENTS_WRITE,
+    PERMISSIONS.REPORTS_VIEW,
+  ],
+  STUDENT_COORDINATOR: [
+    PERMISSIONS.EVENTS_VIEW,
+    PERMISSIONS.REGISTRATIONS_VIEW,
+    PERMISSIONS.PAYMENTS_VIEW,
+    PERMISSIONS.PAYMENTS_COLLECT,
     PERMISSIONS.ATTENDANCE_VIEW,
     PERMISSIONS.ATTENDANCE_MANAGE,
     PERMISSIONS.RESULTS_MANAGE,
@@ -102,6 +115,8 @@ export function getHomeRoute(role: string): string {
     case "SUPER_ADMIN":
       return "/admin";
     case "EVENT_COORDINATOR":
+      return "/coordinator";
+    case "STUDENT_COORDINATOR":
       return "/coordinator";
     case "JUDGE":
       return "/judge";

@@ -1,6 +1,6 @@
 export interface EventCategory {
     id: string;
-    eventNo: number;
+    slug: string;
     eventName: string;
     userId: string;
     maxParticipant: number;
@@ -9,9 +9,18 @@ export interface EventCategory {
     amount?: number;
 }
 
+function slugify(name: string): string {
+    return name
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
+}
+
 export const interDepartmentEvents: EventCategory[] = [
     {
-        eventNo: 1,
+        slug: slugify("Techninja"),
         eventName: "Techninja",
         category: "TECHNICAL",
         maxParticipant: 4,
@@ -21,7 +30,7 @@ export const interDepartmentEvents: EventCategory[] = [
         amount: 100,
     },
     {
-        eventNo: 2,
+        slug: slugify("VV care"),
         eventName: "VV care",
         category: "GENERAL",
         maxParticipant: 5,
@@ -31,29 +40,9 @@ export const interDepartmentEvents: EventCategory[] = [
         amount: 100,
     },
     {
-        eventNo: 3,
-        eventName: "Cooking Without Fire",
-        category: "GENERAL",
-        maxParticipant: 3,
-        id: "",
-        userId: "",
-        registeredParticipant: 0,
-        amount: 150,
-    },
-    {
-        eventNo: 4,
-        eventName: "Talent mania",
-        category: "GENERAL",
-        maxParticipant: 1,
-        id: "",
-        userId: "",
-        registeredParticipant: 0,
-        amount: 100,
-    },
-    {
-        eventNo: 5,
-        eventName: "Collage (Best out of waste)",
-        category: "FINE_ARTS",
+        slug: slugify("Mini Project [Presentation]"),
+        eventName: "Mini Project [Presentation]",
+        category: "TECHNICAL",
         maxParticipant: 4,
         id: "",
         userId: "",
@@ -61,27 +50,7 @@ export const interDepartmentEvents: EventCategory[] = [
         amount: 100,
     },
     {
-        eventNo: 6,
-        eventName: "ICEBREAKER",
-        category: "GENERAL",
-        maxParticipant: 6,
-        id: "",
-        userId: "",
-        registeredParticipant: 0,
-        amount: 100,
-    },
-    {
-        eventNo: 7,
-        eventName: "Dumb charades",
-        category: "THEATRE",
-        maxParticipant: 5,
-        id: "",
-        userId: "",
-        registeredParticipant: 0,
-        amount: 100,
-    },
-    {
-        eventNo: 8,
+        slug: slugify("Code Conflux"),
         eventName: "Code Conflux",
         category: "TECHNICAL",
         maxParticipant: 3,
@@ -91,7 +60,37 @@ export const interDepartmentEvents: EventCategory[] = [
         amount: 150,
     },
     {
-        eventNo: 9,
+        slug: slugify("Symposium (Group Discussion)"),
+        eventName: "Symposium (Group Discussion)",
+        category: "GENERAL",
+        maxParticipant: 4,
+        id: "",
+        userId: "",
+        registeredParticipant: 0,
+        amount: 100,
+    },
+    {
+        slug: slugify("Air Crash"),
+        eventName: "Air Crash",
+        category: "GENERAL",
+        maxParticipant: 4,
+        id: "",
+        userId: "",
+        registeredParticipant: 0,
+        amount: 100,
+    },
+    {
+        slug: slugify("Photography"),
+        eventName: "Photography",
+        category: "GENERAL",
+        maxParticipant: 1,
+        id: "",
+        userId: "",
+        registeredParticipant: 0,
+        amount: 100,
+    },
+    {
+        slug: slugify("Dance Elite"),
         eventName: "Dance Elite",
         category: "DANCE",
         maxParticipant: 10,
@@ -101,14 +100,54 @@ export const interDepartmentEvents: EventCategory[] = [
         amount: 200,
     },
     {
-        eventNo: 10,
-        eventName: "BGMI",
+        slug: slugify("BGMI / Freefire"),
+        eventName: "BGMI / Freefire",
         category: "GAMING",
         maxParticipant: 4,
         id: "",
         userId: "",
         registeredParticipant: 0,
         amount: 200,
+    },
+    {
+        slug: slugify("VVIT got Latent"),
+        eventName: "VVIT got Latent",
+        category: "GENERAL",
+        maxParticipant: 1,
+        id: "",
+        userId: "",
+        registeredParticipant: 0,
+        amount: 100,
+    },
+    {
+        slug: slugify("Reel Video Making"),
+        eventName: "Reel Video Making",
+        category: "GENERAL",
+        maxParticipant: 4,
+        id: "",
+        userId: "",
+        registeredParticipant: 0,
+        amount: 100,
+    },
+    {
+        slug: slugify("The Royal Walk"),
+        eventName: "The Royal Walk",
+        category: "GENERAL",
+        maxParticipant: 1,
+        id: "",
+        userId: "",
+        registeredParticipant: 0,
+        amount: 100,
+    },
+    {
+        slug: slugify("Crucial Beats (Singing)"),
+        eventName: "Crucial Beats (Singing)",
+        category: "THEATRE",
+        maxParticipant: 1,
+        id: "",
+        userId: "",
+        registeredParticipant: 0,
+        amount: 100,
     },
 ];
 

@@ -7,7 +7,7 @@ import { useAuthContext } from "@/contexts/auth-context";
 
 // ─── All auth logic below is intentionally untouched ─────────────────────────
 
-const LoginLogoutButton = () => {
+const LoginLogoutButton = ({ onNavigate }: { onNavigate?: () => void } = {}) => {
   const { isLoggedIn, setIsLoggedIn } = useAuthContext();
   const router = useRouter();
 
@@ -45,15 +45,15 @@ const LoginLogoutButton = () => {
     <div className="flex items-center gap-2">
       {isLoggedIn ? (
         <>
-          <Link id="dashboard-link" href="/dashboard" className={baseBtn}>
+          <Link id="dashboard-link" href="/dashboard" onClick={onNavigate} className={baseBtn}>
             Dashboard
           </Link>
-          <Link id="logout-link" href="/auth/logout" className={primaryBtn}>
+          <Link id="logout-link" href="/auth/logout" onClick={onNavigate} className={primaryBtn}>
             Logout
           </Link>
         </>
       ) : (
-        <Link id="login-link" href="/auth/signin" className={primaryBtn}>
+        <Link id="login-link" href="/auth/signin" onClick={onNavigate} className={primaryBtn}>
           Get Started
         </Link>
       )}

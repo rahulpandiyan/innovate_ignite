@@ -38,7 +38,6 @@ export default function EventPage() {
 
   return (
     <div className="min-h-screen bg-[#FFFBEB] pt-20 pb-20 md:pb-0">
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600&display=swap');`}</style>
 
       {/* ── HEADER ────────────────────────────────────────────── */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -58,7 +57,7 @@ export default function EventPage() {
 
         <div className="grid grid-cols-12 gap-6 py-8 lg:py-10">
           <div className="col-span-12 lg:col-span-6">
-            <h1 className="leading-[0.9] tracking-[-0.03em]" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+            <h1 className="leading-[0.9] tracking-[-0.03em]" >
               <span className="block text-[clamp(36px,6vw,64px)]">THE</span>
               <span className="block text-[clamp(36px,6vw,64px)] text-[#2362EC]">LINEUP</span>
             </h1>
@@ -119,7 +118,7 @@ export default function EventPage() {
                 const rotations = ["rotate-[-0.4deg]", "rotate-[0.5deg]", "rotate-[-0.3deg]", "rotate-[0.6deg]"];
                 return (
                   <motion.div
-                    key={event.eventNo}
+                    key={event.slug}
                     layout
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -127,7 +126,7 @@ export default function EventPage() {
                     transition={{ duration: 0.3, delay: i * 0.03 }}
                     className={`${rotations[i % rotations.length]} group`}
                   >
-                    <Link href={`/events/${event.eventNo}`} className="block h-full">
+                    <Link href={`/events/${event.slug}`} className="block h-full">
                       <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-[#0F172A]/10 bg-white p-5 shadow-sm transition-all hover:-translate-y-1 hover:rotate-[0deg] hover:shadow-[0_16px_40px_rgba(15,23,42,0.12)]">
                         {/* tape */}
                         <div className="absolute -top-1.5 left-6 h-3 w-10 rotate-[-7deg] rounded-sm bg-white/80 shadow-sm ring-1 ring-black/5" />
@@ -138,7 +137,7 @@ export default function EventPage() {
                             {event.category.replace(/_/g, " ")}
                           </span>
                           <span className="rounded-full bg-[#0F172A]/5 px-2 py-1 font-mono text-[10px] tracking-wide text-[#0F172A]/60">
-                            #{String(event.eventNo).padStart(2, "0")}
+                            #{String(i + 1).padStart(2, "0")}
                           </span>
                         </div>
 
@@ -165,7 +164,7 @@ export default function EventPage() {
                             View details <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                           </span>
                           <span className="hidden sm:inline-flex items-center gap-1 font-mono text-[10px] tracking-[0.16em] uppercase text-[#0F172A]/30">
-                            VVIT · Oct 9–10
+                            VVIT · Oct 8–9
                           </span>
                         </div>
 
@@ -199,7 +198,7 @@ export default function EventPage() {
 
         <div className="mt-8 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#0F172A]/10 bg-white px-4 py-3 sm:px-6">
           <span className="font-mono text-xs tracking-wide text-[#0F172A]/60">
-            Showing {filteredEvents.length} of {eventCategories.length} stages · VVIT Campus · Oct 9–10, 2026
+            Showing {filteredEvents.length} of {eventCategories.length} stages · VVIT Campus · Oct 8–9, 2026
           </span>
           <Link href="/" className="inline-flex items-center gap-1 font-mono text-xs font-bold tracking-wide text-[#0F172A] hover:text-[#2362EC]">
             Back to home <ArrowRight className="h-3.5 w-3.5" />

@@ -90,13 +90,12 @@ function SignInContent() {
 
   return (
     <div className="min-h-screen bg-[#FFFBEB] pt-20 pb-24 md:pb-8">
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600&display=swap');`}</style>
 
       {/* ticker */}
       <div className="overflow-hidden border-y border-[#0F172A]/10 bg-[#0F172A] py-2">
         <div className="flex animate-[marquee_22s_linear_infinite] whitespace-nowrap font-mono text-[10px] sm:text-[11px] tracking-[0.16em] uppercase text-white">
-          <span className="mx-6">TECHNINJA ◆ VV CARE ◆ COOKING WITHOUT FIRE ◆ TALENT MANIA ◆ COLLAGE ◆ ICEBREAKER ◆ DUMB CHARADES ◆ CODE CONFLUX ◆ DANCE ELITE ◆ BGMI</span>
-          <span className="mx-6" aria-hidden>TECHNINJA ◆ VV CARE ◆ COOKING WITHOUT FIRE ◆ TALENT MANIA ◆ COLLAGE ◆ ICEBREAKER ◆ DUMB CHARADES ◆ CODE CONFLUX ◆ DANCE ELITE ◆ BGMI</span>
+          <span className="mx-6">TECHNINJA ◆ VV CARE ◆ MINI PROJECT ◆ CODE CONFLUX ◆ SYMPOSIUM ◆ AIR CRASH ◆ PHOTOGRAPHY ◆ DANCE ELITE ◆ BGMI / FREEFIRE ◆ VVIT GOT LATENT ◆ REEL VIDEO MAKING ◆ THE ROYAL WALK ◆ CRUCIAL BEATS</span>
+          <span className="mx-6" aria-hidden>TECHNINJA ◆ VV CARE ◆ MINI PROJECT ◆ CODE CONFLUX ◆ SYMPOSIUM ◆ AIR CRASH ◆ PHOTOGRAPHY ◆ DANCE ELITE ◆ BGMI / FREEFIRE ◆ VVIT GOT LATENT ◆ REEL VIDEO MAKING ◆ THE ROYAL WALK ◆ CRUCIAL BEATS</span>
         </div>
         <style>{`@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
       </div>
@@ -116,7 +115,7 @@ function SignInContent() {
               <div className="inline-flex items-center gap-2 rounded-full bg-[#0F172A] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-white">
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#19E3A8]" /> VVIT · MAY 13–15
               </div>
-              <h1 className="mt-4 leading-[0.86] tracking-[-0.03em]" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+              <h1 className="mt-4 leading-[0.86] tracking-[-0.03em]" >
                 <span className="block text-[44px] sm:text-[56px]">WELCOME</span>
                 <span className="block text-[44px] sm:text-[56px] text-[#2362EC]">BACK</span>
               </h1>
@@ -128,7 +127,7 @@ function SignInContent() {
                 <span className="h-6 w-px bg-[#0F172A]/10" />
                 <Image src={innovateIgniteLogo} alt="Ignite" width={48} height={48} className="h-9 w-auto" />
               </div>
-              <div className="mt-6 inline-flex -rotate-1 rounded-xl bg-[#FFF1A6] px-3 py-1.5 shadow" style={{ fontFamily: "'Caveat', cursive" }}>
+              <div className="mt-6 inline-flex -rotate-1 rounded-xl bg-[#FFF1A6] px-3 py-1.5 shadow" >
                 <span className="text-sm">Psst — 10 events, 6 domains →</span>
               </div>
             </div>

@@ -18,7 +18,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ reg
   });
   if (!registration) return errorResponse("Registration not found.", 404);
   if (!registration.payment) return errorResponse("No payment to verify.", 400);
-  if (registration.payment.status !== "PENDING") return errorResponse(`Payment already ${registration.payment.status.toLowerCase()}.`, 400);
+  if (registration.payment.status !== "PENDING" && registration.payment.status !== "COORDINATOR_COLLECTED") return errorResponse(`Payment already ${registration.payment.status.toLowerCase()}.`, 400);
 
   await prisma.payment.update({
     where: { registrationId: registration.id },

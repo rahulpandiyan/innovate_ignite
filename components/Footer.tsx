@@ -8,12 +8,12 @@ import linkedin from "@/public/images/flogo4.png";
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t border-white/10 bg-[#0F172A] text-white">
+    <footer className="relative overflow-hidden border-t border-white/10 bg-[#0F172A] text-white pb-16 md:pb-0">
       {/* ghost wordmark */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 select-none overflow-hidden leading-none"
-        style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+        
       >
         <div
           className="whitespace-nowrap text-center font-black tracking-[-0.04em]"
@@ -29,7 +29,7 @@ export default function Footer() {
           <div className="col-span-12 lg:col-span-5">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[11px] tracking-[0.16em] uppercase text-white/70">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#19E3A8]" />
-              VVIT · Bengaluru · Oct 9–10, 2026
+              VVIT · Bengaluru · Oct 8–9, 2026
             </div>
             <p className="mt-3 font-mono text-[11px] tracking-[0.14em] uppercase text-[#F3C317]">
               Organized by Department of CSE
@@ -99,7 +99,7 @@ export default function Footer() {
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <span className="rounded-full bg-[#2362EC] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-white">10 EVENTS</span>
-                <span className="rounded-full bg-[#F3C317] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-[#0F172A]">OCT 9–10</span>
+                <span className="rounded-full bg-[#F3C317] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-[#0F172A]">OCT 8–9</span>
               </div>
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}

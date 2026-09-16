@@ -158,6 +158,10 @@ model Registration {
   collegeId      String?
   formResponses  Json?
   status         RegistrationStatus @default(PENDING)
+  rejectionReason String?
+  rejectedAt     DateTime?
+  rejectedBy     String?
+  rejector       User?              @relation("RegistrationRejector", fields: [rejectedBy], references: [id])
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
   event          Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
@@ -266,6 +270,8 @@ model User {
   TeamInvite_TeamInvite_invitedUserIdToUser TeamInvite[]   @relation("TeamInvite_invitedUserIdToUser")
   teamMemberships                           TeamMember[]
   paymentsVerified                          Payment[]      @relation("PaymentVerifier")
+  paymentsCollected                         Payment[]      @relation("PaymentCollector")
+  registrationsRejected                     Registration[] @relation("RegistrationRejector")
   attendanceMarked                          Attendance[]   @relation("AttendanceChecker")
   judgeScores                               JudgeScore[]   @relation("JudgeScorer")
   announcementsAuthored                     Announcement[] @relation("AnnouncementAuthor")
@@ -362,6 +368,7 @@ enum RegistrationStatus {
 enum PaymentStatus {
   PENDING
   PROCESSING
+  COORDINATOR_COLLECTED
   SUCCESS
   FAILED
   REFUNDED
@@ -528,6 +535,9 @@ model Payment {
   initiatedAt    DateTime      @default(now())
   confirmedAt    DateTime?
   refundedAt     DateTime?
+  collectedAt    DateTime?
+  collectedBy    String?
+  collector      User?         @relation("PaymentCollector", fields: [collectedBy], references: [id])
   verifiedBy     String?
   verifier       User?         @relation("PaymentVerifier", fields: [verifiedBy], references: [id])
   registration   Registration  @relation(fields: [registrationId], references: [id], onDelete: Cascade)

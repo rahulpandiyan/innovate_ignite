@@ -2,7 +2,7 @@ import eventImage from "@/public/images/pexels-jidev-mohan-356965646-14469571.jp
 import { StaticImageData } from "next/image";
 
 export interface EventList {
-    eventNo?: number;
+    slug?: string;
     category: string;
     image: StaticImageData;
     name: string;
@@ -11,85 +11,118 @@ export interface EventList {
     coordinators?: { name: string; mobile: string; }[]
 }
 
+function slugify(name: string): string {
+    return name
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
+}
+
 export const eventsList:EventList[]= [
     {
-        eventNo: 1,
+        slug: slugify("Techninja"),
         category: "TECHNICAL",
         image: eventImage,
         name: "Techninja",
-        rules: ["Faculty coordinator: M G Kousar", "Student coordinators: Sam Goldwin, Rahul", "Team size: 1-4", "Venue: VVIT Campus - Lab Block", "Bring college ID and team details"],
+        rules: ["Faculty coordinator: M G Kousar", "Student coordinators: Sam Goldwin, Rahul", "Team size: 1-4", "Bring college ID and team details"],
         coordinators: [{ name: "M G Kousar (Faculty)", mobile: "" }, { name: "Sam Goldwin", mobile: "" }, { name: "Rahul", mobile: "" }],
     },
     {
-        eventNo: 2,
+        slug: slugify("VV care"),
         category: "GENERAL",
         image: eventImage,
         name: "VV care",
-        rules: ["Faculty coordinators: Rajani M, M G Kousar", "Student coordinators: Shrishty, Lalitha", "Team size: 2-5", "Venue: VVIT Campus - Open Ground", "Social service / awareness theme"],
+        rules: ["Faculty coordinators: Rajani M, M G Kousar", "Student coordinators: Shrishty, Lalitha", "Team size: 2-5", "Social service / awareness theme"],
         coordinators: [{ name: "Rajani M (Faculty)", mobile: "" }, { name: "M G Kousar (Faculty)", mobile: "" }, { name: "Shrishty", mobile: "" }, { name: "Lalitha", mobile: "" }],
     },
     {
-        eventNo: 3,
-        category: "GENERAL",
+        slug: slugify("Mini Project [Presentation]"),
+        category: "TECHNICAL",
         image: eventImage,
-        name: "Cooking Without Fire",
-        rules: ["Faculty coordinator: Rashmi Rani Samantaray", "Student coordinators: Anushka S (+91 81971 97536), Arshiya (+91 90081 50803)", "Team size: 2-3", "Venue: VVIT Campus - Food Court", "No flame / heating allowed. Bring pre-cut ingredients as instructed."],
-        coordinators: [{ name: "Rashmi Rani Samantaray (Faculty)", mobile: "" }, { name: "Anushka S", mobile: "+91 81971 97536" }, { name: "Arshiya", mobile: "+91 90081 50803" }],
+        name: "Mini Project [Presentation]",
+        rules: ["Faculty coordinator: Rashmi Rani Samantaray", "Team size: 1-4", "Present your mini project to judges"],
+        coordinators: [{ name: "Rashmi Rani Samantaray (Faculty)", mobile: "" }],
     },
     {
-        eventNo: 4,
-        category: "GENERAL",
-        image: eventImage,
-        name: "Talent mania",
-        rules: ["Faculty coordinator: Kavyashree J", "Student coordinators: Shree Kyathi, Harshitha", "Solo event", "Venue: Main Auditorium", "Any talent (singing, mimicry, instrument, etc.) 3-5 mins"],
-        coordinators: [{ name: "Kavyashree J (Faculty)", mobile: "" }, { name: "Shree Kyathi", mobile: "" }, { name: "Harshitha", mobile: "" }],
-    },
-    {
-        eventNo: 5,
-        category: "FINE_ARTS",
-        image: eventImage,
-        name: "Collage (Best out of waste)",
-        rules: ["Faculty coordinators: Sushma B M, Bharathi J", "Student coordinators: Harish 5th sem A sec (9901709596), Divya C 5th sem A sec (8074142405)", "Team size: 2-4", "Venue: Seminar Hall 1", "Use waste materials only. A2 sheet provided."],
-        coordinators: [{ name: "Sushma B M (Faculty)", mobile: "" }, { name: "Bharathi J (Faculty)", mobile: "" }, { name: "Harish", mobile: "9901709596" }, { name: "Divya C", mobile: "8074142405" }],
-    },
-    {
-        eventNo: 6,
-        category: "GENERAL",
-        image: eventImage,
-        name: "ICEBREAKER",
-        rules: ["Faculty coordinators: Swetha/Harini", "Student coordinators: Lokhapradeep (9632425042), Harish P (9901709596), Deekshitha A (7892563979)", "Team size: 3-6", "Venue: Open Air Theatre", "Fun team bonding games"],
-        coordinators: [{ name: "Swetha/Harini (Faculty)", mobile: "" }, { name: "Lokhapradeep", mobile: "9632425042" }, { name: "Harish P", mobile: "9901709596" }, { name: "Deekshitha A", mobile: "7892563979" }],
-    },
-    {
-        eventNo: 7,
-        category: "THEATRE",
-        image: eventImage,
-        name: "Dumb charades",
-        rules: ["Faculty coordinator: Supriya", "Student coordinators: Dhikshitha A (7892563979), Divya C (8792354155)", "Team size: 2-5", "Venue: Seminar Hall 2", "Standard dumb charades rules. No speaking."],
-        coordinators: [{ name: "Supriya (Faculty)", mobile: "" }, { name: "Dhikshitha A", mobile: "7892563979" }, { name: "Divya C", mobile: "8792354155" }],
-    },
-    {
-        eventNo: 8,
+        slug: slugify("Code Conflux"),
         category: "TECHNICAL",
         image: eventImage,
         name: "Code Conflux",
-        rules: ["Faculty coordinators: V Vanitha, Rashmi Rani", "Student coordinators: Anushka (8197197536), Mohammed Ghouse, Daniel (9380987187)", "Team size: 1-3", "Venue: Central Computing Lab", "Bring laptop. Internet may be restricted."],
-        coordinators: [{ name: "V Vanitha (Faculty)", mobile: "" }, { name: "Rashmi Rani (Faculty)", mobile: "" }, { name: "Anushka", mobile: "8197197536" }, { name: "Mohammed Ghouse", mobile: "" }, { name: "Daniel", mobile: "9380987187" }],
+        rules: ["Faculty coordinators: V Vanitha, Rashmi Rani", "Student coordinators: Anushka, Mohammed Ghouse, Daniel", "Team size: 1-3", "Bring laptop. Internet may be restricted."],
+        coordinators: [{ name: "V Vanitha (Faculty)", mobile: "" }, { name: "Rashmi Rani (Faculty)", mobile: "" }, { name: "Anushka", mobile: "" }, { name: "Mohammed Ghouse", mobile: "" }, { name: "Daniel", mobile: "" }],
     },
     {
-        eventNo: 9,
+        slug: slugify("Symposium (Group Discussion)"),
+        category: "GENERAL",
+        image: eventImage,
+        name: "Symposium (Group Discussion)",
+        rules: ["Faculty coordinator: Selva Agnes", "Team size: 1-4", "Group discussion on given topics"],
+        coordinators: [{ name: "Selva Agnes (Faculty)", mobile: "" }],
+    },
+    {
+        slug: slugify("Air Crash"),
+        category: "GENERAL",
+        image: eventImage,
+        name: "Air Crash",
+        rules: ["Faculty coordinators: Swetha, Harini", "Team size: 2-4", "Problem-solving challenge"],
+        coordinators: [{ name: "Swetha (Faculty)", mobile: "" }, { name: "Harini (Faculty)", mobile: "" }],
+    },
+    {
+        slug: slugify("Photography"),
+        category: "GENERAL",
+        image: eventImage,
+        name: "Photography",
+        rules: ["Faculty coordinator: Supriya", "Solo event", "Bring your own camera/phone"],
+        coordinators: [{ name: "Supriya (Faculty)", mobile: "" }],
+    },
+    {
+        slug: slugify("Dance Elite"),
         category: "DANCE",
         image: eventImage,
         name: "Dance Elite",
-        rules: ["Faculty coordinator: J Bharathi", "Student coordinators: Krishnaveni H K (9743116619), Lahari M (8884084501), Bhoomika (7975535763)", "Team size: 3-10", "Venue: Main Auditorium", "Any dance form. 5-7 mins. Bring track on pen drive."],
-        coordinators: [{ name: "J Bharathi (Faculty)", mobile: "" }, { name: "Krishnaveni H K", mobile: "9743116619" }, { name: "Lahari M", mobile: "8884084501" }, { name: "Bhoomika", mobile: "7975535763" }],
+        rules: ["Faculty coordinator: J Bharathi", "Student coordinators: Krishnaveni H K, Lahari M, Bhoomika", "Team size: 3-10", "Any dance form. 5-7 mins. Bring track on pen drive."],
+        coordinators: [{ name: "J Bharathi (Faculty)", mobile: "" }, { name: "Krishnaveni H K", mobile: "" }, { name: "Lahari M", mobile: "" }, { name: "Bhoomika", mobile: "" }],
     },
     {
-        eventNo: 10,
+        slug: slugify("BGMI / Freefire"),
         category: "GAMING",
         image: eventImage,
-        name: "BGMI",
-        rules: ["Faculty coordinator: Subhrajit Sengupta", "Student coordinators: Arshad (7795811494), Charan (6362348311)", "Squad size: 2-4", "Venue: E-Sports Arena", "Bring own device + headphones. Emulators not allowed."],
-        coordinators: [{ name: "Subhrajit Sengupta (Faculty)", mobile: "" }, { name: "Arshad", mobile: "7795811494" }, { name: "Charan", mobile: "6362348311" }],
+        name: "BGMI / Freefire",
+        rules: ["Faculty coordinator: Subhrajit Sengupta", "Squad size: 2-4", "Bring own device + headphones. Emulators not allowed."],
+        coordinators: [{ name: "Subhrajit Sengupta (Faculty)", mobile: "" }],
+    },
+    {
+        slug: slugify("VVIT got Latent"),
+        category: "GENERAL",
+        image: eventImage,
+        name: "VVIT got Latent",
+        rules: ["Faculty coordinator: Kavyashree J", "Solo event", "Talent show — any talent (singing, mimicry, instrument, etc.) 3-5 mins"],
+        coordinators: [{ name: "Kavyashree J (Faculty)", mobile: "" }],
+    },
+    {
+        slug: slugify("Reel Video Making"),
+        category: "GENERAL",
+        image: eventImage,
+        name: "Reel Video Making",
+        rules: ["Faculty coordinators: Sushma B M, Bharathi J", "Team size: 1-4", "Create a creative reel on given theme"],
+        coordinators: [{ name: "Sushma B M (Faculty)", mobile: "" }, { name: "Bharathi J (Faculty)", mobile: "" }],
+    },
+    {
+        slug: slugify("The Royal Walk"),
+        category: "GENERAL",
+        image: eventImage,
+        name: "The Royal Walk",
+        rules: ["Faculty coordinator: MahaLakshmi", "Solo event", "Fashion/walk event"],
+        coordinators: [{ name: "MahaLakshmi (Faculty)", mobile: "" }],
+    },
+    {
+        slug: slugify("Crucial Beats (Singing)"),
+        category: "THEATRE",
+        image: eventImage,
+        name: "Crucial Beats (Singing)",
+        rules: ["Faculty coordinator: Selva Agnes", "Solo event", "Singing competition — 3-5 mins"],
+        coordinators: [{ name: "Selva Agnes (Faculty)", mobile: "" }],
     },
 ];

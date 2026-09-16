@@ -19,7 +19,6 @@ import recognizedImg from "@/components/images/recognized.png";
 export default function About() {
   return (
     <div className="min-h-screen bg-[#FFFBEB] text-[#0F172A] selection:bg-[#2362EC] selection:text-white">
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600&display=swap');`}</style>
 
       {/* ── HERO — CAMPUS POSTER ──────────────────────────────── */}
       <section className="relative overflow-hidden pt-20">
@@ -42,7 +41,7 @@ export default function About() {
 
           <div className="mt-6 grid grid-cols-12 gap-8 items-center">
             <div className="col-span-12 lg:col-span-6">
-              <h1 className="leading-[0.88] tracking-[-0.03em]" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+              <h1 className="leading-[0.88] tracking-[-0.03em]" >
                 <span className="block text-[clamp(42px,7vw,84px)]">ABOUT</span>
                 <span className="block text-[clamp(42px,7vw,84px)] text-[#2362EC]">VVIT</span>
               </h1>
@@ -61,7 +60,7 @@ export default function About() {
                   </a>
                 </Button>
               </div>
-              <div className="mt-6 inline-flex -rotate-1 rounded-xl bg-[#FFF1A6] px-3 py-1.5 shadow" style={{ fontFamily: "'Caveat', cursive" }}>
+              <div className="mt-6 inline-flex -rotate-1 rounded-xl bg-[#FFF1A6] px-3 py-1.5 shadow" >
                 <span className="text-sm text-[#0F172A]">10-acre campus · 3,500 students · 300 staff →</span>
               </div>
             </div>
@@ -101,7 +100,7 @@ export default function About() {
           <div className="grid grid-cols-12 gap-8">
             <div className="col-span-12 lg:col-span-4">
               <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#E11D48]">The bio — as written</p>
-              <h2 className="mt-2 text-3xl font-black leading-none tracking-tight" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+              <h2 className="mt-2 text-3xl font-black leading-none tracking-tight" >
                 ENGINEERING
                 <br />
                 <span className="text-[#2362EC]">IS DISCOVERY.</span>
@@ -131,7 +130,7 @@ export default function About() {
                   </div>
                 </div>
                 <div className="mt-6 flex flex-wrap items-center gap-2 font-mono text-xs text-[#0F172A]/50">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#19E3A8]/15 px-2.5 py-1"><Calendar className="h-3 w-3" /> Oct 9–10 · VVIT Campus</span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#19E3A8]/15 px-2.5 py-1"><Calendar className="h-3 w-3" /> Oct 8–9 · VVIT Campus</span>
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 px-2.5 py-1"><MapPin className="h-3 w-3" /> Bengaluru</span>
                 </div>
               </div>
@@ -146,7 +145,7 @@ export default function About() {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#2362EC]">Excellence recognized</p>
-              <h2 className="mt-2 font-heading text-3xl font-black tracking-tight sm:text-4xl" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+              <h2 className="mt-2 font-heading text-3xl font-black tracking-tight sm:text-4xl" >
                 TRUST, <span className="text-[#2362EC]">VERIFIED.</span>
               </h2>
             </div>
@@ -187,7 +186,7 @@ export default function About() {
             <div className="absolute -left-6 -top-6 h-20 w-20 rounded-full bg-[#F3C317]/20 blur-2xl" />
             <div className="absolute -right-6 -bottom-6 h-24 w-24 rounded-full bg-[#2362EC]/20 blur-2xl" />
             <p className="font-mono text-[11px] tracking-[0.22em] uppercase text-[#F3C317]">See it for yourself</p>
-            <h2 className="mx-auto mt-3 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+            <h2 className="mx-auto mt-3 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl" >
               Your campus tour <span className="text-[#19E3A8]">starts here.</span>
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-white/70">

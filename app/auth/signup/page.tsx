@@ -120,7 +120,6 @@ function SignUpContent() {
 
   return (
     <div className="min-h-screen bg-[#FFFBEB] pt-20 pb-24 md:pb-8">
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600&display=swap');`}</style>
 
       <div className="overflow-hidden border-y border-[#0F172A]/10 bg-[#0F172A] py-2">
         <div className="flex animate-[marquee_22s_linear_infinite] whitespace-nowrap font-mono text-[10px] sm:text-[11px] tracking-[0.16em] uppercase text-white">
@@ -141,7 +140,7 @@ function SignUpContent() {
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#19E3A8]" />
                 STEP {step} OF 3
               </div>
-              <h1 className="mt-4 leading-[0.86] tracking-[-0.03em]" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+              <h1 className="mt-4 leading-[0.86] tracking-[-0.03em]" >
                 <span className="block text-[44px] sm:text-[52px]">CREATE</span>
                 <span className="block text-[44px] sm:text-[52px] text-[#2362EC]">ACCOUNT</span>
               </h1>
