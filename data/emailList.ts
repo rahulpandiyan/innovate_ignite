@@ -282,5 +282,5 @@ export const emailList = [
     // "cultural_vdit@klsvdit.edu.in",
     // "sports@bmssa.ac.in",
     // "principal@cambridge.edu.in",
-    "bhuvan.ar0101@gmail.com"
+    "rahul.legend345@gmail.com"
 ];

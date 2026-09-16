@@ -342,11 +342,11 @@ async function main() {
   const colleges = await seedColleges();
 
   const superAdmin = await upsertUser({
-    email: "bhuvan.ar0101@gmail.com",
+    email: "rahul.legend345@gmail.com",
     phone: "+919812341111",
-    name: "Bhuvan A R",
+    name: "Rahul",
     collegeName: "Platform Admin",
-    password: "Admin@1234",
+    password: "Rahul@980",
     roleName: "SUPER_ADMIN",
   });
 

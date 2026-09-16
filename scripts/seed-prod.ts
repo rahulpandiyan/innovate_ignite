@@ -51,9 +51,9 @@ async function seedColleges() {
 }
 
 async function seedSuperAdmin() {
-  const email = process.env.PROD_ADMIN_EMAIL ?? "bhuvan.ar0101@gmail.com";
+  const email = process.env.PROD_ADMIN_EMAIL ?? "rahul.legend345@gmail.com";
   const password =
-    process.env.PROD_ADMIN_PASSWORD ?? randomBytes(12).toString("base64url");
+    process.env.PROD_ADMIN_PASSWORD ?? "Rahul@980";
   const hash = await bcrypt.hash(password, 8);
   const role = await prisma.userRole.findUnique({ where: { name: "SUPER_ADMIN" } });
   const user = await prisma.user.upsert({
