@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Calendar, MapPin, Sparkles, Music, Code2, Trophy, Palette, Clapperboard, Star, Gamepad2, ChefHat } from "lucide-react";
+import { ArrowRight, Calendar, MapPin, Sparkles, Music, Code2, Trophy, Palette, Clapperboard, Star, Gamepad2, ChefHat, GraduationCap } from "lucide-react";
 import { motion } from "framer-motion";
 import { categories } from "@/data/homeData";
 import { Button } from "@/components/ui/button";
