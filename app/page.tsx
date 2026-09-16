@@ -55,7 +55,7 @@ export default function Home() {
                 className="inline-flex items-center gap-2 rounded-full border border-[#0F172A]/10 bg-white px-3 py-1.5 shadow-sm"
               >
                 <span className="h-2 w-2 animate-pulse rounded-full bg-[#19E3A8]" />
-                <span className="font-mono text-[11px] tracking-[0.16em] uppercase">Vijaya Vittala Institute of Technology presents</span>
+                <span className="font-mono text-[11px] tracking-[0.16em] uppercase">Organized by Department of CSE</span>
               </motion.div>
 
               <motion.h1
