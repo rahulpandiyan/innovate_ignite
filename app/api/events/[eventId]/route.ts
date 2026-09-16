@@ -8,6 +8,7 @@ import {
   errorResponse,
 } from "@/lib/apiHelpers";
 import { updateEventSchema } from "@/lib/schemas/events";
+import { assertPermission } from "@/lib/rbac";
 
 type RouteContext = { params: Promise<{ eventId: string }> };
 
@@ -60,13 +61,29 @@ export async function GET(req: NextRequest, context: RouteContext) {
   }
 }
 
-// PATCH /api/events/:eventId — Admin only
+// PATCH /api/events/:eventId — Admin or assigned coordinator
 export async function PATCH(req: NextRequest, context: RouteContext) {
   try {
-    const auth = await requireAdmin();
+    const auth = await requireAuth();
     if (auth.error) return auth.error;
 
     const { eventId } = await context.params;
+    const isAdmin = auth.session.role === "SUPER_ADMIN";
+    const isCoordinator = ["EVENT_COORDINATOR", "STUDENT_COORDINATOR"].includes(auth.session.role);
+
+    if (!isAdmin && !isCoordinator) {
+      return errorResponse("Not authorized.", 403);
+    }
+
+    // Coordinators can only edit events they're assigned to
+    if (isCoordinator && !isAdmin) {
+      const assigned = await prisma.eventCoordinator.findFirst({
+        where: { eventId, userId: auth.session.id },
+      });
+      if (!assigned) {
+        return errorResponse("You are not a coordinator for this event.", 403);
+      }
+    }
 
     const existing = await prisma.event.findUnique({ where: { id: eventId } });
     if (!existing) {

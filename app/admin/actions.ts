@@ -160,6 +160,47 @@ export async function updateEventStatus(input: { eventId: string; status: string
   return { ok: true };
 }
 
+export async function updateEvent(input: {
+  eventId: string;
+  name?: string;
+  description?: string;
+  type?: "SOLO" | "TEAM";
+  category?: string;
+  venue?: string;
+  price?: number;
+  minTeamSize?: number;
+  maxTeamSize?: number;
+  status?: string;
+  time?: string;
+}) {
+  await requireAdmin(PERMISSIONS.EVENTS_MANAGE);
+  const data: Record<string, any> = {};
+  if (input.name !== undefined) data.name = input.name;
+  if (input.description !== undefined) data.description = input.description;
+  if (input.type !== undefined) data.type = input.type;
+  if (input.category !== undefined) data.category = input.category;
+  if (input.venue !== undefined) data.venue = input.venue;
+  if (input.price !== undefined) data.price = input.price;
+  if (input.minTeamSize !== undefined) data.minTeamSize = input.minTeamSize;
+  if (input.maxTeamSize !== undefined) data.maxTeamSize = input.maxTeamSize;
+  if (input.status !== undefined) data.status = input.status;
+  if (input.time !== undefined) data.time = input.time;
+
+  await prisma.event.update({ where: { id: input.eventId }, data });
+  await prisma.auditLog.create({
+    data: {
+      action: "EVENT_UPDATED",
+      userId: (await requireAdmin()).id,
+      entityType: "Event",
+      entityId: input.eventId,
+      details: { updatedFields: Object.keys(data) },
+    },
+  });
+  revalidatePath("/admin/events");
+  revalidatePath("/coordinator");
+  return { ok: true };
+}
+
 const ROLES = [
   "SUPER_ADMIN",
   "COLLEGE_ADMIN",

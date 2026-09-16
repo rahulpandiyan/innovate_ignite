@@ -22,8 +22,7 @@ import {
 import { AnnouncementForm } from "@/components/coordinator/announcement-form";
 import { PublishResultsButton } from "@/components/coordinator/publish-results-button";
 import { getEventStandings } from "@/lib/judging";
-import {
-  Megaphone,
+import { Megaphone,
   UsersRound,
   Building2,
   TicketCheck,
@@ -32,6 +31,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { format } from "date-fns";
+import { CoordinatorEventEditForm } from "@/components/coordinator/coordinator-event-edit-form";
 
 type PageProps = { params: Promise<{ eventId: string }> };
 
@@ -99,6 +99,21 @@ export default async function CoordinatorEventPage({ params }: PageProps) {
         </div>
         <Badge variant="outline">{event.status}</Badge>
       </div>
+
+      <CoordinatorEventEditForm
+        event={{
+          id: event.id,
+          name: event.name,
+          description: event.description ?? "",
+          type: event.type,
+          category: event.category,
+          venue: event.venue ?? "",
+          price: Number(event.price),
+          minTeamSize: event.minTeamSize ?? 1,
+          maxTeamSize: event.maxTeamSize ?? 1,
+          time: event.time ?? "",
+        }}
+      />
 
       <Tabs defaultValue="overview">
         <TabsList>

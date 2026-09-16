@@ -1,5 +1,5 @@
 import prisma from "@/lib/db";
-import { assignEventUsers, createEvent, updateEventStatus } from "@/app/admin/actions";
+import { assignEventUsers, createEvent, updateEvent, updateEventStatus } from "@/app/admin/actions";
 import {
   Card,
   CardContent,
@@ -18,9 +18,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { EventEditForm } from "@/components/admin/event-edit-form";
 
 const STATUS_OPTIONS = ["DRAFT", "OPEN", "REGISTRATION_CLOSED", "ONGOING", "COMPLETED"] as const;
-const CATEGORIES = ["DANCE", "MUSIC", "THEATRE", "ART", "LITERARY", "TECHNICAL", "SPORTS"];
+const CATEGORIES = ["TECHNICAL", "GENERAL", "DANCE", "GAMING", "THEATRE", "FINE_ARTS"];
 
 export default async function EventsPage() {
   const [events, coordinators, judges] = await Promise.all([
@@ -33,7 +34,7 @@ export default async function EventsPage() {
       },
     }),
     prisma.user.findMany({
-      where: { userRole: { name: "EVENT_COORDINATOR" } },
+      where: { userRole: { name: { in: ["EVENT_COORDINATOR", "STUDENT_COORDINATOR"] } } },
       select: { id: true, name: true, email: true },
       orderBy: { name: "asc" },
     }),
@@ -49,14 +50,14 @@ export default async function EventsPage() {
       <div>
         <h1 className="text-2xl font-bold">Events</h1>
         <p className="text-sm text-muted-foreground">
-          Create events and assign coordinators & judges per the PRD.
+          Manage events, coordinators and judges.
         </p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Create event</CardTitle>
-          <CardDescription>A registration window is opened by Super Admin.</CardDescription>
+          <CardDescription>Add a new event to the fest.</CardDescription>
         </CardHeader>
         <CardContent>
           <form
@@ -67,7 +68,7 @@ export default async function EventsPage() {
                 name: String(formData.get("name") ?? ""),
                 description: String(formData.get("description") ?? "") || undefined,
                 type: (String(formData.get("type") ?? "SOLO") as never) ?? "SOLO",
-                category: String(formData.get("category") ?? "DANCE"),
+                category: String(formData.get("category") ?? "GENERAL"),
                 venue: String(formData.get("venue") ?? ""),
                 price: Number(formData.get("price") ?? 0),
                 minTeamSize: Number(formData.get("minTeamSize") ?? 1),
@@ -83,18 +84,18 @@ export default async function EventsPage() {
           >
             <div className="space-y-1">
               <Label htmlFor="name">Name</Label>
-              <Input id="name" name="name" required placeholder="Battle of Bands" />
+              <Input id="name" name="name" required placeholder="Techninja" />
             </div>
             <div className="space-y-1">
               <Label htmlFor="category">Category</Label>
-              <Select name="category" defaultValue="DANCE">
+              <Select name="category" defaultValue="GENERAL">
                 <SelectTrigger id="category">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {CATEGORIES.map((c) => (
                     <SelectItem key={c} value={c}>
-                      {c}
+                      {c.replace(/_/g, " ")}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -129,7 +130,7 @@ export default async function EventsPage() {
             </div>
             <div className="space-y-1">
               <Label htmlFor="venue">Venue</Label>
-              <Input id="venue" name="venue" required />
+              <Input id="venue" name="venue" />
             </div>
             <div className="space-y-1">
               <Label htmlFor="price">Price (INR)</Label>
@@ -145,15 +146,15 @@ export default async function EventsPage() {
             </div>
             <div className="space-y-1">
               <Label htmlFor="date">Date</Label>
-              <Input id="date" name="date" type="datetime-local" required />
+              <Input id="date" name="date" type="datetime-local" />
             </div>
             <div className="space-y-1">
               <Label htmlFor="registrationStart">Reg opens</Label>
-              <Input id="registrationStart" name="registrationStart" type="datetime-local" required />
+              <Input id="registrationStart" name="registrationStart" type="datetime-local" />
             </div>
             <div className="space-y-1">
               <Label htmlFor="registrationEnd">Reg closes</Label>
-              <Input id="registrationEnd" name="registrationEnd" type="datetime-local" required />
+              <Input id="registrationEnd" name="registrationEnd" type="datetime-local" />
             </div>
             <div className="space-y-1">
               <Label htmlFor="coordinatorId">Coordinator</Label>
@@ -198,100 +199,28 @@ export default async function EventsPage() {
 
       <div className="space-y-4">
         {events.map((ev) => (
-          <Card key={ev.id}>
-            <CardHeader className="flex flex-row items-start justify-between space-y-0">
-              <div>
-                <CardTitle className="text-base">{ev.name}</CardTitle>
-                <CardDescription>
-                  {ev.category} · {ev.type} ·{" "}
-                  {ev.date ? new Date(ev.date).toLocaleDateString() : "TBA"} · {ev.venue} · ₹
-                  {Number(ev.price)}
-                </CardDescription>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge>{ev.status}</Badge>
-                <form
-                  action={async (formData) => {
-                    "use server";
-                    await updateEventStatus({
-                      eventId: ev.id,
-                      status: String(formData.get("status") ?? ev.status),
-                    });
-                  }}
-                >
-                  <Select name="status" defaultValue={ev.status}>
-                    <SelectTrigger className="h-8 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {STATUS_OPTIONS.map((s) => (
-                        <SelectItem key={s} value={s}>
-                          {s}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <button type="submit" className="sr-only">
-                    Update
-                  </button>
-                </form>
-              </div>
-            </CardHeader>
-            <CardContent className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-4">
-                <Badge variant="secondary">{ev._count.registrations} registrations</Badge>
-                <Badge variant="secondary">{ev._count.teams} teams</Badge>
-                <span className="text-muted-foreground">
-                  Coordinator: {ev.coordinators.map((c) => c.user.name).join(", ") || "None"}
-                </span>
-                <span className="text-muted-foreground">
-                  Judge: {ev.judges.map((j) => j.user.name).join(", ") || "None"}
-                </span>
-              </div>
-              <form
-                action={async (formData) => {
-                  "use server";
-                  await assignEventUsers({
-                    eventId: ev.id,
-                    coordinatorId:
-                      String(formData.get("coordinatorId") ?? "") || undefined,
-                    judgeId: String(formData.get("judgeId") ?? "") || undefined,
-                    unassignCoordinator: formData.get("clearCoordinator") === "on",
-                    unassignJudge: formData.get("clearJudge") === "on",
-                  });
-                }}
-                className="flex items-center gap-2"
-              >
-                <Select name="coordinatorId">
-                  <SelectTrigger className="h-8 text-xs">
-                    <SelectValue placeholder="Coordinator" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {coordinators.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
-                        {c.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select name="judgeId">
-                  <SelectTrigger className="h-8 text-xs">
-                    <SelectValue placeholder="Judge" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {judges.map((j) => (
-                      <SelectItem key={j.id} value={j.id}>
-                        {j.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button type="submit" size="sm" variant="outline">
-                  Assign
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+          <EventEditForm
+            key={ev.id}
+            event={{
+              id: ev.id,
+              name: ev.name,
+              description: ev.description ?? "",
+              type: ev.type,
+              category: ev.category,
+              venue: ev.venue ?? "",
+              price: Number(ev.price),
+              minTeamSize: ev.minTeamSize ?? 1,
+              maxTeamSize: ev.maxTeamSize ?? 1,
+              status: ev.status,
+              time: ev.time ?? "",
+            }}
+            coordinators={coordinators}
+            judges={judges}
+            assignedCoordinators={ev.coordinators.map((c) => c.user.name)}
+            assignedJudges={ev.judges.map((j) => j.user.name)}
+            registrationCount={ev._count.registrations}
+            teamCount={ev._count.teams}
+          />
         ))}
       </div>
     </div>

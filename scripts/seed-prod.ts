@@ -226,8 +226,6 @@ async function seedEvents(superAdminId: string) {
           type: ev.type,
           category: ev.category,
           price: ev.price,
-          date: ev.date,
-          venue: ev.venue,
           rules: ev.rules,
           minTeamSize: ev.minTeamSize,
           maxTeamSize: ev.maxTeamSize,
