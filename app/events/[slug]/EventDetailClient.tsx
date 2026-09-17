@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { useAuthContext } from "@/contexts/auth-context";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { WhatsAppJoinDialog } from "@/components/participant/whatsapp-join-dialog";
 
 interface Props {
   category: EventCategory;
@@ -37,6 +38,7 @@ export default function EventDetailClient({ category, details }: Props) {
   const [dbEvent, setDbEvent] = useState<any>(null);
   const [registering, setRegistering] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showWhatsApp, setShowWhatsApp] = useState(false);
   const router = useRouter();
   const { isLoggedIn } = useAuthContext();
 
@@ -80,7 +82,7 @@ export default function EventDetailClient({ category, details }: Props) {
           toast.success("Registered!", { description: `You are registered for ${category.eventName}.` });
         }
         setShowConfirm(false);
-        router.push("/dashboard/registrations");
+        setShowWhatsApp(true);
       } else {
         toast.error(res.data.error?.message || "Could not register");
       }
@@ -301,6 +303,16 @@ export default function EventDetailClient({ category, details }: Props) {
           </div>
         </div>
       </div>
+
+      <WhatsAppJoinDialog
+        open={showWhatsApp}
+        onOpenChange={(val) => {
+          setShowWhatsApp(val);
+          if (!val) router.push("/dashboard/registrations");
+        }}
+        title={`Registered for ${category.eventName}! 🎉`}
+        description="You're all set. Join the WhatsApp group for real-time event updates, schedule changes, and coordinator announcements so you don't miss anything."
+      />
 
       <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
         <DialogContent className="sm:max-w-md rounded-2xl">

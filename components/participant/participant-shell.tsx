@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
 import { BottomNav } from "@/components/participant/bottom-nav";
+import { WhatsAppFloatButton } from "@/components/participant/whatsapp-float-button";
 import {
   Sidebar,
   SidebarContent,
@@ -115,6 +116,7 @@ export function ParticipantShell({
           {children}
         </div>
       </SidebarInset>
+      <WhatsAppFloatButton />
       <BottomNav />
     </SidebarProvider>
   );
