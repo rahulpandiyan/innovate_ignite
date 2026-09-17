@@ -157,16 +157,16 @@ export default async function DashboardOverviewPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 md:gap-4 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 md:gap-4 xl:grid-cols-4">
         {stats.map((s) => (
           <Link key={s.label} href={s.href}>
             <Card className="transition-colors hover:bg-accent/50">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{s.label}</CardTitle>
-                <s.icon className="h-4 w-4 text-muted-foreground" />
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 pb-1 md:p-6 md:pb-2">
+                <CardTitle className="text-xs font-medium md:text-sm">{s.label}</CardTitle>
+                <s.icon className="h-3.5 w-3.5 text-muted-foreground md:h-4 md:w-4" />
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{s.value}</div>
+              <CardContent className="p-3 pt-0 md:p-6 md:pt-0">
+                <div className="text-xl font-bold md:text-2xl">{s.value}</div>
               </CardContent>
             </Card>
           </Link>
