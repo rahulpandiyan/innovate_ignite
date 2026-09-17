@@ -2,11 +2,13 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import { avatarUrlFor } from "@/lib/avatar";
 
 export type ProfileFormData = {
   name: string;
@@ -15,12 +17,15 @@ export type ProfileFormData = {
   collegeIdNumber: string;
   aadhaarNumber: string;
   photoUrl: string;
+  email: string;
 };
 
 export function ProfileForm({ initial }: { initial: ProfileFormData }) {
   const router = useRouter();
   const [form, setForm] = React.useState(initial);
   const [loading, setLoading] = React.useState(false);
+
+  const avatarUrl = avatarUrlFor(initial.email);
 
   function set<K extends keyof ProfileFormData>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -32,6 +37,7 @@ export function ProfileForm({ initial }: { initial: ProfileFormData }) {
     try {
       const body: Record<string, string> = {};
       for (const [k, v] of Object.entries(form)) {
+        if (k === "email" || k === "photoUrl") continue;
         if (v !== initial[k as keyof ProfileFormData]) body[k] = v;
       }
       if (Object.keys(body).length === 0) {
@@ -61,6 +67,23 @@ export function ProfileForm({ initial }: { initial: ProfileFormData }) {
         <CardDescription>Keep your contact and college details up to date.</CardDescription>
       </CardHeader>
       <CardContent>
+        <div className="mb-6 flex items-center gap-4">
+          <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-slate-200">
+            <Image
+              src={avatarUrl}
+              alt={form.name || "Avatar"}
+              width={80}
+              height={80}
+              className="h-20 w-20 rounded-full object-cover"
+              unoptimized
+            />
+          </div>
+          <div>
+            <p className="font-medium">{form.name || "Your name"}</p>
+            <p className="text-sm text-muted-foreground">{initial.email}</p>
+            <p className="text-xs text-muted-foreground">Avatar is auto-generated from your email</p>
+          </div>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
@@ -99,16 +122,6 @@ export function ProfileForm({ initial }: { initial: ProfileFormData }) {
                 value={form.aadhaarNumber}
                 onChange={(e) => set("aadhaarNumber", e.target.value)}
                 placeholder="For eligibility verification"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="pf-photo">Profile photo URL</Label>
-              <Input
-                id="pf-photo"
-                value={form.photoUrl}
-                onChange={(e) => set("photoUrl", e.target.value)}
-                placeholder="https://…/photo.jpg"
-                type="url"
               />
             </div>
           </div>

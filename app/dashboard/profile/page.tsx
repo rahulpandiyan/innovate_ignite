@@ -51,6 +51,7 @@ export default async function ProfilePage() {
           collegeIdNumber: user.collegeIdNumber ?? "",
           aadhaarNumber: user.aadharNumber ?? "",
           photoUrl: user.photoUrl ?? "",
+          email: user.email,
         }}
       />
     </div>
