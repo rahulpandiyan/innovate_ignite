@@ -30,6 +30,7 @@ function SignInContent() {
   const searchParams = useSearchParams();
   const eventId = searchParams.get("eventId");
   const redirect = searchParams.get("redirect");
+  const callbackUrl = searchParams.get("callbackUrl");
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { setIsLoggedIn } = useAuthContext();
@@ -55,12 +56,12 @@ function SignInContent() {
             } else {
               toast.success("Logged in & registered!", { description: "You are registered for the event." });
             }
-            router.push(redirect || "/dashboard/registrations");
+            router.push(callbackUrl || redirect || "/dashboard/registrations");
             return;
           } catch (e: unknown) {
             if (axios.isAxiosError(e) && e.response?.status === 409) {
               toast.success("Login successful!", { description: "You were already registered for that event." });
-              router.push(redirect || "/dashboard/registrations");
+              router.push(callbackUrl || redirect || "/dashboard/registrations");
               return;
             }
           }
@@ -68,7 +69,7 @@ function SignInContent() {
         toast.success("Login successful!", { description: "Welcome back!" });
         const user = response.data.data?.user;
         const home = user?.home ?? (user?.role === "SUPER_ADMIN" ? "/admin" : "/dashboard");
-        router.push(home);
+        router.push(callbackUrl || home);
       } else {
         form.setError("email", { type: "manual", message: "Invalid credentials" });
         form.setError("password", { type: "manual", message: "Invalid credentials" });

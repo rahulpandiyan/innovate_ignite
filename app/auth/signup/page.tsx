@@ -28,6 +28,7 @@ function SignUpContent() {
   const searchParams = useSearchParams();
   const eventId = searchParams.get("eventId");
   const redirect = searchParams.get("redirect");
+  const callbackUrl = searchParams.get("callbackUrl");
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [email, setEmail] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -106,10 +107,10 @@ function SignUpContent() {
               toast.success("Account created!", { description: msg || "Welcome aboard! Please confirm your event registration in dashboard." });
             }
           }
-          router.push(redirect || "/dashboard/registrations");
+          router.push(callbackUrl || redirect || "/dashboard/registrations");
         } else {
           toast.success("Account created!", { description: "Welcome aboard!" });
-          router.push("/dashboard");
+          router.push(callbackUrl || "/dashboard");
         }
       } else setError(r.data.error?.message ?? "Could not complete registration.");
     } catch (e: unknown) {

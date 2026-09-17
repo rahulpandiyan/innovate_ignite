@@ -13,6 +13,8 @@ import {
   Megaphone,
   ArrowRight,
   UserRound,
+  CalendarDays,
+  Zap,
 } from "lucide-react";
 import { format } from "date-fns";
 import { BadgeCheck } from "lucide-react";
@@ -171,6 +173,28 @@ export default async function DashboardOverviewPage() {
         ))}
       </div>
 
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Zap className="h-4 w-4 text-amber-500" /> Quick actions
+          </CardTitle>
+          <CardDescription>Browse and register for events.</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-wrap gap-3">
+          <Button asChild>
+            <Link href="/events">
+              <CalendarDays className="mr-2 h-4 w-4" /> Browse all events
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/dashboard/registrations">My registrations</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/dashboard/teams">My teams</Link>
+          </Button>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
@@ -302,28 +326,6 @@ export default async function DashboardOverviewPage() {
           </CardContent>
         </Card>
       )}
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Get started</CardTitle>
-          <CardDescription>
-            Browse events, form a team, or check your registrations.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-wrap gap-3">
-          <Button asChild>
-            <Link href="/events">
-              <Receipt className="mr-2 h-4 w-4" /> Browse events
-            </Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/dashboard/teams">Create a team</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/dashboard/registrations">View passes</Link>
-          </Button>
-        </CardContent>
-      </Card>
     </div>
   );
 }

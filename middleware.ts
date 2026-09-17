@@ -109,17 +109,23 @@ export async function middleware(request: NextRequest) {
 
     // Super-admin-only routes
     if (superAdminRoutes.some(route => path.startsWith(route)) && (!session?.id || session?.role !== "SUPER_ADMIN")) {
-        return NextResponse.redirect(new URL("/auth/signin", request.nextUrl));
+        const signInUrl = new URL("/auth/signin", request.nextUrl);
+        signInUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
+        return NextResponse.redirect(signInUrl);
     }
 
     // Coordinator routes: EVENT_COORDINATOR (or SUPER_ADMIN) only
     if (coordinatorRoutes.some(route => path.startsWith(route)) && (!session?.id || (session?.role !== "EVENT_COORDINATOR" && session?.role !== "SUPER_ADMIN"))) {
-        return NextResponse.redirect(new URL("/auth/signin", request.nextUrl));
+        const signInUrl = new URL("/auth/signin", request.nextUrl);
+        signInUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
+        return NextResponse.redirect(signInUrl);
     }
 
     // Authenticated routes
     if (protectedRoutes.some(route => path.startsWith(route)) && !session?.id) {
-        return NextResponse.redirect(new URL("/auth/signin", request.nextUrl));
+        const signInUrl = new URL("/auth/signin", request.nextUrl);
+        signInUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
+        return NextResponse.redirect(signInUrl);
     }
 }
 
