@@ -14,6 +14,7 @@ import {
   CircleUserRound,
 } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
+import { BottomNav } from "@/components/participant/bottom-nav";
 import {
   Sidebar,
   SidebarContent,
@@ -109,11 +110,12 @@ export function ParticipantShell({
         <SidebarRail />
       </Sidebar>
       <SidebarInset>
-        <div className="px-4 py-6 md:px-6 md:py-8">
+        <div className="px-4 pb-20 pt-6 md:px-6 md:pb-8 md:pt-8">
           <SidebarTrigger className="-ml-2 mb-4 md:hidden" />
           {children}
         </div>
       </SidebarInset>
+      <BottomNav />
     </SidebarProvider>
   );
 }
