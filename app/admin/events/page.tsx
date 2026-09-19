@@ -71,6 +71,8 @@ export default async function EventsPage() {
                 category: String(formData.get("category") ?? "GENERAL"),
                 venue: String(formData.get("venue") ?? ""),
                 price: Number(formData.get("price") ?? 0),
+                priceMode: (String(formData.get("priceMode") ?? "PER_TEAM") as never) ?? "PER_TEAM",
+                groupPrice: Number(formData.get("groupPrice") ?? 0) || undefined,
                 minTeamSize: Number(formData.get("minTeamSize") ?? 1),
                 maxTeamSize: Number(formData.get("maxTeamSize") ?? 1),
                 date: String(formData.get("date") ?? ""),
@@ -135,6 +137,23 @@ export default async function EventsPage() {
             <div className="space-y-1">
               <Label htmlFor="price">Price (INR)</Label>
               <Input id="price" name="price" type="number" min={0} required />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="priceMode">Pricing mode</Label>
+              <Select name="priceMode" defaultValue="PER_TEAM">
+                <SelectTrigger id="priceMode">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PER_TEAM">Per team (flat fee)</SelectItem>
+                  <SelectItem value="PER_PARTICIPANT">Per participant</SelectItem>
+                  <SelectItem value="SOLO_OR_GROUP">Solo / Group</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="groupPrice">Group price (for Solo/Group)</Label>
+              <Input id="groupPrice" name="groupPrice" type="number" min={0} placeholder="e.g. 150" />
             </div>
             <div className="space-y-1">
               <Label htmlFor="minTeamSize">Min team size</Label>

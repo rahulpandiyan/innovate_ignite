@@ -101,21 +101,13 @@ const EventPage = () => {
                                         <h3 className="mb-2 text-blue-600 font-extrabold">
                                             Event Co-Ordinator
                                         </h3>
-                                        {event.coordinator && (
-                                            <ul>
-                                                {event.coordinator && (
-                                                    <span>
-                                                        {event.coordinator.name} {event.coordinator.mobile}
-                                                    </span>
-                                                )}
-                                            </ul>
-                                        )}
                                         {event.coordinators && (
                                             <ul>
                                                 {event.coordinators &&
                                                     event.coordinators.map((coordinator, index) => (
                                                         <li key={index}>
-                                                            {coordinator.name} - {coordinator.mobile}
+                                                            {coordinator.name}
+                                                            {coordinator.email ? ` - ${coordinator.email}` : ""}
                                                         </li>
                                                     ))}
                                             </ul>

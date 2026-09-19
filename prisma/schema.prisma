@@ -29,6 +29,8 @@ model Event {
   type                EventType
   category            String
   price               Decimal             @db.Decimal(10, 2)
+  priceMode           EventPricing         @default(PER_TEAM)
+  groupPrice          Decimal?             @db.Decimal(10, 2)
   date                DateTime?
   time                String?
   venue               String?
@@ -285,6 +287,12 @@ model User {
 enum EventType {
   SOLO
   TEAM
+}
+
+enum EventPricing {
+  PER_TEAM
+  PER_PARTICIPANT
+  SOLO_OR_GROUP
 }
 
 enum OrderStatus {

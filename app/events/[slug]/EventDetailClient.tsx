@@ -4,9 +4,10 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { ArrowLeft, Users, Phone, MapPin, Calendar, Banknote, ShieldCheck, ChevronDown, Loader2 } from "lucide-react";
+import { ArrowLeft, Users, Mail, MapPin, Calendar, Banknote, ShieldCheck, ChevronDown, Loader2 } from "lucide-react";
 import { EventCategory } from "@/data/eventCategories";
 import { EventList } from "@/data/eventList";
+import { formatPriceLabel, memberCountLabel, teamSizeOptions, PricingMode, TeamSizeOption } from "@/lib/pricing";
 import { toast } from "sonner";
 import { useAuthContext } from "@/contexts/auth-context";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -39,8 +40,18 @@ export default function EventDetailClient({ category, details }: Props) {
   const [registering, setRegistering] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showWhatsApp, setShowWhatsApp] = useState(false);
+  const [selectedSize, setSelectedSize] = useState<number>(category.minTeamSize);
   const router = useRouter();
   const { isLoggedIn } = useAuthContext();
+
+  const priceMode = (dbEvent?.priceMode as PricingMode) || category.priceMode;
+  const price = dbEvent?.price != null ? Number(dbEvent.price) : category.price;
+  const groupPrice = dbEvent?.groupPrice != null ? Number(dbEvent.groupPrice) : category.groupPrice;
+  const minTeamSize = category.minTeamSize;
+  const maxTeamSize = category.maxTeamSize;
+
+  const sizeOptions: TeamSizeOption[] = teamSizeOptions({ price, priceMode, minTeamSize, maxTeamSize, groupPrice });
+  const selectedOption = sizeOptions.find((o) => o.value === selectedSize) ?? sizeOptions[0];
 
   useEffect(() => {
     async function fetchDbEvent() {
@@ -66,14 +77,16 @@ export default function EventDetailClient({ category, details }: Props) {
       router.push(`/auth/signup?eventId=${dbEvent.id}&redirect=${encodeURIComponent(`/events/${category.slug}`)}`);
       return;
     }
+    setSelectedSize(minTeamSize);
     setShowConfirm(true);
   };
 
   const confirmRegister = async () => {
     if (!dbEvent?.id) return;
+    if (!selectedOption) return;
     setRegistering(true);
     try {
-      const res = await axios.post(`/api/events/${dbEvent.id}/register`);
+      const res = await axios.post(`/api/events/${dbEvent.id}/register`, { teamSize: selectedOption.value });
       if (res.data.success) {
         const isPaid = res.data.data?.isPaidEvent;
         if (isPaid) {
@@ -129,7 +142,7 @@ export default function EventDetailClient({ category, details }: Props) {
                   {category.category.replace(/_/g, " ")}
                 </span>
                 <span className="rounded-full border border-[#0F172A]/10 bg-[#0F172A]/5 px-2.5 py-1 font-mono text-[10px] tracking-wide">
-                  {category.maxParticipant > 1 ? `Team · up to ${category.maxParticipant}` : "Solo"}
+                  {memberCountLabel(category.minTeamSize, category.maxTeamSize)}
                 </span>
                 <span className="rounded-full bg-[#0F172A] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-white">
                   {category.category.replace(/_/g, " ")}
@@ -143,10 +156,10 @@ export default function EventDetailClient({ category, details }: Props) {
 
               <div className="mt-4 flex flex-wrap gap-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F3C317] px-3 py-1.5 font-mono text-xs font-bold text-[#0F172A]">
-                  <Banknote className="h-3.5 w-3.5" /> {category.amount ? `₹${category.amount}` : "Free"}
+                  <Banknote className="h-3.5 w-3.5" /> {price > 0 ? formatPriceLabel({ price, priceMode, groupPrice }) : "Free"}
                 </span>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 bg-white px-3 py-1.5 font-mono text-xs">
-                  <Users className="h-3.5 w-3.5" /> {category.maxParticipant} max
+                  <Users className="h-3.5 w-3.5" /> {memberCountLabel(category.minTeamSize, category.maxTeamSize)}
                 </span>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 bg-white px-3 py-1.5 font-mono text-xs">
                   <Calendar className="h-3.5 w-3.5" /> Oct 8–9
@@ -229,30 +242,19 @@ export default function EventDetailClient({ category, details }: Props) {
                   ) : null}
 
                   {/* Static sheet data as fallback */}
-                  {mainDetail && (mainDetail.coordinator || (mainDetail.coordinators && mainDetail.coordinators.length)) ? (
+                  {mainDetail && mainDetail.coordinators && mainDetail.coordinators.length ? (
                     <div>
                       {coordinatorsFromDb.length > 0 && <p className="mb-2 font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/40">Sheet contacts</p>}
                       <div className="grid gap-3 sm:grid-cols-2">
-                        {mainDetail.coordinator && (
-                          <a href={`tel:${mainDetail.coordinator.mobile.replace(/\s/g, "")}`} className="flex items-center gap-3 rounded-xl border border-[#0F172A]/10 bg-[#FFFBEB] p-3 hover:bg-white transition-colors">
-                            <span className={`grid h-9 w-9 place-items-center rounded-full text-white ${style.bg}`}>
-                              <Users className="h-4 w-4" />
-                            </span>
-                            <span>
-                              <span className="block text-sm font-bold leading-none">{mainDetail.coordinator.name}</span>
-                              <span className="mt-1 flex items-center gap-1 font-mono text-xs text-[#2362EC]"><Phone className="h-3 w-3" /> {mainDetail.coordinator.mobile}</span>
-                            </span>
-                          </a>
-                        )}
                         {mainDetail.coordinators?.map((c, idx) => (
-                          <a key={idx} href={c.mobile ? `tel:${c.mobile.replace(/\s/g, "")}` : undefined} className={`flex items-center gap-3 rounded-xl border p-3 transition-colors ${c.mobile ? "border-[#0F172A]/10 bg-[#FFFBEB] hover:bg-white" : "border-dashed border-[#0F172A]/15 bg-white"}`}>
-                            <span className={`grid h-9 w-9 place-items-center rounded-full text-white ${c.mobile ? style.bg : "bg-[#0F172A]/20"}`}>
+                          <a key={idx} href={c.email ? `mailto:${c.email}` : undefined} className={`flex items-center gap-3 rounded-xl border p-3 transition-colors ${c.email ? "border-[#0F172A]/10 bg-[#FFFBEB] hover:bg-white" : "border-dashed border-[#0F172A]/15 bg-white"}`}>
+                            <span className={`grid h-9 w-9 place-items-center rounded-full text-white ${c.email ? style.bg : "bg-[#0F172A]/20"}`}>
                               <Users className="h-4 w-4" />
                             </span>
                             <span>
                               <span className="block text-sm font-bold leading-none">{c.name}</span>
-                              {c.mobile ? (
-                                <span className="mt-1 flex items-center gap-1 font-mono text-xs text-[#2362EC]"><Phone className="h-3 w-3" /> {c.mobile}</span>
+                              {c.email ? (
+                                <span className="mt-1 flex items-center gap-1 font-mono text-xs text-[#2362EC]"><Mail className="h-3 w-3" /> {c.email}</span>
                               ) : (
                                 <span className="mt-1 font-mono text-xs text-[#0F172A]/40">Contact via faculty</span>
                               )}
@@ -318,18 +320,45 @@ export default function EventDetailClient({ category, details }: Props) {
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-xl tracking-tight">
-              Confirm registration?
+              {category.eventName}
             </DialogTitle>
             <DialogDescription className="text-sm leading-6">
-              You will be registered for <strong>{category.eventName}</strong> ({category.category.replace(/_/g, " ")}) — {category.amount ? `₹${category.amount}` : "Free"}.
-              {category.amount ? " Registration will show as pending until payment is completed in dashboard." : " Free event — registration is immediate."}
-              {category.maxParticipant > 1 ? " You can form your team later in dashboard." : ""}
+              The team <strong>leader</strong> registers for the whole team — the leader is counted in the team size you pick below.
             </DialogDescription>
           </DialogHeader>
+
+          <div className="space-y-1.5">
+            <p className="font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/40">
+              Team size {memberCountLabel(category.minTeamSize, category.maxTeamSize)}
+            </p>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {sizeOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setSelectedSize(opt.value)}
+                  className={`flex flex-col items-start rounded-xl border px-3.5 py-3 text-left transition-colors ${
+                    selectedSize === opt.value
+                      ? "border-[#0F172A] bg-[#0F172A] text-white"
+                      : "border-[#0F172A]/15 bg-white text-[#0F172A] hover:border-[#0F172A]/40"
+                  }`}
+                >
+                  <span className="text-sm font-bold leading-none">{opt.label}</span>
+                  <span className={`mt-1.5 font-mono text-xs ${selectedSize === opt.value ? "text-white/70" : "text-[#0F172A]/50"}`}>
+                    ₹{opt.price}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <p className="pt-1 font-mono text-[11px] text-[#0F172A]/50">
+              {selectedOption ? formatPriceLabel({ price, priceMode, groupPrice }) : ""} · {selectedOption ? `₹${selectedOption.price} total` : ""}
+            </p>
+          </div>
+
           <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="outline" onClick={() => setShowConfirm(false)} className="rounded-full">Cancel</Button>
             <Button onClick={confirmRegister} disabled={registering} className="rounded-full bg-[#0F172A] text-white hover:bg-black">
-              {registering ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Registering…</> : "Confirm & Register"}
+              {registering ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Registering…</> : `Register team · ₹${selectedOption?.price ?? 0}`}
             </Button>
           </DialogFooter>
         </DialogContent>

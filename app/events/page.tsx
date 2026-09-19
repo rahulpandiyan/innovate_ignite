@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { Search, ArrowRight, Users, Banknote, Sparkles, ChevronRight } from "lucide-react";
 import { eventCategories } from "@/data/eventCategories";
+import { formatPriceLabel, memberCountLabel } from "@/lib/pricing";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -62,7 +63,7 @@ export default function EventPage() {
               <span className="block text-[clamp(36px,6vw,64px)] text-[#2362EC]">LINEUP</span>
             </h1>
             <p className="mt-3 max-w-lg text-sm leading-6 text-[#0F172A]/60">
-              10 stages, 6 domains. Every event is team-ready, faculty-backed, and campus-hosted. Find your stage and register.
+              7 stages. Register with your team, pay by member count, and campus-hosted shows. Find your stage and register.
             </p>
           </div>
 
@@ -72,7 +73,7 @@ export default function EventPage() {
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#0F172A]/40" />
               <input
                 type="text"
-                placeholder="Search Techninja, BGMI, Dance Elite…"
+                placeholder="Search BGMI, Crucial Beats, Group Discussion…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="h-12 w-full rounded-full border border-[#0F172A]/10 bg-white pl-11 pr-4 text-[16px] sm:text-sm font-medium text-[#0F172A] placeholder:text-[#0F172A]/40 focus:border-[#2362EC]/30 focus:outline-none focus:ring-4 focus:ring-[#2362EC]/10"
@@ -150,11 +151,11 @@ export default function EventPage() {
                         <div className="mt-3 flex flex-wrap items-center gap-2">
                           <span className="inline-flex items-center gap-1.5 rounded-full bg-[#0F172A]/5 px-2.5 py-1 font-mono text-xs">
                             <Users className="h-3 w-3" />
-                            {event.maxParticipant > 1 ? `Team · up to ${event.maxParticipant}` : "Solo"}
+                            {memberCountLabel(event.minTeamSize, event.maxTeamSize)}
                           </span>
                           <span className="inline-flex items-center gap-1 rounded-full bg-[#F3C317] px-2.5 py-1 font-mono text-xs font-bold text-[#0F172A]">
                             <Banknote className="h-3 w-3" />
-                            {event.amount ? `₹${event.amount}` : "Free"}
+                            {formatPriceLabel({ price: event.price, priceMode: event.priceMode, groupPrice: event.groupPrice })}
                           </span>
                         </div>
 
@@ -183,7 +184,7 @@ export default function EventPage() {
               <Search className="h-5 w-5 text-[#0F172A]/50" />
             </div>
             <h3 className="mt-4 font-heading text-lg font-bold">No stages match</h3>
-            <p className="mx-auto mt-1 max-w-sm text-sm text-[#0F172A]/60">Try a different search or pick another domain. All 10 stages are live.</p>
+            <p className="mx-auto mt-1 max-w-sm text-sm text-[#0F172A]/60">Try a different search or pick another domain. All 7 stages are live.</p>
             <button
               onClick={() => {
                 setSearchQuery("");

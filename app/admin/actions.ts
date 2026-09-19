@@ -58,6 +58,8 @@ export async function createEvent(input: {
   category: string;
   venue: string;
   price: number;
+  priceMode?: "PER_TEAM" | "PER_PARTICIPANT" | "SOLO_OR_GROUP";
+  groupPrice?: number;
   minTeamSize: number;
   maxTeamSize: number;
   date: string;
@@ -76,6 +78,8 @@ export async function createEvent(input: {
       category: input.category,
       venue: input.venue,
       price: input.price,
+      priceMode: input.priceMode ?? "PER_TEAM",
+      groupPrice: input.groupPrice ?? null,
       minTeamSize: input.minTeamSize,
       maxTeamSize: input.maxTeamSize,
       date: new Date(input.date),
@@ -168,6 +172,8 @@ export async function updateEvent(input: {
   category?: string;
   venue?: string;
   price?: number;
+  priceMode?: "PER_TEAM" | "PER_PARTICIPANT" | "SOLO_OR_GROUP";
+  groupPrice?: number;
   minTeamSize?: number;
   maxTeamSize?: number;
   status?: string;
@@ -181,6 +187,8 @@ export async function updateEvent(input: {
   if (input.category !== undefined) data.category = input.category;
   if (input.venue !== undefined) data.venue = input.venue;
   if (input.price !== undefined) data.price = input.price;
+  if (input.priceMode !== undefined) data.priceMode = input.priceMode;
+  if (input.groupPrice !== undefined) data.groupPrice = input.groupPrice ?? null;
   if (input.minTeamSize !== undefined) data.minTeamSize = input.minTeamSize;
   if (input.maxTeamSize !== undefined) data.maxTeamSize = input.maxTeamSize;
   if (input.status !== undefined) data.status = input.status;

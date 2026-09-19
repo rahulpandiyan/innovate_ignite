@@ -6,6 +6,8 @@ export const createEventSchema = z.object({
   type: z.enum(["SOLO", "TEAM"]),
   category: z.string().min(1, "Category is required"),
   price: z.number().min(0, "Price must be non-negative"),
+  priceMode: z.enum(["PER_TEAM", "PER_PARTICIPANT", "SOLO_OR_GROUP"]).optional().default("PER_TEAM"),
+  groupPrice: z.number().min(0).optional(),
   date: z.string().datetime().optional(),
   time: z.string().optional(),
   venue: z.string().optional(),

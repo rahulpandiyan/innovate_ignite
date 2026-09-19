@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import prisma from "@/lib/db";
 import { requireAuth, successResponse, errorResponse } from "@/lib/apiHelpers";
+import { computeEventPrice } from "@/lib/pricing";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ eventId: string }> }) {
   try {
@@ -10,9 +11,25 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ eve
     const { eventId } = await params;
     const userId = auth.session.id;
 
+    let body: { teamSize?: number } = {};
+    try {
+      body = await req.json();
+    } catch {}
+
     const event = await prisma.event.findUnique({
       where: { id: eventId },
-      select: { id: true, isActive: true, name: true, type: true, status: true, price: true },
+      select: {
+        id: true,
+        isActive: true,
+        name: true,
+        type: true,
+        status: true,
+        price: true,
+        priceMode: true,
+        groupPrice: true,
+        minTeamSize: true,
+        maxTeamSize: true,
+      },
     });
     if (!event || !event.isActive) return errorResponse("Event not found or not open.", 404);
     if (event.status !== "OPEN") return errorResponse("Registrations closed for this event.", 400);
@@ -22,6 +39,21 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ eve
       where: { userId_eventId: { userId, eventId } },
     });
     if (existing) return errorResponse("Already registered for this event.", 409);
+
+    // team size (includes leader). Defaults to minimum for the event.
+    const minTeamSize = event.minTeamSize ?? 1;
+    const maxTeamSize = Math.max(event.maxTeamSize ?? minTeamSize, minTeamSize);
+    let teamSize = body.teamSize ?? minTeamSize;
+    if (!Number.isInteger(teamSize) || teamSize < minTeamSize || teamSize > maxTeamSize) {
+      teamSize = minTeamSize;
+    }
+
+    const price = computeEventPrice({
+      price: Number(event.price ?? 0),
+      priceMode: event.priceMode,
+      teamSize,
+      groupPrice: event.groupPrice !== null ? Number(event.groupPrice) : null,
+    });
 
     // ensure participant exists
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { collegeId: true, collegeName: true } });
@@ -61,24 +93,23 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ eve
         eventId,
         collegeId: participant.collegeId,
         status: "PENDING",
-        formResponses: {},
+        formResponses: { teamSize, price, priceMode: event.priceMode },
       },
     });
 
     // For paid events, create a PENDING payment so dashboard shows pending until paid
-    const price = Number(event.price ?? 0);
     let payment: any = null;
     if (price > 0) {
       payment = await prisma.payment.create({
         data: {
           registrationId: registration.id,
-          amount: event.price,
+          amount: price,
           status: "PENDING",
         },
       });
     }
 
-    return successResponse({ registration, payment, isPaidEvent: price > 0, price }, 201);
+    return successResponse({ registration, payment, isPaidEvent: price > 0, price, teamSize }, 201);
   } catch (error: any) {
     console.error("Registration error:", error);
     return errorResponse(error?.message ?? "Registration failed. Please try again.", 500);
