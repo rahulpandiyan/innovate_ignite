@@ -124,8 +124,8 @@ function SignUpContent() {
 
       <div className="overflow-hidden border-y border-[#0F172A]/10 bg-[#0F172A] py-2">
         <div className="flex animate-[marquee_22s_linear_infinite] whitespace-nowrap font-mono text-[10px] sm:text-[11px] tracking-[0.16em] uppercase text-white">
-          <span className="mx-6">VV CARE · BGMI & FREE FIRE · VVIT GOT LATENT · AIR CRASH · MINI PROJECT · CRUCIAL BEATS · GROUP DISCUSSION · VVIT BENGALURU · OCT 8–9</span>
-          <span className="mx-6" aria-hidden>VV CARE · BGMI & FREE FIRE · VVIT GOT LATENT · AIR CRASH · MINI PROJECT · CRUCIAL BEATS · GROUP DISCUSSION · VVIT BENGALURU · OCT 8–9</span>
+          <span className="mx-6">TECHNINJA · VV CARE · MINI PROJECT · CODE CONFLUX · GROUP DISCUSSION · AIR CRASH · PHOTOGRAPHY · DANCE ELITE · BGMI & FREE FIRE · VVIT GOT LATENT · REEL VIDEO MAKING · THE ROYAL WALK · CRUCIAL BEATS · VVIT BENGALURU · OCT 8–9</span>
+          <span className="mx-6" aria-hidden>TECHNINJA · VV CARE · MINI PROJECT · CODE CONFLUX · GROUP DISCUSSION · AIR CRASH · PHOTOGRAPHY · DANCE ELITE · BGMI & FREE FIRE · VVIT GOT LATENT · REEL VIDEO MAKING · THE ROYAL WALK · CRUCIAL BEATS · VVIT BENGALURU · OCT 8–9</span>
         </div>
         <style>{`@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
       </div>
@@ -146,7 +146,7 @@ function SignUpContent() {
                 <span className="block text-[44px] sm:text-[52px] text-[#2362EC]">ACCOUNT</span>
               </h1>
               <p className="mt-3 max-w-sm text-sm leading-6 text-[#0F172A]/60">
-                One pass for all 7 stages. Verify your email, then complete your profile. No spam — just your lineup.
+                One pass for all 13 stages. Verify your email, then complete your profile. No spam — just your lineup.
               </p>
               <div className="mt-5 flex items-center gap-1.5">
                 {[1, 2, 3].map((s) => (

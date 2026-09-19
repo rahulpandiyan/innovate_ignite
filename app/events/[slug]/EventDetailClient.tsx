@@ -243,25 +243,37 @@ export default function EventDetailClient({ category, details }: Props) {
 
                   {/* Static sheet data as fallback */}
                   {mainDetail && mainDetail.coordinators && mainDetail.coordinators.length ? (
-                    <div>
-                      {coordinatorsFromDb.length > 0 && <p className="mb-2 font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/40">Sheet contacts</p>}
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        {mainDetail.coordinators?.map((c, idx) => (
-                          <a key={idx} href={c.email ? `mailto:${c.email}` : undefined} className={`flex items-center gap-3 rounded-xl border p-3 transition-colors ${c.email ? "border-[#0F172A]/10 bg-[#FFFBEB] hover:bg-white" : "border-dashed border-[#0F172A]/15 bg-white"}`}>
-                            <span className={`grid h-9 w-9 place-items-center rounded-full text-white ${c.email ? style.bg : "bg-[#0F172A]/20"}`}>
-                              <Users className="h-4 w-4" />
-                            </span>
-                            <span>
-                              <span className="block text-sm font-bold leading-none">{c.name}</span>
-                              {c.email ? (
-                                <span className="mt-1 flex items-center gap-1 font-mono text-xs text-[#2362EC]"><Mail className="h-3 w-3" /> {c.email}</span>
-                              ) : (
-                                <span className="mt-1 font-mono text-xs text-[#0F172A]/40">Contact via faculty</span>
-                              )}
-                            </span>
-                          </a>
-                        ))}
-                      </div>
+                    <div className="space-y-4">
+                      {coordinatorsFromDb.length > 0 && <p className="font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/40">Sheet contacts</p>}
+                      {(() => {
+                        const staff = mainDetail.coordinators?.filter((c) => c.faculty) ?? [];
+                        const students = mainDetail.coordinators?.filter((c) => !c.faculty) ?? [];
+                        const groups: { title: string; people: typeof mainDetail.coordinators }[] = [];
+                        if (staff.length) groups.push({ title: "Staff coordinators", people: staff });
+                        if (students.length) groups.push({ title: "Student coordinators", people: students });
+                        return groups.map((g) => (
+                          <div key={g.title}>
+                            <p className="mb-2 font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/40">{g.title}</p>
+                            <div className="grid gap-3 sm:grid-cols-2">
+                              {g.people.map((c, idx) => (
+                                <a key={idx} href={c.email ? `mailto:${c.email}` : undefined} className={`flex items-center gap-3 rounded-xl border p-3 transition-colors ${c.email ? "border-[#0F172A]/10 bg-[#FFFBEB] hover:bg-white" : "border-dashed border-[#0F172A]/15 bg-white"}`}>
+                                  <span className={`grid h-9 w-9 place-items-center rounded-full text-white ${c.email ? style.bg : "bg-[#0F172A]/20"}`}>
+                                    <Users className="h-4 w-4" />
+                                  </span>
+                                  <span>
+                                    <span className="block text-sm font-bold leading-none">{c.name}</span>
+                                    {c.email ? (
+                                      <span className="mt-1 flex items-center gap-1 font-mono text-xs text-[#2362EC]"><Mail className="h-3 w-3" /> {c.email}</span>
+                                    ) : (
+                                      <span className="mt-1 font-mono text-xs text-[#0F172A]/40">Contact via faculty</span>
+                                    )}
+                                  </span>
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        ));
+                      })()}
                     </div>
                   ) : coordinatorsFromDb.length === 0 ? (
                     <p className="font-mono text-sm text-[#0F172A]/50">Coordinator info pending — check event poster or contact VVIT SPOC.</p>

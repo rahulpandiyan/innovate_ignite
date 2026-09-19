@@ -21,6 +21,23 @@ function slugify(name: string): string {
 
 export const eventsList: EventList[] = [
     {
+        slug: slugify("Techninja"),
+        category: "TECHNICAL",
+        image: eventImage,
+        name: "Techninja",
+        rules: [
+            "Faculty coordinator: M G Kousar",
+            "Student coordinators: Sam Goldwin, Rahul",
+            "Team size: 1–4",
+            "Bring college ID and team details.",
+        ],
+        coordinators: [
+            { name: "M G Kousar", faculty: true },
+            { name: "Sam Goldwin" },
+            { name: "Rahul" },
+        ],
+    },
+    {
         slug: slugify("VV CARE – Social Spotlight"),
         category: "GENERAL",
         image: eventImage,
@@ -86,6 +103,35 @@ export const eventsList: EventList[] = [
         ],
     },
     {
+        slug: slugify("Reel Video Making"),
+        category: "GENERAL",
+        image: eventImage,
+        name: "Reel Video Making",
+        rules: [
+            "Faculty coordinators: Sushma B M, Bharathi J",
+            "Team size: 1–4",
+            "Create a creative reel on the given theme.",
+        ],
+        coordinators: [
+            { name: "Sushma B M", faculty: true },
+            { name: "Bharathi J", faculty: true },
+        ],
+    },
+    {
+        slug: slugify("The Royal Walk"),
+        category: "GENERAL",
+        image: eventImage,
+        name: "The Royal Walk",
+        rules: [
+            "Faculty coordinator: MahaLakshmi",
+            "Solo event",
+            "Fashion/walk event.",
+        ],
+        coordinators: [
+            { name: "MahaLakshmi", faculty: true },
+        ],
+    },
+    {
         slug: slugify("Air Crash"),
         category: "GENERAL",
         image: eventImage,
@@ -110,6 +156,38 @@ export const eventsList: EventList[] = [
         ],
     },
     {
+        slug: slugify("Photography"),
+        category: "GENERAL",
+        image: eventImage,
+        name: "Photography",
+        rules: [
+            "Faculty coordinator: Supriya",
+            "Solo event",
+            "Bring your own camera/phone.",
+        ],
+        coordinators: [
+            { name: "Supriya", faculty: true },
+        ],
+    },
+    {
+        slug: slugify("Dance Elite"),
+        category: "DANCE",
+        image: eventImage,
+        name: "Dance Elite",
+        rules: [
+            "Faculty coordinator: J Bharathi",
+            "Student coordinators: Krishnaveni H K, Lahari M, Bhoomika",
+            "Team size: 3–10",
+            "Any dance form. 5–7 minutes. Bring the track on a pen drive.",
+        ],
+        coordinators: [
+            { name: "J Bharathi", faculty: true },
+            { name: "Krishnaveni H K" },
+            { name: "Lahari M" },
+            { name: "Bhoomika" },
+        ],
+    },
+    {
         slug: slugify("Mini Project Presentation"),
         category: "TECHNICAL",
         image: eventImage,
@@ -131,6 +209,25 @@ export const eventsList: EventList[] = [
             { name: "Anushka", email: "anushkasuryanshiafs@gmail.com" },
             { name: "Rajaditya Raj", email: "rajadityaraj005@gmail.com" },
             { name: "Sneha", email: "snehabr2005@gmail.com" },
+        ],
+    },
+    {
+        slug: slugify("Code Conflux"),
+        category: "TECHNICAL",
+        image: eventImage,
+        name: "Code Conflux",
+        rules: [
+            "Faculty coordinators: V Vanitha, Rashmi Rani",
+            "Student coordinators: Anushka, Mohammed Ghouse, Daniel",
+            "Team size: 1–3",
+            "Bring laptop. Internet may be restricted.",
+        ],
+        coordinators: [
+            { name: "V Vanitha", faculty: true },
+            { name: "Rashmi Rani", faculty: true },
+            { name: "Anushka" },
+            { name: "Mohammed Ghouse" },
+            { name: "Daniel" },
         ],
     },
     {

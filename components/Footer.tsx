@@ -40,7 +40,7 @@ export default function Footer() {
               <span className="text-[#F3C317]">built by students.</span>
             </h3>
             <p className="mt-3 max-w-md text-sm leading-6 text-white/60">
-              Vijaya Vittala Institute Of Technology presents Innovate Ignite — 10 stages, 6 domains, one campus.
+              Vijaya Vittala Institute Of Technology presents Innovate Ignite — 13 stages, 5 domains, one campus.
               Code at midnight. Paint at dawn. Dance at dusk.
             </p>
             <div className="mt-6 flex items-center gap-3">
@@ -73,7 +73,7 @@ export default function Footer() {
             <p className="font-mono text-[11px] tracking-[0.18em] uppercase text-white/40">Explore</p>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li><Link href="/" className="text-white/70 hover:text-white transition-colors">Home</Link></li>
-              <li><Link href="/events" className="text-white/70 hover:text-white transition-colors">Events — 10 stages</Link></li>
+              <li><Link href="/events" className="text-white/70 hover:text-white transition-colors">Events — 13 stages</Link></li>
               <li><Link href="/gallery" className="text-white/70 hover:text-white transition-colors">Gallery</Link></li>
               <li><Link href="/about" className="text-white/70 hover:text-white transition-colors">About VVIT</Link></li>
             </ul>

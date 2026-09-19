@@ -3,12 +3,12 @@ import { Music, Gamepad2, Star, Code, Clapperboard } from "lucide-react";
 export const categories = [
   {
     name: "Technical",
-    count: 1,
+    count: 3,
     icon: Code,
     accent: "hsl(221 82% 55%)",
     accentLight: "hsl(221 82% 55% / 0.08)",
     accentBorder: "hsl(221 82% 55% / 0.2)",
-    tags: ["Mini Project Presentation"],
+    tags: ["Techninja", "Code Conflux", "Mini Project Presentation"],
   },
   {
     name: "Gaming",
@@ -30,15 +30,24 @@ export const categories = [
   },
   {
     name: "General",
-    count: 4,
+    count: 7,
     icon: Star,
     accent: "hsl(197 70% 45%)",
     accentLight: "hsl(197 70% 45% / 0.08)",
     accentBorder: "hsl(197 70% 45% / 0.22)",
-    tags: ["VV CARE – Social Spotlight", "VVIT Got Latent", "Air Crash", "Group Discussion"],
+    tags: ["VV CARE – Social Spotlight", "Air Crash", "VVIT Got Latent", "Group Discussion", "Photography", "Reel Video Making", "The Royal Walk"],
+  },
+  {
+    name: "Dance",
+    count: 1,
+    icon: Music,
+    accent: "hsl(331 73% 52%)",
+    accentLight: "hsl(331 73% 52% / 0.08)",
+    accentBorder: "hsl(331 73% 52% / 0.22)",
+    tags: ["Dance Elite"],
   },
 ];
 
 export const marqueeItems = [
-  "VV CARE – Social Spotlight", "BGMI & Free Fire", "VVIT Got Latent", "Air Crash", "Mini Project Presentation", "Crucial Beats", "Group Discussion",
+  "Techninja", "Code Conflux", "Mini Project Presentation", "BGMI & Free Fire", "Crucial Beats", "VV CARE – Social Spotlight", "Air Crash", "VVIT Got Latent", "Group Discussion", "Photography", "Dance Elite", "Reel Video Making", "The Royal Walk",
 ];
