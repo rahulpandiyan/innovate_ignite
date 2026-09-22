@@ -72,7 +72,7 @@ export default function Home() {
                     &apos;26
                   </span>
                   <span className="hidden sm:inline-flex -rotate-2 rounded-xl bg-[#F3C317] px-3 py-1 font-mono text-[11px] font-bold tracking-[0.16em] uppercase text-[#0F172A] shadow-sm">
-                    14 events · 14 stages
+                    13 events · 13 stages
                   </span>
                 </span>
               </motion.h1>
@@ -177,14 +177,14 @@ export default function Home() {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-[#0F172A]/10 bg-white px-3 py-1 font-mono text-[11px] tracking-[0.16em] uppercase">
-                <Star className="h-3.5 w-3.5 text-[#F3C317]" /> Lineup — 14 stages
+                <Star className="h-3.5 w-3.5 text-[#F3C317]" /> Lineup — 13 stages
               </div>
               <h2 className="mt-3 font-heading text-3xl font-black tracking-tight sm:text-4xl" style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "-0.02em" }}>
                 Pick your stage.
               </h2>
             </div>
             <p className="max-w-md font-body text-sm leading-6 text-[#0F172A]/60">
-              5 domains, 14 events. Each sticker peels to reveal venue, team size and price — tap to filter the real list.
+              5 domains, 13 events. Each sticker peels to reveal venue, team size and price — tap to filter the real list.
             </p>
           </div>
 
@@ -236,7 +236,7 @@ export default function Home() {
 
           <div className="mt-6 flex justify-center">
             <Link href="/events" className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.14em] uppercase text-[#0F172A]/60 hover:text-[#0F172A]">
-              View all 14 events <ArrowRight className="h-3.5 w-3.5" />
+              View all 13 events <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         </div>
@@ -250,7 +250,7 @@ export default function Home() {
             <div className="col-span-12 lg:col-span-4">
               <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#19E3A8]">Festival timetable</p>
               <h2 className="mt-2 text-3xl font-black leading-none tracking-tight" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
-                2 DAYS.<br />14 STAGES.<br />
+                2 DAYS.<br />13 STAGES.<br />
                 <span className="text-[#F3C317]">NONSTOP.</span>
               </h2>
               <p className="mt-3 max-w-sm text-sm leading-6 text-white/70">
@@ -263,8 +263,8 @@ export default function Home() {
             <div className="col-span-12 lg:col-span-8">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {[
-                  { day: "DAY 1 — OCT 8", items: ["Code Conflux", "Group Discussion", "VV CARE – Social Spotlight", "Mini Project Presentation", "Techninja"], dot: "bg-[#19E3A8]" },
-                  { day: "DAY 2 — OCT 9", items: ["Air Crash", "Reel Video Making", "BGMI", "Free Fire", "VVIT Got Latent", "Photography", "The Royal Walk", "Dance Elite", "Crucial Beats"], dot: "bg-[#F3C317]" },
+                  { day: "DAY 1 — OCT 8", items: ["Code conflux", "Group Discussion", "VV CARE", "Mini Project Expo", "TechNinja - Quiz"], dot: "bg-[#19E3A8]" },
+                  { day: "DAY 2 — OCT 9", items: ["AIR CRASH", "Reel Video Making", "BGMI & FreeFire", "VVIT GOT LATENT", "PIXELS - Photography", "The Royal Walk", "DANCE.exe", "Crucial Beats"], dot: "bg-[#F3C317]" },
                 ].map((col) => (
                   <div key={col.day} className="rounded-2xl border border-white/10 bg-white/[0.06] p-5 backdrop-blur">
                     <p className="font-mono text-[11px] tracking-[0.16em] text-white/70">{col.day}</p>
@@ -300,7 +300,7 @@ export default function Home() {
               Your crew. <span className="text-[#2362EC]">Your stage.</span> One pass.
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-[#0F172A]/60">
-              Join 1000+ students across 14 events. One portal, one pass, all venues on VVIT campus. Edit your lineup till Nov 10.
+              Join 1000+ students across 13 events. One portal, one pass, all venues on VVIT campus. Edit your lineup till Nov 10.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg" className="h-11 rounded-full bg-[#0F172A] px-7 text-white hover:bg-black">

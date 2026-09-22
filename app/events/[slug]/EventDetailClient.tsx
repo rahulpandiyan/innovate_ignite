@@ -54,7 +54,7 @@ export default function EventDetailClient({ category, details }: Props) {
   const [showWhatsApp, setShowWhatsApp] = useState(false);
   const [selectedSize, setSelectedSize] = useState<number>(category.minTeamSize);
   const [latentAnswers, setLatentAnswers] = useState<Record<number, string>>({});
-  const isLatent = category.eventName === "VVIT Got Latent";
+  const isLatent = category.eventName === "VVIT GOT LATENT";
   const latentComplete = LATENT_QUESTIONS.every((_, i) => (latentAnswers[i] ?? "").trim().length > 0);
   const router = useRouter();
   const { isLoggedIn } = useAuthContext();

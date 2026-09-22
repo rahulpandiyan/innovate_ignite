@@ -8,16 +8,16 @@ export const categories = [
     accent: "hsl(221 82% 55%)",
     accentLight: "hsl(221 82% 55% / 0.08)",
     accentBorder: "hsl(221 82% 55% / 0.2)",
-    tags: ["Techninja", "Code Conflux", "Mini Project Presentation"],
+    tags: ["TechNinja - Quiz", "Code conflux", "Mini Project Expo"],
   },
   {
     name: "Gaming",
-    count: 2,
+    count: 1,
     icon: Gamepad2,
     accent: "hsl(258 70% 55%)",
     accentLight: "hsl(258 70% 55% / 0.08)",
     accentBorder: "hsl(258 70% 55% / 0.25)",
-    tags: ["BGMI", "Free Fire"],
+    tags: ["BGMI & FreeFire"],
   },
   {
     name: "Theatre",
@@ -35,7 +35,7 @@ export const categories = [
     accent: "hsl(197 70% 45%)",
     accentLight: "hsl(197 70% 45% / 0.08)",
     accentBorder: "hsl(197 70% 45% / 0.22)",
-    tags: ["VV CARE – Social Spotlight", "Air Crash", "VVIT Got Latent", "Group Discussion", "Photography", "Reel Video Making", "The Royal Walk"],
+    tags: ["VV CARE", "AIR CRASH", "VVIT GOT LATENT", "Group Discussion", "PIXELS - Photography", "Reel Video Making", "The Royal Walk"],
   },
   {
     name: "Dance",
@@ -44,10 +44,10 @@ export const categories = [
     accent: "hsl(331 73% 52%)",
     accentLight: "hsl(331 73% 52% / 0.08)",
     accentBorder: "hsl(331 73% 52% / 0.22)",
-    tags: ["Dance Elite"],
+    tags: ["DANCE.exe"],
   },
 ];
 
 export const marqueeItems = [
-  "Techninja", "Code Conflux", "Mini Project Presentation", "BGMI", "Free Fire", "Crucial Beats", "VV CARE – Social Spotlight", "Air Crash", "VVIT Got Latent", "Group Discussion", "Photography", "Dance Elite", "Reel Video Making", "The Royal Walk",
+  "TechNinja - Quiz", "Code conflux", "Mini Project Expo", "BGMI & FreeFire", "Crucial Beats", "VV CARE", "AIR CRASH", "VVIT GOT LATENT", "Group Discussion", "PIXELS - Photography", "DANCE.exe", "Reel Video Making", "The Royal Walk",
 ];

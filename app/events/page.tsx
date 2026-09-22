@@ -73,7 +73,7 @@ export default function EventPage() {
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#0F172A]/40" />
               <input
                 type="text"
-                placeholder="Search Techninja, BGMI, Dance Elite…"
+                placeholder="Search Code conflux, AIR CRASH, DANCE.exe…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="h-12 w-full rounded-full border border-[#0F172A]/10 bg-white pl-11 pr-4 text-[16px] sm:text-sm font-medium text-[#0F172A] placeholder:text-[#0F172A]/40 focus:border-[#2362EC]/30 focus:outline-none focus:ring-4 focus:ring-[#2362EC]/10"

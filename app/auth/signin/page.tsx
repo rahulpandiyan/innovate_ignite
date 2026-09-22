@@ -95,8 +95,8 @@ function SignInContent() {
       {/* ticker */}
       <div className="overflow-hidden border-y border-[#0F172A]/10 bg-[#0F172A] py-2">
         <div className="flex animate-[marquee_22s_linear_infinite] whitespace-nowrap font-mono text-[10px] sm:text-[11px] tracking-[0.16em] uppercase text-white">
-          <span className="mx-6">TECHNINJA ◆ VV CARE ◆ MINI PROJECT ◆ CODE CONFLUX ◆ GROUP DISCUSSION ◆ AIR CRASH ◆ PHOTOGRAPHY ◆ DANCE ELITE ◆ BGMI ◆ FREE FIRE ◆ VVIT GOT LATENT ◆ REEL VIDEO MAKING ◆ THE ROYAL WALK ◆ CRUCIAL BEATS</span>
-          <span className="mx-6" aria-hidden>TECHNINJA ◆ VV CARE ◆ MINI PROJECT ◆ CODE CONFLUX ◆ GROUP DISCUSSION ◆ AIR CRASH ◆ PHOTOGRAPHY ◆ DANCE ELITE ◆ BGMI ◆ FREE FIRE ◆ VVIT GOT LATENT ◆ REEL VIDEO MAKING ◆ THE ROYAL WALK ◆ CRUCIAL BEATS</span>
+          <span className="mx-6">TECHNINJA - QUIZ ◆ VV CARE ◆ MINI PROJECT EXPO ◆ CODE CONFLUX ◆ GROUP DISCUSSION ◆ AIR CRASH ◆ PIXELS - PHOTOGRAPHY ◆ DANCE.EXE ◆ BGMI & FREEFIRE ◆ VVIT GOT LATENT ◆ REEL VIDEO MAKING ◆ THE ROYAL WALK ◆ CRUCIAL BEATS</span>
+          <span className="mx-6" aria-hidden>TECHNINJA - QUIZ ◆ VV CARE ◆ MINI PROJECT EXPO ◆ CODE CONFLUX ◆ GROUP DISCUSSION ◆ AIR CRASH ◆ PIXELS - PHOTOGRAPHY ◆ DANCE.EXE ◆ BGMI & FREEFIRE ◆ VVIT GOT LATENT ◆ REEL VIDEO MAKING ◆ THE ROYAL WALK ◆ CRUCIAL BEATS</span>
         </div>
         <style>{`@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
       </div>
@@ -121,7 +121,7 @@ function SignInContent() {
                 <span className="block text-[44px] sm:text-[56px] text-[#2362EC]">BACK</span>
               </h1>
               <p className="mt-3 max-w-sm text-sm leading-6 text-[#0F172A]/60">
-                Your pass to 14 stages. Sign in to register, form teams, and track your lineup. One portal — all venues on campus.
+                Your pass to 13 stages. Sign in to register, form teams, and track your lineup. One portal — all venues on campus.
               </p>
               <div className="mt-6 flex items-center gap-3">
                 <Image src={gatLogo} alt="VVIT" width={48} height={48} className="h-9 w-auto" />
@@ -129,7 +129,7 @@ function SignInContent() {
                 <Image src={innovateIgniteLogo} alt="Ignite" width={48} height={48} className="h-9 w-auto" />
               </div>
               <div className="mt-6 inline-flex -rotate-1 rounded-xl bg-[#FFF1A6] px-3 py-1.5 shadow" >
-                <span className="text-sm">Psst — 14 events, 5 domains →</span>
+                <span className="text-sm">Psst — 13 events, 5 domains →</span>
               </div>
             </div>
           </div>
@@ -242,7 +242,7 @@ function SignInContent() {
               </p>
             </div>
           </div>
-          <p className="mt-3 text-center font-mono text-[11px] text-[#0F172A]/40">Protected by VVIT · One pass for all 14 stages</p>
+          <p className="mt-3 text-center font-mono text-[11px] text-[#0F172A]/40">Protected by VVIT · One pass for all 13 stages</p>
         </motion.div>
       </div>
     </div>

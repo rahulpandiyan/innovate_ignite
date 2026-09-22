@@ -98,24 +98,24 @@ async function seedColleges() {
 async function seedEvents(superAdminId: string, coordinatorId: string, judgeId: string) {
   const events = [
     {
-      name: "Techninja",
+      name: "TechNinja - Quiz",
       category: "TECHNICAL",
       type: "TEAM" as const,
-      price: 100,
+      price: 50,
       priceMode: "PER_TEAM" as const,
       groupPrice: null,
       minTeamSize: 2,
       maxTeamSize: 2,
       status: "OPEN" as const,
       date: new Date("2026-10-08T10:00:00.000Z"),
-      rules: "Team of 2 (no solo) | ₹100 per team | Tech-based event | Coordinator: M G Kousar | Students: Sam Goldwin, Rahul",
+      rules: "Team of 2 (no solo) | ₹50 per team | Quiz: 3 rounds (Prelim 25m, Second 25m, Final 25m) | 4 options each | Smartphone required | No AI/search | Top 10 to Second, Top 5 to Final",
       faculty: "M G Kousar",
       students: [{ name: "Sam Goldwin", phone: "+919739431299" }, { name: "Rahul", phone: "+918792137157" }],
       assignCoordinatorId: coordinatorId,
       assignJudgeId: judgeId,
     },
     {
-      name: "VV CARE – Social Spotlight",
+      name: "VV CARE",
       category: "GENERAL",
       type: "TEAM" as const,
       price: 50,
@@ -132,7 +132,7 @@ async function seedEvents(superAdminId: string, coordinatorId: string, judgeId: 
       assignJudgeId: judgeId,
     },
     {
-      name: "BGMI",
+      name: "BGMI & FreeFire",
       category: "GAMING",
       type: "TEAM" as const,
       price: 200,
@@ -142,31 +142,14 @@ async function seedEvents(superAdminId: string, coordinatorId: string, judgeId: 
       maxTeamSize: 4,
       status: "OPEN" as const,
       date: new Date("2026-10-09T10:00:00.000Z"),
-      rules: "Squad of 4 | ₹200 per team | Online + offline modes | Coordinators: Subhrajit, Kumari Manjunatha | Students: Al Arshad, Charan",
+      rules: "Squad of 4 | ₹200 per team | Offline campus-only squad for BGMI and Free Fire | Prize pool up to ₹5000 | IGL is primary contact | Coordinators: Subhrajit, Kumari Manjunatha | Students: Al Arshad, Charan",
       faculty: "Subhrajit, Kumari Manjunatha",
       students: [{ name: "Al Arshad", phone: "+917795811484" }, { name: "Charan", phone: "+916362348311" }],
       assignCoordinatorId: coordinatorId,
       assignJudgeId: judgeId,
     },
     {
-      name: "Free Fire",
-      category: "GAMING",
-      type: "TEAM" as const,
-      price: 200,
-      priceMode: "PER_TEAM" as const,
-      groupPrice: null,
-      minTeamSize: 4,
-      maxTeamSize: 4,
-      status: "OPEN" as const,
-      date: new Date("2026-10-09T10:00:00.000Z"),
-      rules: "Squad of 4 | ₹200 per team | Online + offline modes | Coordinators: Subhrajit, Kumari Manjunatha | Students: Al Arshad, Charan",
-      faculty: "Subhrajit, Kumari Manjunatha",
-      students: [{ name: "Al Arshad", phone: "+917795811484" }, { name: "Charan", phone: "+916362348311" }],
-      assignCoordinatorId: coordinatorId,
-      assignJudgeId: judgeId,
-    },
-    {
-      name: "VVIT Got Latent",
+      name: "VVIT GOT LATENT",
       category: "GENERAL",
       type: "SOLO" as const,
       price: 50,
@@ -217,7 +200,7 @@ async function seedEvents(superAdminId: string, coordinatorId: string, judgeId: 
       assignJudgeId: judgeId,
     },
     {
-      name: "Air Crash",
+      name: "AIR CRASH",
       category: "GENERAL",
       type: "SOLO" as const,
       price: 50,
@@ -234,7 +217,7 @@ async function seedEvents(superAdminId: string, coordinatorId: string, judgeId: 
       assignJudgeId: judgeId,
     },
     {
-      name: "Photography",
+      name: "PIXELS - Photography",
       category: "GENERAL",
       type: "SOLO" as const,
       price: 100,
@@ -251,14 +234,14 @@ async function seedEvents(superAdminId: string, coordinatorId: string, judgeId: 
       assignJudgeId: judgeId,
     },
     {
-      name: "Dance Elite",
+      name: "DANCE.exe",
       category: "DANCE",
       type: "TEAM" as const,
       price: 50,
       priceMode: "SOLO_OR_GROUP" as const,
       groupPrice: 150,
       minTeamSize: 1,
-      maxTeamSize: 10,
+      maxTeamSize: 12,
       status: "OPEN" as const,
       date: new Date("2026-10-09T10:00:00.000Z"),
       rules: "Solo + Group allowed | Solo ₹50 (max 5 min) | Group 2-10 ₹150 (5-7 min) | Any dance form | Bring the track on a pen drive | Coordinator: J Bharathi | Students: Krishnaveni H K, Lahari M, Bhoomika",
@@ -268,7 +251,7 @@ async function seedEvents(superAdminId: string, coordinatorId: string, judgeId: 
       assignJudgeId: judgeId,
     },
     {
-      name: "Mini Project Presentation",
+      name: "Mini Project Expo",
       category: "TECHNICAL",
       type: "TEAM" as const,
       price: 200,
@@ -285,14 +268,14 @@ async function seedEvents(superAdminId: string, coordinatorId: string, judgeId: 
       assignJudgeId: judgeId,
     },
     {
-      name: "Code Conflux",
+      name: "Code conflux",
       category: "TECHNICAL",
       type: "TEAM" as const,
-      price: 150,
+      price: 200,
       priceMode: "PER_TEAM" as const,
       groupPrice: null,
-      minTeamSize: 1,
-      maxTeamSize: 3,
+      minTeamSize: 2,
+      maxTeamSize: 2,
       status: "OPEN" as const,
       date: new Date("2026-10-08T10:00:00.000Z"),
       rules: "Team 1-3 | ₹150 per team | Coding competition | Coordinators: V Vanitha, Rashmi Rani | Students: Anushka, Mohammed Ghouse, Daniel",
@@ -305,14 +288,14 @@ async function seedEvents(superAdminId: string, coordinatorId: string, judgeId: 
       name: "Crucial Beats",
       category: "THEATRE",
       type: "TEAM" as const,
-      price: 50,
+      price: 100,
       priceMode: "SOLO_OR_GROUP" as const,
       groupPrice: 150,
       minTeamSize: 1,
       maxTeamSize: 2,
       status: "OPEN" as const,
       date: new Date("2026-10-09T14:00:00.000Z"),
-      rules: "Solo ₹50 / Group ₹150 | Max 4 min | Coordinators: Agnes Stephen | Students: Thannavee, Lavanya",
+      rules: "Solo ₹100 / Group ₹150 | Max 4 min | Coordinators: Agnes Stephen | Students: Thannavee, Lavanya",
       faculty: "Agnes Stephen",
       students: [{ name: "Thannavee", phone: "+917204967325" }, { name: "Lavanya", phone: "+917204967325" }],
       assignCoordinatorId: coordinatorId,
@@ -476,8 +459,8 @@ async function main() {
 
   const events = await seedEvents(superAdmin.id, coordinator.id, judge.id);
 
-  const soloDance = events.find((e) => e.name === "VVIT Got Latent")!;
-  const acappella = events.find((e) => e.name === "VV CARE – Social Spotlight")!;
+  const soloDance = events.find((e) => e.name === "VVIT GOT LATENT")!;
+  const acappella = events.find((e) => e.name === "VV CARE")!;
 
   const par1 = await prisma.participant.findUnique({ where: { userId: p1.id } });
   const par2 = await prisma.participant.findUnique({ where: { userId: p2.id } });
@@ -561,7 +544,7 @@ async function main() {
   // ── Slice 1 demo: team, invite, order ────────────────────────────────────
   const existingTeam = await prisma.team.findFirst({ where: { name: "Resonance Crew" } });
   if (!existingTeam) {
-    const bop = events.find((e) => e.name === "BGMI")!;
+    const bop = events.find((e) => e.name === "BGMI & FreeFire")!;
     const team = await prisma.team.create({
       data: { name: "Resonance Crew", eventId: bop.id, leaderId: p1.id },
     });
@@ -581,7 +564,7 @@ async function main() {
 
   const existingOrder = await prisma.order.findFirst({ where: { userId: p1.id } });
   if (!existingOrder) {
-    const bop = events.find((e) => e.name === "BGMI")!;
+    const bop = events.find((e) => e.name === "BGMI & FreeFire")!;
     await prisma.order.create({
       data: {
         userId: p1.id,
