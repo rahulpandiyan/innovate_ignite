@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { ArrowLeft, Users, Mail, MapPin, Calendar, Banknote, ShieldCheck, ChevronDown, Loader2 } from "lucide-react";
+import { ArrowLeft, Users, Phone, MapPin, Calendar, Banknote, ShieldCheck, ChevronDown, Loader2 } from "lucide-react";
 import { EventCategory } from "@/data/eventCategories";
 import { EventList } from "@/data/eventList";
 import { formatPriceLabel, memberCountLabel, teamSizeOptions, PricingMode, TeamSizeOption } from "@/lib/pricing";
@@ -32,6 +32,18 @@ const getCategoryStyle = (category: string) => {
   return map[category] || { bg: "bg-[#0F172A]", text: "text-white", dot: "bg-[#0F172A]", border: "border-[#0F172A]/10" };
 };
 
+const LATENT_QUESTIONS = [
+  "If you woke up with a superpower for one day, what would it be?",
+  "If you could have any nickname without worrying about being judged or teased, what would it be?",
+  "What is the weirdest encounter you have ever had with a stranger?",
+  "What is the weirdest character you would choose to replace yourself with for a day?",
+  "What is the funniest story from your childhood or your most recent funny experience?",
+  "Tell us an interesting or unusual fact about yourself.",
+  "What is the best aspect of your personality that you admire the most?",
+  "Describe your “latent” — the hidden talent, trait, or weirdness that people don't usually notice about you.",
+  "Why do you think you should be selected for VVIT Got Latent?",
+];
+
 export default function EventDetailClient({ category, details }: Props) {
   const style = getCategoryStyle(category.category);
   const mainDetail = details[0] || null;
@@ -41,6 +53,9 @@ export default function EventDetailClient({ category, details }: Props) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [showWhatsApp, setShowWhatsApp] = useState(false);
   const [selectedSize, setSelectedSize] = useState<number>(category.minTeamSize);
+  const [latentAnswers, setLatentAnswers] = useState<Record<number, string>>({});
+  const isLatent = category.eventName === "VVIT Got Latent";
+  const latentComplete = LATENT_QUESTIONS.every((_, i) => (latentAnswers[i] ?? "").trim().length > 0);
   const router = useRouter();
   const { isLoggedIn } = useAuthContext();
 
@@ -78,15 +93,26 @@ export default function EventDetailClient({ category, details }: Props) {
       return;
     }
     setSelectedSize(minTeamSize);
+    setLatentAnswers({});
     setShowConfirm(true);
   };
 
   const confirmRegister = async () => {
     if (!dbEvent?.id) return;
     if (!selectedOption) return;
+    if (isLatent && !latentComplete) {
+      toast.error("Please answer all the selection questions.");
+      return;
+    }
     setRegistering(true);
     try {
-      const res = await axios.post(`/api/events/${dbEvent.id}/register`, { teamSize: selectedOption.value });
+      const body: Record<string, unknown> = { teamSize: selectedOption.value };
+      if (isLatent) {
+        body.answers = Object.fromEntries(
+          LATENT_QUESTIONS.map((q, i) => [q, (latentAnswers[i] ?? "").trim()])
+        );
+      }
+      const res = await axios.post(`/api/events/${dbEvent.id}/register`, body);
       if (res.data.success) {
         const isPaid = res.data.data?.isPaidEvent;
         if (isPaid) {
@@ -95,7 +121,8 @@ export default function EventDetailClient({ category, details }: Props) {
           toast.success("Registered!", { description: `You are registered for ${category.eventName}.` });
         }
         setShowConfirm(false);
-        setShowWhatsApp(true);
+        // WhatsApp group dialog only when no payment is due (finance-verified later otherwise)
+        if (!isPaid) setShowWhatsApp(true);
       } else {
         toast.error(res.data.error?.message || "Could not register");
       }
@@ -255,21 +282,25 @@ export default function EventDetailClient({ category, details }: Props) {
                           <div key={g.title}>
                             <p className="mb-2 font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/40">{g.title}</p>
                             <div className="grid gap-3 sm:grid-cols-2">
-                              {g.people.map((c, idx) => (
-                                <a key={idx} href={c.email ? `mailto:${c.email}` : undefined} className={`flex items-center gap-3 rounded-xl border p-3 transition-colors ${c.email ? "border-[#0F172A]/10 bg-[#FFFBEB] hover:bg-white" : "border-dashed border-[#0F172A]/15 bg-white"}`}>
-                                  <span className={`grid h-9 w-9 place-items-center rounded-full text-white ${c.email ? style.bg : "bg-[#0F172A]/20"}`}>
-                                    <Users className="h-4 w-4" />
-                                  </span>
-                                  <span>
-                                    <span className="block text-sm font-bold leading-none">{c.name}</span>
-                                    {c.email ? (
-                                      <span className="mt-1 flex items-center gap-1 font-mono text-xs text-[#2362EC]"><Mail className="h-3 w-3" /> {c.email}</span>
-                                    ) : (
-                                      <span className="mt-1 font-mono text-xs text-[#0F172A]/40">Contact via faculty</span>
-                                    )}
-                                  </span>
-                                </a>
-                              ))}
+                              {g.people.map((c, idx) => {
+                                const isStaff = g.title === "Staff coordinators";
+                                const displayName = isStaff && !/^prof\.\s/i.test(c.name) ? `Prof. ${c.name}` : c.name;
+                                return (
+                                  <div key={idx} className={`flex items-center gap-3 rounded-xl border p-3 ${c.phone ? "border-[#0F172A]/10 bg-[#FFFBEB]" : "border-dashed border-[#0F172A]/15 bg-white"}`}>
+                                    <span className={`grid h-9 w-9 place-items-center rounded-full text-white ${c.phone ? style.bg : "bg-[#0F172A]/20"}`}>
+                                      <Users className="h-4 w-4" />
+                                    </span>
+                                    <span>
+                                      <span className="block text-sm font-bold leading-none">{displayName}</span>
+                                      {c.phone ? (
+                                        <a href={`tel:${c.phone.replace(/\s/g, "")}`} className="mt-1 flex items-center gap-1 font-mono text-xs text-[#2362EC]"><Phone className="h-3 w-3" /> {c.phone}</a>
+                                      ) : (
+                                        <span className="mt-1 font-mono text-xs text-[#0F172A]/40">Contact via faculty</span>
+                                      )}
+                                    </span>
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
                         ));
@@ -329,13 +360,15 @@ export default function EventDetailClient({ category, details }: Props) {
       />
 
       <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
+        <DialogContent className={`${isLatent ? "sm:max-w-lg max-h-[90vh] overflow-y-auto" : "sm:max-w-md"} rounded-2xl`}>
           <DialogHeader>
             <DialogTitle className="text-xl tracking-tight">
               {category.eventName}
             </DialogTitle>
             <DialogDescription className="text-sm leading-6">
-              The team <strong>leader</strong> registers for the whole team — the leader is counted in the team size you pick below.
+              {isLatent
+                ? "Answer the selection questions below — the panel uses them to shortlist performers."
+                : <>The team <strong>leader</strong> registers for the whole team — the leader is counted in the team size you pick below.</>}
             </DialogDescription>
           </DialogHeader>
 
@@ -367,9 +400,29 @@ export default function EventDetailClient({ category, details }: Props) {
             </p>
           </div>
 
+          {isLatent && (
+            <div className="space-y-3">
+              <p className="font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/40">
+                Selection questions · all required
+              </p>
+              {LATENT_QUESTIONS.map((q, i) => (
+                <label key={i} className="block">
+                  <span className="mb-1 block text-sm font-medium leading-5 text-[#0F172A]">{i + 1}. {q}</span>
+                  <textarea
+                    value={latentAnswers[i] ?? ""}
+                    onChange={(e) => setLatentAnswers((prev) => ({ ...prev, [i]: e.target.value }))}
+                    rows={2}
+                    placeholder="Your answer…"
+                    className="w-full rounded-xl border border-[#0F172A]/15 bg-white px-3 py-2 text-sm text-[#0F172A] placeholder:text-[#0F172A]/35 focus:border-[#2362EC]/40 focus:outline-none focus:ring-4 focus:ring-[#2362EC]/10"
+                  />
+                </label>
+              ))}
+            </div>
+          )}
+
           <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="outline" onClick={() => setShowConfirm(false)} className="rounded-full">Cancel</Button>
-            <Button onClick={confirmRegister} disabled={registering} className="rounded-full bg-[#0F172A] text-white hover:bg-black">
+            <Button onClick={confirmRegister} disabled={registering || (isLatent && !latentComplete)} className="rounded-full bg-[#0F172A] text-white hover:bg-black">
               {registering ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Registering…</> : `Register team · ₹${selectedOption?.price ?? 0}`}
             </Button>
           </DialogFooter>

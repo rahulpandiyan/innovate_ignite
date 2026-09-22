@@ -7,7 +7,7 @@ export interface EventList {
     image: StaticImageData;
     name: string;
     rules: string[];
-    coordinators?: { name: string; email?: string; faculty?: boolean }[];
+    coordinators?: { name: string; email?: string; phone?: string; faculty?: boolean }[];
 }
 
 function slugify(name: string): string {
@@ -28,7 +28,7 @@ export const eventsList: EventList[] = [
         rules: [
             "Faculty coordinator: M G Kousar",
             "Student coordinators: Sam Goldwin, Rahul",
-            "Team size: 1–4",
+            "Each team must consist of two members. Solo participation is not allowed.",
             "Bring college ID and team details.",
         ],
         coordinators: [
@@ -59,15 +59,34 @@ export const eventsList: EventList[] = [
         ],
     },
     {
-        slug: slugify("BGMI & Free Fire"),
+        slug: slugify("BGMI"),
         category: "GAMING",
         image: eventImage,
-        name: "BGMI & Free Fire",
+        name: "BGMI",
         rules: [
-            "Intercollegiate squad-based esports tournament.",
-            "Games: BGMI and Free Fire.",
+            "Intercollegiate squad-based BGMI esports tournament.",
             "Conducted in online and offline modes.",
             "Each team consists of 4 players.",
+            "Registration fee: ₹200 per team.",
+            "One player must be designated as the In-Game Leader (IGL) and act as the primary contact with the organizers.",
+        ],
+        coordinators: [
+            { name: "Subhrajit", email: "subhrajit.cs@vvit.ac.in", faculty: true },
+            { name: "Kumari Manjunatha", email: "kummarimanjunatha295@gmail.com", faculty: true },
+            { name: "Al Arshad", email: "alarshad007@gmail.com" },
+            { name: "Charan", email: "charancharan63623@gmail.com" },
+        ],
+    },
+    {
+        slug: slugify("Free Fire"),
+        category: "GAMING",
+        image: eventImage,
+        name: "Free Fire",
+        rules: [
+            "Intercollegiate squad-based Free Fire esports tournament.",
+            "Conducted in online and offline modes.",
+            "Each team consists of 4 players.",
+            "Registration fee: ₹200 per team.",
             "One player must be designated as the In-Game Leader (IGL) and act as the primary contact with the organizers.",
         ],
         coordinators: [
@@ -98,7 +117,7 @@ export const eventsList: EventList[] = [
         ],
         coordinators: [
             { name: "Kavyashree", email: "kavyashreej.cs@vvit.ac.in", faculty: true },
-            { name: "Shree Guggilam", email: "shreeguggilam16@gmail.com" },
+            { name: "Shree Khyathi R", email: "shreeguggilam16@gmail.com" },
             { name: "M. Harshitha", email: "mharshitha775@gmail.com" },
         ],
     },
@@ -108,13 +127,41 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Reel Video Making",
         rules: [
-            "Faculty coordinators: Sushma B M, Bharathi J",
-            "Team size: 1–4",
-            "Create a creative reel on the given theme.",
+            "Vijaya Vittala Institute of Technology is organizing a Reel Video Making Program to encourage creativity, teamwork, spontaneous thinking, and effective communication among undergraduate students.",
+            "Eligibility: participation is open exclusively to undergraduate students.",
+            "Eligibility: each team must consist of 2–3 members.",
+            "Registration: each participating team must pay a registration fee of ₹50.",
+            "Registration: teams will be considered officially registered only after completing the registration process and paying the prescribed fee.",
+            "Theme allocation: a specific theme will be assigned to each registered team after enrollment.",
+            "Theme allocation: themes will be allotted individually to participating teams.",
+            "Theme allocation: participants must create their reel on the spot without any prior preparation, ideas, or pre-planned content related to the assigned theme.",
+            "Reel content: the reel must be educational and entertaining in nature.",
+            "Reel content: the maximum permitted reel duration is 90 seconds.",
+            "Reel content: content must be appropriate, respectful, and suitable for an academic environment.",
+            "Reel content: vulgar, obscene, offensive, adult, or 18+ content is strictly prohibited.",
+            "Reel content: any reel containing such content will not be entertained and will be removed or disqualified from the program.",
+            "Preparation and submission: teams must create, record, and edit their reels within the allotted activity period.",
+            "Preparation and submission: the completed reel must be submitted to the coordinators between 9:30 AM to 3:00 PM.",
+            "Preparation and submission: after completing the recording and editing process, each team must share its final reel video with the student coordinators through email at harishhari781823@gmail.com or divyachavala05@gmail.com.",
+            "Preparation and submission: teams are advised to ensure that the submitted video is the final edited version before sending it.",
+            "Preparation and submission: reels submitted after the specified deadline may not be accepted.",
+            "Presentation venue: the completed reels will be presented at Seminar Hall–2.",
+            "Evaluation: submitted reels will be reviewed and evaluated on event guidelines, creativity, educational and entertainment value, originality, teamwork, and adherence to the assigned theme.",
+            "Evaluation: after the finalization of the selected teams and their winning reels, prize distribution will be conducted on the spot at the venue.",
+            "Evaluation: the decision of the event coordinators regarding selection and prize distribution will be final.",
+            "General instructions: all participants must maintain discipline and decorum throughout the event.",
+            "General instructions: teams are responsible for ensuring that their content follows the assigned theme and all event guidelines.",
+            "General instructions: participants must not use vulgar, obscene, adult, or inappropriate content in any form.",
+            "General instructions: participants are expected to demonstrate creativity, originality, teamwork, and responsible content creation.",
+            "General instructions: the decision of the event coordinators regarding content acceptance, participation, and disqualification will be final.",
+            "Use of AI tools: the use of Artificial Intelligence (AI) tools for creating, generating, editing, modifying, or enhancing the reel is strictly prohibited.",
+            "Use of AI tools: all videos must be created and edited entirely by the participating team members.",
+            "Use of AI tools: teams must submit original content produced through their own efforts and creativity.",
+            "Event coordinators — faculty: Sushma BM – 9902077624, Bharathi J – 9606605509. Student: Harish P – 9901709596, Divya C – 8792354155.",
+            "All participants are requested to follow the above rules and regulations strictly to ensure the smooth and successful conduct of the Reel Video Making Program.",
         ],
         coordinators: [
-            { name: "Sushma B M", faculty: true },
-            { name: "Bharathi J", faculty: true },
+            { name: "Divya", phone: "8792354155" },
         ],
     },
     {
@@ -177,8 +224,11 @@ export const eventsList: EventList[] = [
         rules: [
             "Faculty coordinator: J Bharathi",
             "Student coordinators: Krishnaveni H K, Lahari M, Bhoomika",
-            "Team size: 3–10",
-            "Any dance form. 5–7 minutes. Bring the track on a pen drive.",
+            "Both solo and group participation are allowed.",
+            "Solo Dance: 1 participant. Registration fee: ₹50.",
+            "Solo Dance: any dance form. Maximum performance time: 5 minutes. Bring the track on a pen drive.",
+            "Group Dance: 2–10 members. Registration fee: ₹150 per group.",
+            "Group Dance: any dance form. 5–7 minutes. Bring the track on a pen drive.",
         ],
         coordinators: [
             { name: "J Bharathi", faculty: true },

@@ -21,8 +21,8 @@ export function PayRegistrationButton({ registrationId, amount }: { registration
   const [loading, setLoading] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
 
-  const upiHandle = "rahulpandiyan@ptyes";
-  const upiLink = `upi://pay?pa=${upiHandle}&pn=Rahul%20Pandiyan&am=${amount}&cu=INR&tn=InnovateIgnite-${registrationId.slice(0,8)}`;
+  const upiHandle = "subhrajitsengupta1-2@okicici";
+  const upiLink = `upi://pay?pa=${upiHandle}&pn=Subhrajit%20Sengupta&am=${amount}&cu=INR&tn=InnovateIgnite-${registrationId.slice(0,8)}`;
 
   const handleCopy = async () => {
     try {

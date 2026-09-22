@@ -104,12 +104,17 @@ const EventPage = () => {
                                         {event.coordinators && (
                                             <ul>
                                                 {event.coordinators &&
-                                                    event.coordinators.map((coordinator, index) => (
-                                                        <li key={index}>
-                                                            {coordinator.name}
-                                                            {coordinator.email ? ` - ${coordinator.email}` : ""}
-                                                        </li>
-                                                    ))}
+                                                    event.coordinators.map((coordinator, index) => {
+                                                        const displayName = coordinator.faculty && !/^prof\.\s/i.test(coordinator.name)
+                                                            ? `Prof. ${coordinator.name}`
+                                                            : coordinator.name;
+                                                        return (
+                                                            <li key={index}>
+                                                                {displayName}
+                                                                {coordinator.phone ? ` - ${coordinator.phone}` : ""}
+                                                            </li>
+                                                        );
+                                                    })}
                                             </ul>
                                         )}
                                     </div>

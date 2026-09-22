@@ -12,12 +12,12 @@ export const categories = [
   },
   {
     name: "Gaming",
-    count: 1,
+    count: 2,
     icon: Gamepad2,
     accent: "hsl(258 70% 55%)",
     accentLight: "hsl(258 70% 55% / 0.08)",
     accentBorder: "hsl(258 70% 55% / 0.25)",
-    tags: ["BGMI & Free Fire"],
+    tags: ["BGMI", "Free Fire"],
   },
   {
     name: "Theatre",
@@ -49,5 +49,5 @@ export const categories = [
 ];
 
 export const marqueeItems = [
-  "Techninja", "Code Conflux", "Mini Project Presentation", "BGMI & Free Fire", "Crucial Beats", "VV CARE – Social Spotlight", "Air Crash", "VVIT Got Latent", "Group Discussion", "Photography", "Dance Elite", "Reel Video Making", "The Royal Walk",
+  "Techninja", "Code Conflux", "Mini Project Presentation", "BGMI", "Free Fire", "Crucial Beats", "VV CARE – Social Spotlight", "Air Crash", "VVIT Got Latent", "Group Discussion", "Photography", "Dance Elite", "Reel Video Making", "The Royal Walk",
 ];

@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { QrPassButton } from "@/components/participant/qr-pass-button";
 import { PayRegistrationButton } from "@/components/participant/pay-registration";
+import { WhatsAppGroupButton } from "@/components/participant/whatsapp-group-button";
 import { format } from "date-fns";
 
 const STATUS_STYLE: Record<string, string> = {
@@ -133,6 +134,9 @@ export default async function RegistrationsPage() {
                           <span className="text-muted-foreground">₹{reg.payment.amount.toString()}</span>
                           {reg.payment.status !== "SUCCESS" && reg.status === "PENDING" && (
                             <PayRegistrationButton registrationId={reg.id} amount={Number(reg.payment.amount)} />
+                          )}
+                          {reg.payment.status === "SUCCESS" && (
+                            <WhatsAppGroupButton eventName={reg.event.name} />
                           )}
                         </div>
                       ) : reg.status === "PENDING" && Number(reg.event.price) > 0 ? (
