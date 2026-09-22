@@ -7,7 +7,7 @@ import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 
-import gatLogo from "@/public/gat-logos/college-logo.png";
+import gatLogo from "@/public/gat-logos/college-header-logo.png";
 import innovateIgniteLogo from "@/public/gat-logos/innovate-ignite.png";
 import LoginLogoutButton from "./LoginLogoutButton";
 
@@ -43,9 +43,9 @@ export default function Navbar() {
             <Image
               src={gatLogo}
               alt="VVIT"
-              width={120}
+              width={360}
               height={68}
-              className="h-6 w-auto object-contain sm:h-8"
+              className="h-7 w-auto object-contain sm:h-8"
               priority
             />
             <span className="hidden sm:block h-6 w-px bg-[#0F172A]/10" />
@@ -152,8 +152,8 @@ export default function Navbar() {
             );
           })}
           <span className="mx-1 h-4 w-px bg-[#0F172A]/10" />
-          <span className="rounded-full bg-[#F3C317] px-3 py-1.5 font-mono text-[10px] font-bold tracking-widest text-[#0F172A]">
-            10 EVENTS
+            <span className="rounded-full bg-[#F3C317] px-3 py-1.5 font-mono text-[10px] font-bold tracking-widest text-[#0F172A]">
+            13 EVENTS
           </span>
         </div>
       </nav>
