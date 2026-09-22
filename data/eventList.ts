@@ -174,7 +174,7 @@ export const eventsList: EventList[] = [
             { name: "Swetha", email: "swethap.cs@vvit.ac.in", faculty: true },
             { name: "Dhikshitha", email: "dhikshitha307@gmail.com", phone: "+917892563979" },
             { name: "Harish", email: "harishhari781823@gmail.com", phone: "+919901709596" },
-            { name: "Lokicodgameplay", email: "lokicodgameplay@gmail.com", phone: "+919632425042" },
+            { name: "LokaPradeep", email: "lokicodgameplay@gmail.com", phone: "+919632425042" },
         ],
     },
     {
@@ -194,6 +194,8 @@ export const eventsList: EventList[] = [
         ],
         coordinators: [
             { name: "Supriya", faculty: true },
+            { name: "Dhikshita A", phone: "+917892563979" },
+            { name: "LokaPradeep", phone: "+919632425042" },
         ],
     },
     {
@@ -240,7 +242,7 @@ export const eventsList: EventList[] = [
             { name: "Rashmi", email: "rashmirs.cs@vvit.ac.in", faculty: true },
             { name: "Vanitha", email: "vanithav.cs@vvit.ac.in", faculty: true },
             { name: "Anushka", email: "anushkasuryanshiafs@gmail.com", phone: "+918197197536" },
-            { name: "Rajaditya Raj", email: "rajadityaraj005@gmail.com", phone: "+919341606324" },
+            { name: "Aditya Raj", email: "rajadityaraj005@gmail.com", phone: "+919341606324" },
             { name: "Sneha", email: "snehabr2005@gmail.com", phone: "+919341435924" },
         ],
     },

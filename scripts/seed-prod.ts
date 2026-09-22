@@ -183,7 +183,7 @@ async function seedEvents(superAdminId: string) {
       date: new Date("2026-10-09T09:30:00+05:30"),
       time: "09:30 AM – 11:30 AM",
       venue: "Quadrangle",
-      rules: "Individual | ₹50 | Persona-based speaking event | Persona must be a real historical/contemporary figure (no fiction/mythology) | Duplicate personas not allowed | English only | Coordinators: Harini, Swetha | Students: Dhikshitha, Harish, Lokicodgameplay",
+      rules: "Individual | ₹50 | Persona-based speaking event | Persona must be a real historical/contemporary figure (no fiction/mythology) | Duplicate personas not allowed | English only | Coordinators: Harini, Swetha | Students: Dhikshita A, Harish, LokaPradeep",
     },
     {
       name: "PIXELS - Photography",
@@ -198,7 +198,7 @@ async function seedEvents(superAdminId: string) {
       date: new Date("2026-10-09T09:30:00+05:30"),
       time: "Open – 09:30 AM",
       venue: "Quadrangle",
-      rules: "Solo | ₹50 | Bring your own camera/phone | Coordinator: Supriya",
+      rules: "Solo | ₹50 | Bring your own camera/phone | Coordinator: Supriya | Students: Dhikshita A 7892563979, LokaPradeep 9632425042",
     },
     {
       name: "DANCE.exe",
@@ -228,7 +228,7 @@ async function seedEvents(superAdminId: string) {
       date: new Date("2026-10-08T13:30:00+05:30"),
       time: "01:30 PM – 04:30 PM",
       venue: "2nd Floor Labs & Classes",
-      rules: "Team 3-4 | ₹200 per team | For CS, EC, AI/ML & allied branches | Hardware/software/hybrid projects | Original work only | Coordinators: Rashmi, Vanitha | Students: Anushka, Rajaditya Raj, Sneha",
+      rules: "Team 3-4 | ₹200 per team | For CS, EC, AI/ML & allied branches | Hardware/software/hybrid projects | Original work only | Coordinators: Rashmi, Vanitha | Students: Anushka, Aditya Raj, Sneha",
     },
     {
       name: "Code conflux",
