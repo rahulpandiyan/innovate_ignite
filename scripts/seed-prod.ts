@@ -259,7 +259,7 @@ async function seedEvents(superAdminId: string) {
           maxTeamSize: ev.maxTeamSize,
           status: ev.status,
           registrationStart: new Date("2026-09-01T00:00:00.000Z"),
-          registrationEnd: new Date("2026-11-10T00:00:00.000Z"),
+          registrationEnd: new Date("2026-10-06T23:59:59.000Z"),
           createdById: superAdminId,
         },
       });

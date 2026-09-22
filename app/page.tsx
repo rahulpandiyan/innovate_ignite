@@ -40,7 +40,7 @@ export default function Home() {
             </span>
             <span className="inline-flex items-center gap-2 text-[#0F172A]/60">
               <Calendar className="h-3.5 w-3.5" /> Oct 8–9, 2026
-              <span className="hidden sm:inline">· Registrations open → close Nov 10</span>
+              <span className="hidden sm:inline">· Registrations open → close Oct 6</span>
             </span>
           </motion.div>
 
@@ -123,8 +123,8 @@ export default function Home() {
                     <Image src={innovateLogo} alt="Innovate Ignite" className="h-[240px] sm:h-[280px] w-full object-contain bg-white p-6" priority />
                   </div>
                   <div className="flex items-center justify-between px-1 pt-3">
-                    <span className="font-mono text-[11px] tracking-[0.16em] uppercase text-[#0F172A]/60">VVIT · 13—15 MAY</span>
-                    <span className="rounded-full bg-[#2362EC] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-white">10 EVENTS</span>
+                    <span className="font-mono text-[11px] tracking-[0.16em] uppercase text-[#0F172A]/60">VVIT · 8—9 OCT</span>
+                    <span className="rounded-full bg-[#2362EC] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-white">13 EVENTS</span>
                   </div>
                   {/* tape */}
                   <div className="absolute -left-3 top-6 h-7 w-20 rotate-[-12deg] rounded-sm bg-[#19E3A8]/90 shadow" />
@@ -149,7 +149,7 @@ export default function Home() {
                 <div className="absolute left-1/2 bottom-2 hidden -translate-x-1/2 sm:flex rotate-[-1deg] rounded-full border border-[#0F172A]/10 bg-white px-4 py-2 shadow sm:flex items-center gap-2">
                   <span className="font-mono text-[11px] tracking-[0.16em] uppercase">No fee till you confirm</span>
                   <span className="h-1 w-1 rounded-full bg-[#0F172A]/30" />
-                  <span className="font-mono text-[11px]">Edit till Nov 10</span>
+                  <span className="font-mono text-[11px]">Edit till Oct 6</span>
                 </div>
 
                 {/* handwritten annotation */}
@@ -254,7 +254,7 @@ export default function Home() {
                 <span className="text-[#F3C317]">NONSTOP.</span>
               </h2>
               <p className="mt-3 max-w-sm text-sm leading-6 text-white/70">
-                Doors 9:00. Every venue published in advance — no last-minute room changes. Final times drop week of Oct 4.
+                Doors 9:00. Every venue published in advance — no last-minute room changes. Final times drop week of Oct 1.
               </p>
               <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1.5 font-mono text-[11px] tracking-wide text-white/80">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-[#F3C317]" /> 2 days · Oct 8–9
@@ -300,7 +300,7 @@ export default function Home() {
               Your crew. <span className="text-[#2362EC]">Your stage.</span> One pass.
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-[#0F172A]/60">
-              Join 1000+ students across 13 events. One portal, one pass, all venues on VVIT campus. Edit your lineup till Nov 10.
+              Join 1000+ students across 13 events. One portal, one pass, all venues on VVIT campus. Edit your lineup till Oct 6.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg" className="h-11 rounded-full bg-[#0F172A] px-7 text-white hover:bg-black">
