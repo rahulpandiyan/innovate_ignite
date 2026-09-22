@@ -123,7 +123,7 @@ async function seedEvents(superAdminId: string) {
       date: new Date("2026-10-09T09:30:00+05:30"),
       time: "09:30 AM – 04:00 PM",
       venue: "Classrooms",
-      rules: "Squad of 4 | ₹200 per team | Offline campus-only, Oct 9 | Prize pool up to ₹5000 | IGL is primary contact | Faculty: Manjunatha | Students: Arshad, Charan",
+      rules: "Squad of 4 | ₹200 per team | Offline campus-only, Oct 9 | Prize pool up to ₹5000 | IGL is primary contact | Faculty: Manjunatha, Subhrajit Sengupta | Students: Arshad, Charan",
     },
     {
       name: "VVIT GOT LATENT",
