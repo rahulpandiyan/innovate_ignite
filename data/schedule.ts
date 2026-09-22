@@ -74,7 +74,7 @@ export const festSchedule: ScheduleDay[] = [
             {
                 time: "12:00 PM – 01:00 PM",
                 items: [
-                    { name: "The Royal Walk", slug: "the-royal-walk", category: "GENERAL", faculty: "Bharathi, Harini", venue: "Quadrangle" },
+                    { name: "The Royal Walk", slug: "the-royal-walk", category: "GENERAL", faculty: "Bharathi J", venue: "Quadrangle" },
                 ],
             },
             {

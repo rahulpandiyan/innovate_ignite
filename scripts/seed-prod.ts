@@ -168,7 +168,7 @@ async function seedEvents(superAdminId: string) {
       date: new Date("2026-10-09T12:00:00+05:30"),
       time: "12:00 PM – 01:00 PM",
       venue: "Quadrangle",
-      rules: "Solo | ₹50 | Fashion/walk event | Coordinator: MahaLakshmi",
+      rules: "Solo | ₹50 | Fashion/walk event | Faculty: Bharathi J | Students: Rachana H T 6362178152, Sahana 9141660595",
     },
     {
       name: "AIR CRASH",

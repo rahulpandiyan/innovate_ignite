@@ -150,7 +150,9 @@ export const eventsList: EventList[] = [
             "Conduct & Important Notes: participants must report 30 minutes before the event and maintain respectful conduct. Vulgar, offensive, discriminatory, or inappropriate performances may lead to disqualification. Organisers' decision will be final.",
         ],
         coordinators: [
-            { name: "MahaLakshmi", faculty: true },
+            { name: "Bharathi J", faculty: true },
+            { name: "Rachana H T", phone: "+916362178152" },
+            { name: "Sahana", phone: "+919141660595" },
         ],
     },
     {
