@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Calendar, Clock, MapPin, UserCheck, Camera } from "lucide-react";
@@ -59,8 +59,6 @@ function EventCard({ item, time, index }: { item: ScheduleItem; time: string; in
 }
 
 export default function SchedulePage() {
-  const [activeDay, setActiveDay] = useState(0);
-  const day = festSchedule[activeDay];
   const totalEvents = festSchedule.reduce(
     (n, d) => n + d.slots.reduce((m, s) => m + s.items.length, 0) + (d.runsAlongside ? 1 : 0),
     0
@@ -92,64 +90,62 @@ export default function SchedulePage() {
           </p>
         </div>
 
-        {/* ── Day tabs ─────────────────────────────────────── */}
+        {/* ── Day jump links ───────────────────────────────── */}
         <div className="mt-8 flex justify-center gap-2">
           {festSchedule.map((d, i) => (
-            <button
+            <a
               key={d.day}
-              onClick={() => setActiveDay(i)}
-              className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-bold tracking-wide transition-colors ${
-                activeDay === i
-                  ? "bg-[#0F172A] text-white shadow-sm"
-                  : "border border-[#0F172A]/10 bg-white text-[#0F172A]/70 hover:text-[#0F172A]"
-              }`}
+              href={`#day-${i + 1}`}
+              className="inline-flex items-center gap-2 rounded-full bg-[#0F172A] px-5 py-2.5 text-xs font-bold tracking-wide text-white shadow-sm transition-colors hover:bg-black"
             >
               <Calendar className="h-3.5 w-3.5" />
               {d.day} · {d.short}
-            </button>
+            </a>
           ))}
         </div>
 
-        {/* ── Day section ──────────────────────────────────── */}
-        <div key={day.day} className="mt-8">
-          <div className="flex items-center gap-3">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#0F172A] font-mono text-sm font-bold text-white">
-              {activeDay + 1}
-            </span>
-            <div>
-              <h2 className="text-2xl font-black tracking-tight">{day.day}</h2>
-              <p className="font-mono text-xs text-[#0F172A]/50">{day.date} · VVIT Campus</p>
+        {/* ── Day sections (all stacked) ─────────────────────── */}
+        {festSchedule.map((day, di) => (
+          <div key={day.day} id={`day-${di + 1}`} className="mt-10 scroll-mt-24">
+            <div className="flex items-center gap-3">
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#0F172A] font-mono text-sm font-bold text-white">
+                {di + 1}
+              </span>
+              <div>
+                <h2 className="text-2xl font-black tracking-tight">{day.day}</h2>
+                <p className="font-mono text-xs text-[#0F172A]/50">{day.date} · VVIT Campus</p>
+              </div>
             </div>
+
+            {day.slots.map((slot) => (
+              <div key={slot.time} className="mt-6">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F3C317] px-3 py-1.5 font-mono text-xs font-bold text-[#0F172A]">
+                    <Clock className="h-3.5 w-3.5" /> {slot.time}
+                  </span>
+                  <span className="h-px flex-1 bg-[#0F172A]/10" />
+                </div>
+                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {slot.items.map((item, i) => (
+                    <EventCard key={item.slug} item={item} time={slot.time} index={i} />
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            {/* ── Runs alongside ───────────────────────────── */}
+            {day.runsAlongside && (
+              <div className="mt-6 rounded-2xl border border-dashed border-[#0F172A]/20 bg-white/60 p-5">
+                <p className="font-mono text-[11px] tracking-[0.16em] uppercase text-[#0F172A]/50">
+                  Runs alongside
+                </p>
+                <div className="mt-3 max-w-md">
+                  <EventCard item={day.runsAlongside} time={day.runsAlongside.time} index={0} />
+                </div>
+              </div>
+            )}
           </div>
-
-          {day.slots.map((slot) => (
-            <div key={slot.time} className="mt-6">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F3C317] px-3 py-1.5 font-mono text-xs font-bold text-[#0F172A]">
-                  <Clock className="h-3.5 w-3.5" /> {slot.time}
-                </span>
-                <span className="h-px flex-1 bg-[#0F172A]/10" />
-              </div>
-              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {slot.items.map((item, i) => (
-                  <EventCard key={item.slug} item={item} time={slot.time} index={i} />
-                ))}
-              </div>
-            </div>
-          ))}
-
-          {/* ── Runs alongside ─────────────────────────────── */}
-          {day.runsAlongside && (
-            <div className="mt-6 rounded-2xl border border-dashed border-[#0F172A]/20 bg-white/60 p-5">
-              <p className="font-mono text-[11px] tracking-[0.16em] uppercase text-[#0F172A]/50">
-                Runs alongside
-              </p>
-              <div className="mt-3 max-w-md">
-                <EventCard item={day.runsAlongside} time={day.runsAlongside.time} index={0} />
-              </div>
-            </div>
-          )}
-        </div>
+        ))}
 
         {/* ── Browse all ───────────────────────────────────── */}
         <div className="mt-10 flex justify-center pb-16">
