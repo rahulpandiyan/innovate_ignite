@@ -132,7 +132,9 @@ export const eventsList: EventList[] = [
             "Judging & Venue: completed reels will be showcased in Seminar Hall–2. Evaluated for creativity and teamwork, followed by on-the-spot prize distribution.",
         ],
         coordinators: [
-            { name: "Divya", phone: "8792354155" },
+            { name: "Sushma BM", faculty: true },
+            { name: "Harish", phone: "+919901709596" },
+            { name: "Divya C", phone: "+918792354155" },
         ],
     },
     {

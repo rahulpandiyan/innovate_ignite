@@ -153,7 +153,7 @@ async function seedEvents(superAdminId: string) {
       date: new Date("2026-10-09T09:30:00+05:30"),
       time: "09:30 AM – 01:30 PM",
       venue: "Seminar Hall – 2",
-      rules: "Team 2-3 (UG only) | ₹50 per team | On-the-spot reel on assigned theme | Max 90s, educational + entertaining | Submit 9:30 AM–3:00 PM to harishhari781823@gmail.com / divyachavala05@gmail.com | Venue: Seminar Hall–2 | No AI tools | Coordinators: Sushma BM 9902077624, Bharathi J 9606605509 | Students: Harish P 9901709596, Divya C 8792354155",
+      rules: "Team 2-3 (UG only) | ₹50 per team | On-the-spot reel on assigned theme | Max 90s, educational + entertaining | Submit 9:30 AM–3:00 PM to harishhari781823@gmail.com / divyachavala05@gmail.com | Venue: Seminar Hall–2 | No AI tools | Faculty: Sushma BM | Students: Harish 9901709596, Divya C 8792354155",
     },
     {
       name: "The Royal Walk",

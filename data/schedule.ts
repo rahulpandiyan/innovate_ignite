@@ -56,7 +56,7 @@ export const festSchedule: ScheduleDay[] = [
             {
                 time: "09:30 AM – 01:30 PM",
                 items: [
-                    { name: "Reel Video Making", slug: "reel-video-making", category: "GENERAL", faculty: "Sushma B M, Bharathi J", venue: "Seminar Hall – 2" },
+                    { name: "Reel Video Making", slug: "reel-video-making", category: "GENERAL", faculty: "Sushma BM", venue: "Seminar Hall – 2" },
                 ],
             },
             {
