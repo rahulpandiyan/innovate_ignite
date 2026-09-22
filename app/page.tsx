@@ -146,11 +146,7 @@ export default function Home() {
                     <span className="font-mono text-[10px] text-white/70">E-Sports Arena</span>
                   </div>
                 </div>
-                <div className="absolute left-1/2 bottom-2 hidden -translate-x-1/2 sm:flex rotate-[-1deg] rounded-full border border-[#0F172A]/10 bg-white px-4 py-2 shadow sm:flex items-center gap-2">
-                  <span className="font-mono text-[11px] tracking-[0.16em] uppercase">No fee till you confirm</span>
-                  <span className="h-1 w-1 rounded-full bg-[#0F172A]/30" />
-                  <span className="font-mono text-[11px]">Edit till Oct 6</span>
-                </div>
+
 
                 {/* handwritten annotation */}
                 <div className="absolute -bottom-3 right-6 hidden sm:block rounded-lg bg-[#FFF1A6] px-3 py-1.5 shadow" style={{ fontFamily: "'Caveat', cursive", transform: "rotate(2deg)" }}>

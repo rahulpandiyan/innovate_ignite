@@ -9,7 +9,7 @@ import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import vtulogo from "@/public/images/vtu-wide-logo.png";
 import MobileSidebar from "./MobileSidebar";
-import gatlogo from "@/public/images/vvit-header-logo.png"
+import gatlogo from "@/public/gat-logos/college-header-logo.png"
 
 import {
     NavigationMenu,
