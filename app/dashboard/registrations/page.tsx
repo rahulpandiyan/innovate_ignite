@@ -15,7 +15,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { QrPassButton } from "@/components/participant/qr-pass-button";
 import { PayRegistrationButton } from "@/components/participant/pay-registration";
 import { WhatsAppGroupButton } from "@/components/participant/whatsapp-group-button";
+import { festSchedule } from "@/data/schedule";
 import { format } from "date-fns";
+
+function scheduleFallback(name: string) {
+  for (const day of festSchedule) {
+    for (const slot of day.slots) {
+      const hit = slot.items.find((i) => i.name === name)
+      if (hit) return { date: new Date(day.date === "8 October 2026" ? "2026-10-08T09:30:00+05:30" : "2026-10-09T09:30:00+05:30"), venue: hit.venue as string, time: slot.time as string }
+    }
+    if (day.runsAlongside?.name === name) return { date: new Date("2026-10-09T09:30:00+05:30"), venue: day.runsAlongside.venue as string, time: day.runsAlongside.time as string }
+  }
+  return null
+}
 
 const STATUS_STYLE: Record<string, string> = {
   CONFIRMED: "bg-green-600/15 text-green-700",
@@ -107,15 +119,21 @@ export default async function RegistrationsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {rows.map((reg) => (
+                {rows.map((reg) => {
+                  const fb = !reg.event.date || !reg.event.venue ? scheduleFallback(reg.event.name) : null
+                  const d = reg.event.date ?? fb?.date ?? null
+                  const venue = reg.event.venue ?? fb?.venue ?? "Venue TBA"
+                  const time = reg.event.time ?? fb?.time ?? null
+                  return (
                   <TableRow key={reg.id}>
                     <TableCell className="font-medium">{reg.event.name}</TableCell>
                     <TableCell>
                       <div className="text-sm">
-                        {reg.event.date ? format(reg.event.date, "MMM d, yyyy") : "TBA"}
+                        {d ? format(d, "MMM d, yyyy") : "TBA"}
+                        {time ? ` · ${time}` : ""}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {reg.event.venue ?? "Venue TBA"}
+                        {venue}
                         {reg.team?.name ? ` · ${reg.team.name}` : ""}
                       </div>
                     </TableCell>
@@ -163,7 +181,7 @@ export default async function RegistrationsPage() {
                       )}
                     </TableCell>
                   </TableRow>
-                ))}
+                  )})}
               </TableBody>
             </Table>
           </CardContent>
