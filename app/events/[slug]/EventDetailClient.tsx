@@ -294,9 +294,9 @@ export default function EventDetailClient({ category, details }: Props) {
                                       <span className="block text-sm font-bold leading-none">{displayName}</span>
                                       {c.phone ? (
                                         <a href={`tel:${c.phone.replace(/\s/g, "")}`} className="mt-1 flex items-center gap-1 font-mono text-xs text-[#2362EC]"><Phone className="h-3 w-3" /> {c.phone}</a>
-                                      ) : (
+                                      ) : !isStaff ? (
                                         <span className="mt-1 font-mono text-xs text-[#0F172A]/40">Contact via faculty</span>
-                                      )}
+                                      ) : null}
                                     </span>
                                   </div>
                                 );

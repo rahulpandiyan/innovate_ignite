@@ -1,265 +1,164 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { Calendar, Clock, MapPin, Filter } from "lucide-react";
-import { events } from "@/data/scheduleInterDepartment";
+import { ArrowLeft, ArrowRight, Calendar, Clock, MapPin, UserCheck, Camera } from "lucide-react";
+import { festSchedule, ScheduleItem } from "@/data/schedule";
 
-// ── Track config ──────────────────────────────────────────────────────────────
-const TRACKS = [
-  { label: "25-04-2026", dateKey: "25th April", trackNo: 1, color: "#f87171", bg: "rgba(248,113,113,0.15)", border: "rgba(248,113,113,0.35)" },
-  { label: "09-05-2026", dateKey: "9th May",    trackNo: 2, color: "#c084fc", bg: "rgba(192,132,252,0.15)", border: "rgba(192,132,252,0.35)" },
-  { label: "11-05-2026", dateKey: "11th May",   trackNo: 3, color: "#60a5fa", bg: "rgba(96,165,250,0.15)",  border: "rgba(96,165,250,0.35)"  },
-  { label: "12-05-2026", dateKey: "12th May",   trackNo: 4, color: "#4ade80", bg: "rgba(74,222,128,0.15)", border: "rgba(74,222,128,0.35)"  },
-];
-
-const DOMAIN_COLORS: Record<string, string> = {
-  THEATRE:          "#f97316",
-  DANCE:            "#a855f7",
-  MUSIC:            "#00f2ff",
-  FASHION:          "#f43f5e",
-  LITERARY:         "#22d3ee",
-  "FINE ARTS":      "#84cc16",
-  "GENERAL EVENTS": "#fbbf24",
+const CATEGORY_STYLE: Record<string, { bg: string; text: string; dot: string; border: string }> = {
+  TECHNICAL: { bg: "bg-[#2362EC]", text: "text-[#2362EC]", dot: "bg-[#2362EC]", border: "border-[#2362EC]/20" },
+  DANCE: { bg: "bg-[#F3C317]", text: "text-[#0F172A]", dot: "bg-[#F3C317]", border: "border-[#F3C317]/30" },
+  GAMING: { bg: "bg-[#0F172A]", text: "text-white", dot: "bg-[#E11D48]", border: "border-[#0F172A]" },
+  THEATRE: { bg: "bg-[#E11D48]", text: "text-[#E11D48]", dot: "bg-[#E11D48]", border: "border-[#E11D48]/20" },
+  GENERAL: { bg: "bg-[#FFFBEB]", text: "text-[#0F172A]/70", dot: "bg-[#0F172A]/30", border: "border-[#0F172A]/10" },
 };
 
-function trackForDate(dateKey: string) {
-  return TRACKS.find((t) => t.dateKey === dateKey);
+const catStyle = (category: string) =>
+  CATEGORY_STYLE[category] ?? { bg: "bg-[#0F172A]", text: "text-white", dot: "bg-[#0F172A]", border: "border-[#0F172A]/10" };
+
+function EventCard({ item, time, index }: { item: ScheduleItem; time: string; index: number }) {
+  const style = catStyle(item.category);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-30px" }}
+      transition={{ delay: Math.min(index * 0.05, 0.3) }}
+    >
+      <Link
+        href={`/events/${item.slug}`}
+        className="group relative flex h-full flex-col rounded-2xl border border-[#0F172A]/10 bg-white p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,0,0,0.12)]"
+      >
+        <div className="flex items-center justify-between gap-2">
+          <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-widest ${style.bg} ${style.text} ${style.border}`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
+            {item.category}
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full bg-[#0F172A]/5 px-2.5 py-1 font-mono text-[10px] font-bold tracking-wide text-[#0F172A]/70">
+            <Clock className="h-3 w-3" /> {time}
+          </span>
+        </div>
+        <h3 className="mt-3 text-lg font-bold leading-tight tracking-tight group-hover:text-[#2362EC]">
+          {item.name}
+        </h3>
+        <div className="mt-3 space-y-1.5 font-mono text-xs text-[#0F172A]/60">
+          <p className="flex items-center gap-1.5">
+            <UserCheck className="h-3.5 w-3.5 shrink-0" /> {item.faculty}
+          </p>
+          <p className="flex items-center gap-1.5">
+            <MapPin className="h-3.5 w-3.5 shrink-0" /> {item.venue}
+          </p>
+        </div>
+        <span className="mt-4 inline-flex items-center gap-1 font-mono text-xs tracking-wide text-[#0F172A]/50 group-hover:text-[#2362EC]">
+          Rules, fee & coordinators <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+        </span>
+      </Link>
+    </motion.div>
+  );
 }
 
-const ALL_DOMAINS = ["All", ...Array.from(new Set(events.map((e) => e.domain)))];
-
 export default function SchedulePage() {
-  const [activeTrack, setActiveTrack] = useState<number | null>(null);
-  const [activeDomain, setActiveDomain] = useState("All");
-
-  const filtered = events.filter((e) => {
-    const track = trackForDate(e.date);
-    const matchTrack = activeTrack === null || track?.trackNo === activeTrack;
-    const matchDomain = activeDomain === "All" || e.domain === activeDomain;
-    return matchTrack && matchDomain;
-  });
+  const [activeDay, setActiveDay] = useState(0);
+  const day = festSchedule[activeDay];
+  const totalEvents = festSchedule.reduce(
+    (n, d) => n + d.slots.reduce((m, s) => m + s.items.length, 0) + (d.runsAlongside ? 1 : 0),
+    0
+  );
 
   return (
-    <div className="relative min-h-screen bg-[#020202]">
-      {/* Ambient glow */}
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0 z-0"
-        style={{ background: "radial-gradient(ellipse 80% 40% at 50% 0%, rgba(99,102,241,0.06) 0%, transparent 65%)" }}
-      />
-
-      {/* ── Hero ──────────────────────────────────────────────────────────── */}
-      <header className="relative z-10 py-20 md:py-28 text-center">
-        <div className="max-w-4xl mx-auto px-4">
-          <motion.p
-            initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-            className="text-xs font-bold tracking-[0.3em] uppercase text-[#00f2ff]/60 mb-4"
-          >
-            VVIT Innovate Ignite
-          </motion.p>
-          <motion.h1
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}
-            className="silver-text text-6xl md:text-8xl font-black tracking-tighter mb-5"
-            style={{ fontFamily: "'Inter Tight', sans-serif" }}
-          >
-            Schedule
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-white/40 text-lg max-w-xl mx-auto"
-          >
-            Four tracks. Forty-one events. One unforgettable fest.
-          </motion.p>
+    <div className="min-h-screen bg-[#FFFBEB] pt-20 pb-20 md:pb-0">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between py-4 font-mono text-[11px] tracking-[0.14em] uppercase">
+          <Link href="/" className="inline-flex items-center gap-2 text-[#0F172A]/60 hover:text-[#0F172A]">
+            <ArrowLeft className="h-3.5 w-3.5" /> Home
+          </Link>
+          <span className="hidden sm:inline-flex items-center gap-2 text-[#0F172A]/40">VVIT · Oct 8–9 · Bengaluru</span>
         </div>
-        <div className="mt-10 h-px max-w-sm mx-auto bg-gradient-to-r from-transparent via-[#00f2ff]/30 to-transparent" />
-      </header>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+        {/* ── Hero ─────────────────────────────────────────── */}
+        <div className="text-center">
+          <p className="font-mono text-[11px] tracking-[0.22em] uppercase text-[#0F172A]/50">
+            Innovate Ignite &apos;26 · VVIT Bengaluru
+          </p>
+          <h1 className="mt-2 text-[clamp(44px,8vw,88px)] font-black leading-[0.9] tracking-tight">
+            SCHEDULE
+          </h1>
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-[#0F172A]/60">
+            Two days, {totalEvents} stages, Oct 8–9. Tap any event for its rules, fee and coordinators.
+          </p>
+          <p className="mx-auto mt-2 max-w-xl font-mono text-xs text-[#0F172A]/50">
+            Check for clashes before you register — timings here are the coordinators&apos; latest.
+          </p>
+        </div>
 
-        {/* ── Section heading ──────────────────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.25 }}
-          className="flex items-center gap-4 mb-8"
-        >
-          <div className="w-1 h-10 rounded-full bg-gradient-to-b from-[#00f2ff] to-[#8b5cf6]" />
-          <div>
-            <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-white/30 mb-0.5">Event Category</p>
-            <h2 className="text-2xl md:text-3xl font-black text-white/90" style={{ fontFamily: "'Inter Tight', sans-serif" }}>
-              Inter Department Events
-            </h2>
-          </div>
-        </motion.div>
-
-        {/* ── Track filter pills ───────────────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }}
-          className="flex flex-wrap gap-2 mb-5"
-        >
-          <button
-            onClick={() => setActiveTrack(null)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border transition-all duration-200"
-            style={{
-              background: activeTrack === null ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.04)",
-              borderColor: activeTrack === null ? "rgba(255,255,255,0.30)" : "rgba(255,255,255,0.10)",
-              color: activeTrack === null ? "#fff" : "rgba(255,255,255,0.45)",
-            }}
-          >
-            All Tracks
-          </button>
-          {TRACKS.map((t) => (
+        {/* ── Day tabs ─────────────────────────────────────── */}
+        <div className="mt-8 flex justify-center gap-2">
+          {festSchedule.map((d, i) => (
             <button
-              key={t.trackNo}
-              onClick={() => setActiveTrack(activeTrack === t.trackNo ? null : t.trackNo)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border transition-all duration-200"
-              style={{
-                background: activeTrack === t.trackNo ? t.bg : "rgba(255,255,255,0.04)",
-                borderColor: activeTrack === t.trackNo ? t.border : "rgba(255,255,255,0.08)",
-                color: activeTrack === t.trackNo ? t.color : "rgba(255,255,255,0.45)",
-              }}
+              key={d.day}
+              onClick={() => setActiveDay(i)}
+              className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-bold tracking-wide transition-colors ${
+                activeDay === i
+                  ? "bg-[#0F172A] text-white shadow-sm"
+                  : "border border-[#0F172A]/10 bg-white text-[#0F172A]/70 hover:text-[#0F172A]"
+              }`}
             >
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: t.color }} />
-              Track {t.trackNo} · {t.label}
+              <Calendar className="h-3.5 w-3.5" />
+              {d.day} · {d.short}
             </button>
           ))}
-        </motion.div>
+        </div>
 
-        {/* ── Domain filter pills ──────────────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.35 }}
-          className="flex flex-wrap gap-2 mb-8"
-        >
-          <Filter className="w-3.5 h-3.5 text-white/25 self-center" />
-          {ALL_DOMAINS.map((d) => {
-            const dc = d === "All" ? "#ffffff" : DOMAIN_COLORS[d] ?? "#ffffff";
-            const active = activeDomain === d;
-            return (
-              <button
-                key={d}
-                onClick={() => setActiveDomain(d)}
-                className="px-3 py-1 rounded-full text-[11px] font-semibold border transition-all duration-200"
-                style={{
-                  background: active ? `${dc}18` : "transparent",
-                  borderColor: active ? `${dc}50` : "rgba(255,255,255,0.08)",
-                  color: active ? dc : "rgba(255,255,255,0.35)",
-                }}
-              >
-                {d}
-              </button>
-            );
-          })}
-        </motion.div>
-
-        {/* ── Table ────────────────────────────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }}
-          className="rounded-2xl border overflow-hidden"
-          style={{ borderColor: "rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.015)" }}
-        >
-          {/* Table header */}
-          <div
-            className="grid text-[10px] font-bold tracking-widest uppercase text-white/35 border-b"
-            style={{
-              gridTemplateColumns: "3rem 1fr 8rem 9rem 9rem 11rem",
-              borderColor: "rgba(255,255,255,0.08)",
-              background: "rgba(255,255,255,0.04)",
-              padding: "0.75rem 1.25rem",
-            }}
-          >
-            <span>#</span>
-            <span>Event</span>
-            <span>Domain</span>
-            <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />Date</span>
-            <span className="flex items-center gap-1"><Clock className="w-3 h-3" />Time</span>
-            <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />Venue</span>
+        {/* ── Day section ──────────────────────────────────── */}
+        <div key={day.day} className="mt-8">
+          <div className="flex items-center gap-3">
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#0F172A] font-mono text-sm font-bold text-white">
+              {activeDay + 1}
+            </span>
+            <div>
+              <h2 className="text-2xl font-black tracking-tight">{day.day}</h2>
+              <p className="font-mono text-xs text-[#0F172A]/50">{day.date} · VVIT Campus</p>
+            </div>
           </div>
 
-          {/* Table body */}
-          {filtered.length === 0 ? (
-            <div className="py-16 text-center text-white/30 text-sm">
-              No events match the selected filters.
+          {day.slots.map((slot) => (
+            <div key={slot.time} className="mt-6">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F3C317] px-3 py-1.5 font-mono text-xs font-bold text-[#0F172A]">
+                  <Clock className="h-3.5 w-3.5" /> {slot.time}
+                </span>
+                <span className="h-px flex-1 bg-[#0F172A]/10" />
+              </div>
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {slot.items.map((item, i) => (
+                  <EventCard key={item.slug} item={item} time={slot.time} index={i} />
+                ))}
+              </div>
             </div>
-          ) : (
-            filtered.map((ev, idx) => {
-              const track = trackForDate(ev.date);
-              const domainColor = DOMAIN_COLORS[ev.domain] ?? "#ffffff";
-              const isEven = idx % 2 === 0;
-
-              return (
-                <motion.div
-                  key={ev.eventId}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: Math.min(idx * 0.018, 0.4) }}
-                  className="grid items-center border-b last:border-b-0 transition-colors duration-150 hover:bg-white/[0.025]"
-                  style={{
-                    gridTemplateColumns: "3rem 1fr 8rem 9rem 9rem 11rem",
-                    borderColor: "rgba(255,255,255,0.05)",
-                    background: isEven ? "transparent" : "rgba(255,255,255,0.012)",
-                    padding: "0.85rem 1.25rem",
-                    gap: "0.5rem",
-                  }}
-                >
-                  {/* # */}
-                  <span className="text-[11px] font-bold text-white/25">
-                    {String(ev.eventId).padStart(2, "0")}
-                  </span>
-
-                  {/* Event name */}
-                  <span className="text-sm font-semibold text-white/85 leading-snug pr-4">
-                    {ev.eventName}
-                  </span>
-
-                  {/* Domain */}
-                  <span
-                    className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-wider uppercase"
-                    style={{ color: domainColor }}
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: domainColor }} />
-                    {ev.domain}
-                  </span>
-
-                  {/* Date — track pill */}
-                  {track ? (
-                    <span
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border w-fit"
-                      style={{ background: track.bg, borderColor: track.border, color: track.color }}
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: track.color }} />
-                      {track.label}
-                    </span>
-                  ) : (
-                    <span className="text-xs text-white/30">{ev.date}</span>
-                  )}
-
-                  {/* Time */}
-                  <span className="text-xs text-white/50">{ev.timings}</span>
-
-                  {/* Venue */}
-                  <span className="text-xs text-white/40 leading-snug">{ev.venue}</span>
-                </motion.div>
-              );
-            })
-          )}
-        </motion.div>
-
-        {/* Result count */}
-        <p className="mt-4 text-xs text-white/25 text-right">
-          Showing {filtered.length} of {events.length} events
-        </p>
-
-        {/* Legend */}
-        <div className="mt-10 flex flex-wrap gap-3 justify-center">
-          {TRACKS.map((t) => (
-            <span
-              key={t.trackNo}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-semibold border"
-              style={{ background: t.bg, borderColor: t.border, color: t.color }}
-            >
-              <span className="w-2 h-2 rounded-full" style={{ background: t.color }} />
-              {t.label} — Event Track {t.trackNo}
-            </span>
           ))}
+
+          {/* ── Runs alongside ─────────────────────────────── */}
+          {day.runsAlongside && (
+            <div className="mt-6 rounded-2xl border border-dashed border-[#0F172A]/20 bg-white/60 p-5">
+              <p className="font-mono text-[11px] tracking-[0.16em] uppercase text-[#0F172A]/50">
+                Runs alongside
+              </p>
+              <div className="mt-3 max-w-md">
+                <EventCard item={day.runsAlongside} time={day.runsAlongside.time} index={0} />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ── Browse all ───────────────────────────────────── */}
+        <div className="mt-10 flex justify-center pb-16">
+          <Link
+            href="/events"
+            className="inline-flex items-center gap-2 rounded-full bg-[#0F172A] px-6 py-3 text-sm font-bold text-white hover:bg-black"
+          >
+            <Camera className="h-4 w-4" /> Browse all events <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </div>
     </div>

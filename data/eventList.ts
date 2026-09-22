@@ -33,8 +33,8 @@ export const eventsList: EventList[] = [
         ],
         coordinators: [
             { name: "M G Kousar", faculty: true },
-            { name: "Sam Goldwin" },
-            { name: "Rahul" },
+            { name: "Sam Goldwin", phone: "+919739431299" },
+            { name: "Rahul", phone: "+918792137157" },
         ],
     },
     {
@@ -54,8 +54,8 @@ export const eventsList: EventList[] = [
         coordinators: [
             { name: "Kousar", email: "kousar.cs@vvit.ac.in", faculty: true },
             { name: "Rajani", email: "rajanim.cs@vvit.ac.in", faculty: true },
-            { name: "Srishty Singh", email: "srishty2005singh@gmail.com" },
-            { name: "Lalitha Sreenivasan", email: "lalithasreenivasan93@gmail.com" },
+            { name: "Srishty Singh", email: "srishty2005singh@gmail.com", phone: "+919741079214" },
+            { name: "Lalitha Sreenivasan", email: "lalithasreenivasan93@gmail.com", phone: "+918105398761" },
         ],
     },
     {
@@ -73,8 +73,8 @@ export const eventsList: EventList[] = [
         coordinators: [
             { name: "Subhrajit", email: "subhrajit.cs@vvit.ac.in", faculty: true },
             { name: "Kumari Manjunatha", email: "kummarimanjunatha295@gmail.com", faculty: true },
-            { name: "Al Arshad", email: "alarshad007@gmail.com" },
-            { name: "Charan", email: "charancharan63623@gmail.com" },
+            { name: "Al Arshad", email: "alarshad007@gmail.com", phone: "+917795811484" },
+            { name: "Charan", email: "charancharan63623@gmail.com", phone: "+916362348311" },
         ],
     },
     {
@@ -92,8 +92,8 @@ export const eventsList: EventList[] = [
         coordinators: [
             { name: "Subhrajit", email: "subhrajit.cs@vvit.ac.in", faculty: true },
             { name: "Kumari Manjunatha", email: "kummarimanjunatha295@gmail.com", faculty: true },
-            { name: "Al Arshad", email: "alarshad007@gmail.com" },
-            { name: "Charan", email: "charancharan63623@gmail.com" },
+            { name: "Al Arshad", email: "alarshad007@gmail.com", phone: "+917795811484" },
+            { name: "Charan", email: "charancharan63623@gmail.com", phone: "+916362348311" },
         ],
     },
     {
@@ -117,8 +117,8 @@ export const eventsList: EventList[] = [
         ],
         coordinators: [
             { name: "Kavyashree", email: "kavyashreej.cs@vvit.ac.in", faculty: true },
-            { name: "Shree Khyathi R", email: "shreeguggilam16@gmail.com" },
-            { name: "M. Harshitha", email: "mharshitha775@gmail.com" },
+            { name: "Shree Khyathi R", email: "shreeguggilam16@gmail.com", phone: "+917975199059" },
+            { name: "M. Harshitha", email: "mharshitha775@gmail.com", phone: "+917975026732" },
         ],
     },
     {
@@ -197,9 +197,9 @@ export const eventsList: EventList[] = [
         coordinators: [
             { name: "Harini", email: "harinis.cs@vvit.ac.in", faculty: true },
             { name: "Swetha", email: "swethap.cs@vvit.ac.in", faculty: true },
-            { name: "Dhikshitha", email: "dhikshitha307@gmail.com" },
-            { name: "Harish", email: "harishhari781823@gmail.com" },
-            { name: "Lokicodgameplay", email: "lokicodgameplay@gmail.com" },
+            { name: "Dhikshitha", email: "dhikshitha307@gmail.com", phone: "+917892563979" },
+            { name: "Harish", email: "harishhari781823@gmail.com", phone: "+919901709596" },
+            { name: "Lokicodgameplay", email: "lokicodgameplay@gmail.com", phone: "+919632425042" },
         ],
     },
     {
@@ -232,8 +232,8 @@ export const eventsList: EventList[] = [
         ],
         coordinators: [
             { name: "J Bharathi", faculty: true },
-            { name: "Krishnaveni H K" },
-            { name: "Lahari M" },
+            { name: "Krishnaveni H K", phone: "+919743116619" },
+            { name: "Lahari M", phone: "+918884084501" },
             { name: "Bhoomika" },
         ],
     },
@@ -256,9 +256,9 @@ export const eventsList: EventList[] = [
         coordinators: [
             { name: "Rashmi", email: "rashmirs.cs@vvit.ac.in", faculty: true },
             { name: "Vanitha", email: "vanithav.cs@vvit.ac.in", faculty: true },
-            { name: "Anushka", email: "anushkasuryanshiafs@gmail.com" },
-            { name: "Rajaditya Raj", email: "rajadityaraj005@gmail.com" },
-            { name: "Sneha", email: "snehabr2005@gmail.com" },
+            { name: "Anushka", email: "anushkasuryanshiafs@gmail.com", phone: "+918197197536" },
+            { name: "Rajaditya Raj", email: "rajadityaraj005@gmail.com", phone: "+919341606324" },
+            { name: "Sneha", email: "snehabr2005@gmail.com", phone: "+919341435924" },
         ],
     },
     {
@@ -275,9 +275,9 @@ export const eventsList: EventList[] = [
         coordinators: [
             { name: "V Vanitha", faculty: true },
             { name: "Rashmi Rani", faculty: true },
-            { name: "Anushka" },
-            { name: "Mohammed Ghouse" },
-            { name: "Daniel" },
+            { name: "Anushka", phone: "+918197197536" },
+            { name: "Mohammed Ghouse", phone: "+917892786089" },
+            { name: "Daniel", phone: "+919380987187" },
         ],
     },
     {
@@ -299,8 +299,8 @@ export const eventsList: EventList[] = [
         ],
         coordinators: [
             { name: "Agnes Stephen", email: "agnesstephen2010@gmail.com", faculty: true },
-            { name: "Thannavee", email: "thannavee7204@gmail.com" },
-            { name: "Lavanya", email: "0506lavanya000@gmail.com" },
+            { name: "Thannavee", email: "thannavee7204@gmail.com", phone: "+917204967325" },
+            { name: "Lavanya", email: "0506lavanya000@gmail.com", phone: "+917204967325" },
         ],
     },
     {
@@ -320,8 +320,8 @@ export const eventsList: EventList[] = [
         ],
         coordinators: [
             { name: "Agnes Stephen", email: "agnesstephen2010@gmail.com", faculty: true },
-            { name: "Thannavee", email: "thannavee7204@gmail.com" },
-            { name: "Lavanya", email: "0506lavanya000@gmail.com" },
+            { name: "Thannavee", email: "thannavee7204@gmail.com", phone: "+917204967325" },
+            { name: "Lavanya", email: "0506lavanya000@gmail.com", phone: "+917204967325" },
         ],
     },
 ];

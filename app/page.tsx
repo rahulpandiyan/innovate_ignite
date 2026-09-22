@@ -263,8 +263,8 @@ export default function Home() {
             <div className="col-span-12 lg:col-span-8">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {[
-                  { day: "DAY 1 — OCT 8", items: ["Techninja", "VV CARE – Social Spotlight", "Mini Project Presentation", "Code Conflux", "Group Discussion", "The Royal Walk"], dot: "bg-[#19E3A8]" },
-                  { day: "DAY 2 — OCT 9", items: ["Air Crash", "Photography", "Dance Elite", "BGMI", "Free Fire", "VVIT Got Latent", "Reel Video Making", "Crucial Beats"], dot: "bg-[#F3C317]" },
+                  { day: "DAY 1 — OCT 8", items: ["Code Conflux", "Group Discussion", "VV CARE – Social Spotlight", "Mini Project Presentation", "Techninja"], dot: "bg-[#19E3A8]" },
+                  { day: "DAY 2 — OCT 9", items: ["Air Crash", "Reel Video Making", "BGMI", "Free Fire", "VVIT Got Latent", "Photography", "The Royal Walk", "Dance Elite", "Crucial Beats"], dot: "bg-[#F3C317]" },
                 ].map((col) => (
                   <div key={col.day} className="rounded-2xl border border-white/10 bg-white/[0.06] p-5 backdrop-blur">
                     <p className="font-mono text-[11px] tracking-[0.16em] text-white/70">{col.day}</p>
