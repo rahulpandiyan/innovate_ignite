@@ -9,7 +9,7 @@ import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import vtulogo from "@/public/images/vtu-wide-logo.png";
 import MobileSidebar from "./MobileSidebar";
-import gatlogo from "@/public/images/college-wide-logo.png"
+import gatlogo from "@/public/images/vvit-header-logo.png"
 
 import {
     NavigationMenu,
@@ -81,8 +81,8 @@ const NavBar = () => {
             <div className="container mx-auto px-4 md:px-16">
                 <div className="flex items-center justify-between mt-1 mb-1">
                     <div className="flex items-center gap-3">
-                    <div style={{textAlign: 'left'}}>
-                    <Image src={gatlogo} alt="VVIT Logo" width={800} height={200} priority />
+                    <div style={{textAlign: 'left'}} className="bg-white rounded-lg px-2 py-1">
+                    <Image src={gatlogo} alt="VVIT Logo" width={800} height={200} priority className="h-10 w-auto object-contain" />
                     </div>
 
                         
