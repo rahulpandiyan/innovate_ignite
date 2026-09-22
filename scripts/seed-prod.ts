@@ -123,7 +123,7 @@ async function seedEvents(superAdminId: string) {
       date: new Date("2026-10-09T09:30:00+05:30"),
       time: "09:30 AM – 04:00 PM",
       venue: "Classrooms",
-      rules: "Squad of 4 | ₹200 per team | Offline campus-only, Oct 9 | Prize pool up to ₹5000 | IGL is primary contact | Coordinators: Subhrajit, Kumari Manjunatha | Students: Al Arshad, Charan",
+      rules: "Squad of 4 | ₹200 per team | Offline campus-only, Oct 9 | Prize pool up to ₹5000 | IGL is primary contact | Faculty: Manjunatha | Students: Arshad, Charan",
     },
     {
       name: "VVIT GOT LATENT",
@@ -213,7 +213,7 @@ async function seedEvents(superAdminId: string) {
       date: new Date("2026-10-09T14:00:00+05:30"),
       time: "02:00 PM – 04:30 PM",
       venue: "Quadrangle",
-      rules: "Solo + Group allowed | Solo ₹50 (max 5 min) | Group 2-12 ₹150 (5-7 min) | Any dance form | Bring the track on a pen drive | Coordinator: J Bharathi | Students: Krishnaveni H K, Lahari M, Bhoomika",
+      rules: "Solo + Group allowed | Solo ₹50 (max 5 min) | Group 2-12 ₹150 (5-7 min) | Any dance form | Bring the track on a pen drive | Coordinator: J Bharathi | Students: Yashashwini 9187621057, Krishnaveni 9743116619, Lahari M 8884084501",
     },
     {
       name: "Mini Project Expo",

@@ -62,7 +62,7 @@ export const festSchedule: ScheduleDay[] = [
             {
                 time: "09:30 AM – 04:00 PM",
                 items: [
-                    { name: "BGMI & FreeFire", slug: "bgmi-freefire", category: "GAMING", faculty: "Subhrajit Sengupta", venue: "Classrooms" },
+                    { name: "BGMI & FreeFire", slug: "bgmi-freefire", category: "GAMING", faculty: "Manjunatha", venue: "Classrooms" },
                 ],
             },
             {

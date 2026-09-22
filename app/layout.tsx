@@ -81,6 +81,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                   color: "#ffffff",
                   border: "1px solid #2362ec",
                 },
+                classNames: {
+                  description: "!text-white/80",
+                },
               }}
             />
           </AuthContextProvider>

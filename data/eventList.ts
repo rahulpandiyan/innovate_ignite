@@ -85,9 +85,8 @@ export const eventsList: EventList[] = [
             "All final decisions regarding disputes, scoring ties, and rule modifications rest entirely with the organizers and coordinators.",
         ],
         coordinators: [
-            { name: "Subhrajit", email: "subhrajit.cs@vvit.ac.in", faculty: true },
-            { name: "Kumari Manjunatha", email: "kummarimanjunatha295@gmail.com", faculty: true },
-            { name: "Al Arshad", email: "alarshad007@gmail.com", phone: "+917795811484" },
+            { name: "Manjunatha", email: "kummarimanjunatha295@gmail.com", faculty: true },
+            { name: "Arshad", email: "alarshad007@gmail.com", phone: "+917795811484" },
             { name: "Charan", email: "charancharan63623@gmail.com", phone: "+916362348311" },
         ],
     },
@@ -213,9 +212,9 @@ export const eventsList: EventList[] = [
         ],
         coordinators: [
             { name: "J Bharathi", faculty: true },
-            { name: "Krishnaveni H K", phone: "+919743116619" },
+            { name: "Yashashwini", phone: "+919187621057" },
+            { name: "Krishnaveni", phone: "+919743116619" },
             { name: "Lahari M", phone: "+918884084501" },
-            { name: "Bhoomika" },
         ],
     },
     {

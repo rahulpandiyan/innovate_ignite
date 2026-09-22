@@ -21,15 +21,15 @@ interface Props {
 
 const getCategoryStyle = (category: string) => {
   const map: Record<string, { bg: string; text: string; dot: string; border: string }> = {
-    TECHNICAL: { bg: "bg-[#2362EC]", text: "text-[#2362EC]", dot: "bg-[#2362EC]", border: "border-[#2362EC]/20" },
-    DANCE: { bg: "bg-[#F3C317]", text: "text-[#0F172A]", dot: "bg-[#F3C317]", border: "border-[#F3C317]/30" },
+    TECHNICAL: { bg: "bg-[#2362EC]", text: "text-white", dot: "bg-white", border: "border-[#2362EC]/20" },
+    DANCE: { bg: "bg-[#F3C317]", text: "text-[#0F172A]", dot: "bg-[#0F172A]", border: "border-[#F3C317]/30" },
     GAMING: { bg: "bg-[#0F172A]", text: "text-white", dot: "bg-[#E11D48]", border: "border-[#0F172A]" },
-    THEATRE: { bg: "bg-[#E11D48]", text: "text-[#E11D48]", dot: "bg-[#E11D48]", border: "border-[#E11D48]/20" },
-    FINE_ARTS: { bg: "bg-[#19E3A8]", text: "text-[#0F172A]", dot: "bg-[#19E3A8]", border: "border-[#19E3A8]/30" },
-    GENERAL: { bg: "bg-[#FFFBEB]", text: "text-[#0F172A]/70", dot: "bg-[#0F172A]/30", border: "border-[#0F172A]/10" },
-    GENERAL_EVENTS: { bg: "bg-[#FFFBEB]", text: "text-[#0F172A]/70", dot: "bg-[#0F172A]/30", border: "border-[#0F172A]/10" },
+    THEATRE: { bg: "bg-[#E11D48]", text: "text-white", dot: "bg-white", border: "border-[#E11D48]/20" },
+    FINE_ARTS: { bg: "bg-[#19E3A8]", text: "text-[#0F172A]", dot: "bg-[#0F172A]", border: "border-[#19E3A8]/30" },
+    GENERAL: { bg: "bg-[#FFFBEB]", text: "text-[#0F172A]", dot: "bg-[#0F172A]/40", border: "border-[#0F172A]/10" },
+    GENERAL_EVENTS: { bg: "bg-[#FFFBEB]", text: "text-[#0F172A]", dot: "bg-[#0F172A]/40", border: "border-[#0F172A]/10" },
   };
-  return map[category] || { bg: "bg-[#0F172A]", text: "text-white", dot: "bg-[#0F172A]", border: "border-[#0F172A]/10" };
+  return map[category] || { bg: "bg-[#0F172A]", text: "text-white", dot: "bg-white", border: "border-[#0F172A]/10" };
 };
 
 const LATENT_QUESTIONS = [
