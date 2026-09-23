@@ -273,7 +273,7 @@ async function seedEvents(superAdminId: string) {
       date: new Date("2026-10-08T09:30:00+05:30"),
       time: "09:30 AM – 01:00 PM",
       venue: "Placement Cell",
-      rules: "Team 2-3 | ₹100 per team | Topic announced at venue | Choose FOR or AGAINST | 5 min prep | Every member must speak | Coordinators: Agnes Stephen | Students: Thannavee, Lavanya",
+      rules: "Team 2-3 | ₹100 per team | Topic announced at venue | Choose FOR or AGAINST | 5 min prep | Every member must speak | Faculty: Supriya P | Students: Thannavee 7204967325, Lavanya 8296876822",
     },
   ];
 
