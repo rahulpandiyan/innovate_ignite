@@ -74,7 +74,9 @@ export default function Footer() {
             <ul className="mt-4 space-y-2.5 text-sm">
               <li><Link href="/" className="text-white/70 hover:text-white transition-colors">Home</Link></li>
               <li><Link href="/events" className="text-white/70 hover:text-white transition-colors">Events — 13 stages</Link></li>
-              <li><Link href="/gallery" className="text-white/70 hover:text-white transition-colors">Gallery</Link></li>
+              <li><Link href="/schedule" className="text-white/70 hover:text-white transition-colors">Schedule — Oct 8–9</Link></li>
+              <li><Link href="/rules" className="text-white/70 hover:text-white transition-colors">Rules & Regulations</Link></li>
+              <li><Link href="/contact" className="text-white/70 hover:text-white transition-colors">Contact</Link></li>
               <li><Link href="/about" className="text-white/70 hover:text-white transition-colors">About VVIT</Link></li>
             </ul>
           </div>
@@ -97,8 +99,15 @@ export default function Footer() {
                 <br />
                 VVIT Campus, Bengaluru
               </p>
+              <div className="mt-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                <p className="font-mono text-[11px] tracking-wide text-white/50">For any query</p>
+                <a href="tel:+919739431299" className="mt-1 inline-flex items-center gap-1.5 text-sm font-bold text-white hover:text-[#F3C317]">
+                  Sam Goldwin · +91 97394 31299
+                </a>
+                <p className="font-mono text-[11px] text-white/50">Event Coordinator</p>
+              </div>
               <div className="mt-3 flex flex-wrap gap-2">
-                <span className="rounded-full bg-[#2362EC] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-white">10 EVENTS</span>
+                <span className="rounded-full bg-[#2362EC] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-white">13 EVENTS</span>
                 <span className="rounded-full bg-[#F3C317] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-[#0F172A]">OCT 8–9</span>
               </div>
               <button

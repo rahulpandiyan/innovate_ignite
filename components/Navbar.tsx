@@ -14,6 +14,9 @@ import LoginLogoutButton from "./LoginLogoutButton";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/events", label: "Events" },
+  { href: "/schedule", label: "Schedule" },
+  { href: "/contact", label: "Contact" },
+  { href: "/rules", label: "Rules" },
 ];
 
 export default function Navbar() {
