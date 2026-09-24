@@ -176,6 +176,12 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      // Link the leader's registration to this team so dashboard/registrations shows the team
+      await tx.registration.update({
+        where: { userId_eventId: { userId: auth.session.id, eventId } },
+        data: { teamId: newTeam.id },
+      });
+
       return tx.team.findUnique({
         where: { id: newTeam.id },
         include: {
