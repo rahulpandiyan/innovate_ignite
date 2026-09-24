@@ -252,23 +252,36 @@ function AssignForm({
   judges: { id: string; name: string }[];
   onAssign: (input: { eventId: string; coordinatorId?: string; coordinatorIds?: string[]; judgeId?: string }) => Promise<void>;
 }) {
-  const [selected, setSelected] = React.useState<string[]>([]);
+  const [facultyId, setFacultyId] = React.useState("");
+  const [studentId, setStudentId] = React.useState("");
   const [judgeId, setJudgeId] = React.useState("");
   const [busy, setBusy] = React.useState(false);
   const router = useRouter();
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (selected.length === 0 && !judgeId) return;
+  const faculty = coordinators.filter((c) => c.role === "EVENT_COORDINATOR");
+  const students = coordinators.filter((c) => c.role === "STUDENT_COORDINATOR");
+
+  async function addOne(id: string) {
+    if (!id) return;
     setBusy(true);
     try {
-      await onAssign({
-        eventId,
-        coordinatorIds: selected.length ? selected : undefined,
-        judgeId: judgeId || undefined,
-      });
-      toast.success(selected.length ? `Assigned ${selected.length} coordinator(s)` : "Assigned successfully");
-      setSelected([]);
+      await onAssign({ eventId, coordinatorIds: [id] });
+      toast.success("Coordinator added");
+      router.refresh();
+    } catch {
+      toast.error("Assignment failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleJudge(e: React.FormEvent) {
+    e.preventDefault();
+    if (!judgeId) return;
+    setBusy(true);
+    try {
+      await onAssign({ eventId, judgeId });
+      toast.success("Judge assigned");
       setJudgeId("");
       router.refresh();
     } catch {
@@ -279,44 +292,63 @@ function AssignForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 w-full">
-      <div className="flex flex-col gap-2">
-        <Label className="text-xs font-medium">Add coordinator(s) — faculty or student, select multiple (no limit)</Label>
-        <div className="grid gap-1.5 max-h-40 overflow-auto rounded-md border p-2">
-          {coordinators.length === 0 ? (
-            <span className="text-xs text-muted-foreground">No coordinators found. Create users with EVENT_COORDINATOR / STUDENT_COORDINATOR first.</span>
-          ) : (
-            coordinators.map((c) => (
-              <label key={c.id} className="flex items-center gap-2 rounded px-1.5 py-1 hover:bg-muted text-xs cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={selected.includes(c.id)}
-                  onChange={(e) => setSelected((prev) => (e.target.checked ? [...prev, c.id] : prev.filter((x) => x !== c.id)))}
-                  className="h-3.5 w-3.5"
-                />
-                <span className="font-medium truncate">{c.name}</span>
-                <span className="text-muted-foreground truncate">{c.email}</span>
-                {c.role && <Badge variant={c.role === "EVENT_COORDINATOR" ? "default" : "secondary"} className="ml-auto text-[10px] h-4">{c.role === "EVENT_COORDINATOR" ? "Faculty" : "Student"}</Badge>}
-              </label>
-            ))
-          )}
+    <div className="flex flex-col gap-4 w-full">
+      <div className="grid gap-3 md:grid-cols-2">
+        <div className="flex items-end gap-2">
+          <div className="flex-1 space-y-1">
+            <Label className="text-xs">Faculty coordinator</Label>
+            <Select value={facultyId} onValueChange={setFacultyId}>
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue placeholder={faculty.length ? "Select faculty" : "No faculty coordinators"} />
+              </SelectTrigger>
+              <SelectContent>
+                {faculty.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>{c.name} — {c.email}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button size="sm" variant="outline" disabled={busy || !facultyId} onClick={() => { const v = facultyId; setFacultyId(""); addOne(v); }}>
+            {busy ? "..." : "Add"}
+          </Button>
+        </div>
+        <div className="flex items-end gap-2">
+          <div className="flex-1 space-y-1">
+            <Label className="text-xs">Student coordinator</Label>
+            <Select value={studentId} onValueChange={setStudentId}>
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue placeholder={students.length ? "Select student" : "No student coordinators"} />
+              </SelectTrigger>
+              <SelectContent>
+                {students.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>{c.name} — {c.email}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button size="sm" variant="outline" disabled={busy || !studentId} onClick={() => { const v = studentId; setStudentId(""); addOne(v); }}>
+            {busy ? "..." : "Add"}
+          </Button>
         </div>
       </div>
-      <div className="flex items-center gap-2 flex-wrap">
-        <Select value={judgeId} onValueChange={setJudgeId}>
-          <SelectTrigger className="h-8 w-[180px] text-xs">
-            <SelectValue placeholder="Assign judge" />
-          </SelectTrigger>
-          <SelectContent>
-            {judges.map((j) => (
-              <SelectItem key={j.id} value={j.id}>{j.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button type="submit" size="sm" variant="outline" disabled={busy || (selected.length === 0 && !judgeId)}>
-          {busy ? "Assigning…" : `Assign${selected.length ? ` (${selected.length})` : ""}`}
+      <form onSubmit={handleJudge} className="flex items-end gap-2">
+        <div className="flex-1 space-y-1">
+          <Label className="text-xs">Judge</Label>
+          <Select value={judgeId} onValueChange={setJudgeId}>
+            <SelectTrigger className="h-8 text-xs">
+              <SelectValue placeholder="Assign judge" />
+            </SelectTrigger>
+            <SelectContent>
+              {judges.map((j) => (
+                <SelectItem key={j.id} value={j.id}>{j.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <Button type="submit" size="sm" variant="outline" disabled={busy || !judgeId}>
+          {busy ? "Assigning…" : "Assign judge"}
         </Button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }

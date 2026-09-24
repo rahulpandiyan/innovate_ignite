@@ -180,38 +180,39 @@ export default async function EventsPage() {
               <Input id="registrationEnd" name="registrationEnd" type="datetime-local" />
             </div>
             <div className="space-y-1 md:col-span-2">
-              <Label>Faculty Coordinators</Label>
-              <div className="grid gap-1 rounded-md border p-2 max-h-32 overflow-auto">
-                {coordinators.filter((c: any) => c.userRole?.name === "EVENT_COORDINATOR").length === 0 ? (
-                  <span className="text-xs text-muted-foreground">No faculty coordinators — create users with EVENT_COORDINATOR role first</span>
-                ) : (
-                  coordinators.filter((c: any) => c.userRole?.name === "EVENT_COORDINATOR").map((c) => (
-                    <label key={c.id} className="flex items-center gap-2 text-xs cursor-pointer hover:bg-muted px-1.5 py-1 rounded">
-                      <input type="checkbox" name="coordinatorIds" value={c.id} className="h-3.5 w-3.5" />
-                      <span className="font-medium truncate">{c.name}</span>
-                      <span className="text-muted-foreground truncate text-[11px]">{c.email}</span>
-                      <Badge variant="default" className="ml-auto text-[10px] h-4">Faculty</Badge>
-                    </label>
-                  ))
-                )}
-              </div>
+              <Label>Faculty Coordinator</Label>
+              <Select name="coordinatorIds">
+                <SelectTrigger>
+                  <SelectValue placeholder="Select faculty coordinator" />
+                </SelectTrigger>
+                <SelectContent>
+                  {coordinators.filter((c: any) => c.userRole?.name === "EVENT_COORDINATOR").length === 0 ? (
+                    <SelectItem value="__none" disabled>No faculty coordinators</SelectItem>
+                  ) : (
+                    coordinators.filter((c: any) => c.userRole?.name === "EVENT_COORDINATOR").map((c) => (
+                      <SelectItem key={c.id} value={c.id}>{c.name} — {c.email}</SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1 md:col-span-2">
-              <Label>Student Coordinators</Label>
-              <div className="grid gap-1 rounded-md border p-2 max-h-32 overflow-auto">
-                {coordinators.filter((c: any) => c.userRole?.name === "STUDENT_COORDINATOR").length === 0 ? (
-                  <span className="text-xs text-muted-foreground">No student coordinators — create users with STUDENT_COORDINATOR role first</span>
-                ) : (
-                  coordinators.filter((c: any) => c.userRole?.name === "STUDENT_COORDINATOR").map((c) => (
-                    <label key={c.id} className="flex items-center gap-2 text-xs cursor-pointer hover:bg-muted px-1.5 py-1 rounded">
-                      <input type="checkbox" name="coordinatorIds" value={c.id} className="h-3.5 w-3.5" />
-                      <span className="font-medium truncate">{c.name}</span>
-                      <span className="text-muted-foreground truncate text-[11px]">{c.email}</span>
-                      <Badge variant="secondary" className="ml-auto text-[10px] h-4">Student</Badge>
-                    </label>
-                  ))
-                )}
-              </div>
+              <Label>Student Coordinator(s)</Label>
+              <Select name="coordinatorIds">
+                <SelectTrigger>
+                  <SelectValue placeholder="Select student coordinator" />
+                </SelectTrigger>
+                <SelectContent>
+                  {coordinators.filter((c: any) => c.userRole?.name === "STUDENT_COORDINATOR").length === 0 ? (
+                    <SelectItem value="__none" disabled>No student coordinators</SelectItem>
+                  ) : (
+                    coordinators.filter((c: any) => c.userRole?.name === "STUDENT_COORDINATOR").map((c) => (
+                      <SelectItem key={c.id} value={c.id}>{c.name} — {c.email}</SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+              <p className="text-[11px] text-muted-foreground">For more than one, create then add more below. Each save adds one.</p>
             </div>
             <div className="space-y-1">
               <Label htmlFor="judgeId">Judge</Label>
