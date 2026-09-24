@@ -170,7 +170,7 @@ export default async function CoordinatorEventPage({ params }: PageProps) {
         <TabsList className="flex flex-wrap h-auto">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="registrations">Registrations</TabsTrigger>
-          <TabsTrigger value="teams">Teams ({teams.length})</TabsTrigger>
+          {event.type === "TEAM" && <TabsTrigger value="teams">Teams ({teams.length})</TabsTrigger>}
           <TabsTrigger value="participants">Participants</TabsTrigger>
           <TabsTrigger value="announcements">Announcements</TabsTrigger>
           <TabsTrigger value="results">Results</TabsTrigger>
@@ -276,61 +276,69 @@ export default async function CoordinatorEventPage({ params }: PageProps) {
           </Card>
         </TabsContent>
 
-        <TabsContent value="teams">
-          <Card>
-            <CardHeader>
-              <div className="flex items-start justify-between gap-3">
+        {event.type === "TEAM" ? (
+          <TabsContent value="teams">
+            <Card className="border-[#0F172A]/10 bg-white">
+              <CardHeader>
+              <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <CardTitle className="text-base">Teams ({teams.length})</CardTitle>
-                  <CardDescription>Total teams for this event and their members.</CardDescription>
+                  <CardTitle className="text-base">Teams · {teams.length} total</CardTitle>
+                  <CardDescription>Every team for this event — you only see teams for events you coordinate.</CardDescription>
                 </div>
                 <ExportExcelButton data={teamsExport} filename={`${event.name}-teams-${format(new Date(), "yyyy-MM-dd")}`} sheetName="Teams" label={`Export ${teams.length}`} />
               </div>
-            </CardHeader>
-            <CardContent className="overflow-x-auto p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Team</TableHead>
-                    <TableHead>Leader</TableHead>
-                    <TableHead>Members</TableHead>
-                    <TableHead>Count</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {teams.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">No teams yet.</TableCell>
-                    </TableRow>
-                  )}
-                  {teams.map((t) => (
-                    <TableRow key={t.id}>
-                      <TableCell className="font-medium">{t.name}</TableCell>
-                      <TableCell>
-                        <div className="text-sm font-medium">{t.leader.name}</div>
-                        <div className="text-xs text-muted-foreground">{t.leader.email} · {(t.leader as any).phone ?? ""}</div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="space-y-1">
-                          {t.members.map((m) => (
-                            <div key={m.id} className="text-xs">
-                              <span className="font-medium">{m.user.name}</span>
-                              <span className="text-muted-foreground"> — {m.user.email} · {m.user.phone}</span>
-                              {m.role === "LEADER" && <Badge variant="default" className="ml-1 h-4 text-[10px]">Leader</Badge>}
-                            </div>
-                          ))}
+              </CardHeader>
+              <CardContent>
+                {teams.length === 0 ? (
+                  <div className="rounded-xl border border-dashed p-8 text-center">
+                    <p className="text-sm font-medium">No teams yet</p>
+                    <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-muted-foreground">
+                      Teams appear here after a leader creates one from <span className="font-mono">My Teams</span> (only after their registration is <span className="font-bold text-green-700">CONFIRMED</span>).
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {teams.map((t) => (
+                      <div key={t.id} className="rounded-2xl border border-[#0F172A]/10 bg-[#FFFBEB]/30 p-4">
+                        <div>
+                          <h3 className="text-sm font-bold leading-none">{t.name}</h3>
+                          <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <UsersRound className="h-3 w-3" /> {t.members.length} member{t.members.length === 1 ? "" : "s"} · {event.name}
+                          </p>
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{t.members.length}</Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                        <div className="mt-3 space-y-1.5">
+                          <p className="font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/40">Leader</p>
+                          <div className="flex items-center gap-2 rounded-xl border bg-white px-3 py-2">
+                            <span className="grid h-7 w-7 place-items-center rounded-full bg-[#0F172A] text-[11px] font-bold text-white">
+                              {t.leader.name.slice(0, 2).toUpperCase()}
+                            </span>
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-semibold leading-none">{t.leader.name} <span className="ml-1 font-mono text-[11px] text-muted-foreground">· Leader</span></p>
+                              <p className="truncate font-mono text-[11px] text-muted-foreground">{t.leader.email} · {(t.leader as any).phone ?? ""}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-3 space-y-1.5">
+                          <p className="font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/40">Members</p>
+                          <ul className="divide-y rounded-xl border bg-white overflow-hidden">
+                            {t.members.map((m) => (
+                              <li key={m.id} className="flex items-center justify-between px-3 py-2">
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-medium leading-none">{m.user.name} <span className="font-mono text-[11px] text-muted-foreground">· {m.role === "LEADER" ? "Leader" : "Member"}</span></p>
+                                <p className="truncate font-mono text-[11px] text-muted-foreground">{m.user.phone ?? m.user.email}</p>
+                              </div>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        ) : null}
 
         <TabsContent value="participants">
           <div className="grid gap-6 lg:grid-cols-3">

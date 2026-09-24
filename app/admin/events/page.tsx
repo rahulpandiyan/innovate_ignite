@@ -270,39 +270,53 @@ export default async function EventsPage() {
                 await assignEventUsers(input);
               }}
             />
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  Teams — {ev._count.teams} total
-                  <Badge variant="secondary" className="text-[11px]">{ev._count.teams} teams</Badge>
-                </CardTitle>
-                <CardDescription>Event → Teams → members. Expand to see users in each team.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {ev.teams.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No teams yet for this event.</p>
-                ) : (
-                  <div className="space-y-3">
-                    {ev.teams.map((t: any) => (
-                      <div key={t.id} className="rounded-lg border p-3">
-                        <div className="flex items-center justify-between">
-                          <p className="text-sm font-semibold">{t.name} <span className="text-xs text-muted-foreground">· by {t.leader.name}</span></p>
-                          <Badge variant="outline" className="text-[11px]">{t.members.length} member{t.members.length === 1 ? "" : "s"}</Badge>
+            {ev.type === "TEAM" ? (
+              <details className="group rounded-xl border border-[#0F172A]/10 bg-white open:bg-[#FFFBEB]/20">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4">
+                  <span className="flex items-center gap-2 text-sm font-semibold">
+                    <span className="grid h-7 w-7 place-items-center rounded-lg bg-[#0F172A] text-white text-xs font-bold">{ev._count.teams}</span>
+                    Teams
+                    <span className="font-mono text-xs font-normal text-muted-foreground">· {ev._count.teams} total</span>
+                  </span>
+                  <span className="text-xs text-muted-foreground group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <div className="border-t p-4">
+                  {ev.teams.length === 0 ? (
+                    <p className="py-4 text-center text-sm text-muted-foreground">No teams yet — teams appear after a confirmed participant creates one.</p>
+                  ) : (
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {ev.teams.map((t: any) => (
+                        <div key={t.id} className="rounded-2xl border bg-white p-4 shadow-sm">
+                          <div>
+                            <h4 className="text-sm font-bold leading-none">{t.name}</h4>
+                            <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                              <span className="h-1.5 w-1.5 rounded-full bg-[#19E3A8]" /> {t.members.length} member{t.members.length === 1 ? "" : "s"} · by {t.leader.name} · {t.members.length}/{ev.maxTeamSize ?? "∞"}
+                            </p>
+                          </div>
+                          <div className="mt-3 space-y-1.5">
+                            {t.members.map((m: any) => (
+                              <div key={m.id} className="flex items-center gap-2 rounded-xl border bg-[#FFFBEB]/40 px-3 py-2">
+                                <span className="grid h-7 w-7 place-items-center rounded-full bg-[#0F172A]/5 text-[11px] font-bold text-[#0F172A]/60 shrink-0">
+                                  {m.user.name.slice(0, 2).toUpperCase()}
+                                </span>
+                                <div className="min-w-0">
+                                  <p className="truncate text-sm font-medium leading-none">{m.user.name} <span className="ml-1 font-mono text-[11px] text-muted-foreground">· {m.role === "LEADER" ? "Leader" : "Member"}</span></p>
+                                  <p className="truncate font-mono text-[11px] text-muted-foreground">{m.user.phone ?? m.user.email}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                        <div className="mt-2 grid gap-1 sm:grid-cols-2">
-                          {t.members.map((m: any) => (
-                            <div key={m.id} className="rounded border bg-muted/20 px-2 py-1.5">
-                              <p className="text-xs font-medium">{m.user.name} {m.role === "LEADER" && <Badge variant="default" className="ml-1 h-4 text-[10px]">Leader</Badge>}</p>
-                              <p className="font-mono text-[11px] text-muted-foreground">{m.user.email} · {m.user.phone}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </details>
+            ) : (
+              <div className="rounded-xl border border-dashed bg-white p-4 text-center text-xs text-muted-foreground">
+                Solo event — no teams. Participants register individually.
+              </div>
+            )}
           </div>
         ))}
       </div>
