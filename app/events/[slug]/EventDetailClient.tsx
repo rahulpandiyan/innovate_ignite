@@ -172,12 +172,11 @@ export default function EventDetailClient({ category, details }: Props) {
                   <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
                   {category.category.replace(/_/g, " ")}
                 </span>
-                <span className="rounded-full border border-[#0F172A]/10 bg-[#0F172A]/5 px-2.5 py-1 font-mono text-[10px] tracking-wide">
-                  {memberCountLabel(category.minTeamSize, category.maxTeamSize)}
-                </span>
-                <span className="rounded-full bg-[#0F172A] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-white">
-                  {category.category.replace(/_/g, " ")}
-                </span>
+                {!(category.minTeamSize === 1 && category.maxTeamSize === 1 && category.priceMode !== "SOLO_OR_GROUP") && (
+                  <span className="rounded-full border border-[#0F172A]/10 bg-[#0F172A]/5 px-2.5 py-1 font-mono text-[10px] tracking-wide">
+                    {memberCountLabel(category.minTeamSize, category.maxTeamSize)}
+                  </span>
+                )}
               </div>
 
               <h1 className="mt-4 text-3xl font-black leading-[0.9] tracking-tight sm:text-4xl">
@@ -189,9 +188,11 @@ export default function EventDetailClient({ category, details }: Props) {
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F3C317] px-3 py-1.5 font-mono text-xs font-bold text-[#0F172A]">
                   <Banknote className="h-3.5 w-3.5" /> {price > 0 ? formatPriceLabel({ price, priceMode, groupPrice }) : "Free"}
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 bg-white px-3 py-1.5 font-mono text-xs">
-                  <Users className="h-3.5 w-3.5" /> {memberCountLabel(category.minTeamSize, category.maxTeamSize)}
-                </span>
+                {!(category.minTeamSize === 1 && category.maxTeamSize === 1 && category.priceMode !== "SOLO_OR_GROUP") && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 bg-white px-3 py-1.5 font-mono text-xs">
+                    <Users className="h-3.5 w-3.5" /> {memberCountLabel(category.minTeamSize, category.maxTeamSize)}
+                  </span>
+                )}
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 bg-white px-3 py-1.5 font-mono text-xs">
                   <Calendar className="h-3.5 w-3.5" /> Oct 8–9
                 </span>
