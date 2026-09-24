@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { eventCategories } from "@/data/eventCategories";
 import { eventsList } from "@/data/eventList";
 import EventDetailClient from "./EventDetailClient";
@@ -13,6 +13,8 @@ export async function generateStaticParams() {
 
 export default async function EventDetailPage({ params }: Props) {
   const { slug } = await params;
+
+  if (slug === "dance-elite") redirect("/events/danceexe");
 
   const category = eventCategories.find((e) => e.slug === slug);
   if (!category) notFound();

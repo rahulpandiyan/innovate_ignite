@@ -307,6 +307,7 @@ export const eventsList: EventList[] = [
             "Arguments must remain relevant and should be supported by logical reasoning, facts, examples, or relevant viewpoints.",
         ],
         coordinators: [
+            { name: "Selva Agnes", faculty: true },
             { name: "Supriya P", faculty: true },
             { name: "Thannavee", phone: "+917204967325" },
             { name: "Lavanya", phone: "+918296876822" },

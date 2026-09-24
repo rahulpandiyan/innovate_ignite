@@ -29,7 +29,7 @@ export const festSchedule: ScheduleDay[] = [
                 time: "09:30 AM – 01:00 PM",
                 items: [
                     { name: "Code conflux", slug: "code-conflux", category: "TECHNICAL", faculty: "V Vanitha, Rashmi Rani", venue: "Ground Floor Labs" },
-                    { name: "Group Discussion", slug: "group-discussion", category: "GENERAL", faculty: "Supriya P", venue: "Placement Cell" },
+                    { name: "Group Discussion", slug: "group-discussion", category: "GENERAL", faculty: "Selva Agnes, Supriya P", venue: "Placement Cell" },
                     { name: "VV CARE", slug: "vv-care", category: "GENERAL", faculty: "Rajani M, M G Kousar", venue: "Seminar Hall – 1" },
                 ],
             },
