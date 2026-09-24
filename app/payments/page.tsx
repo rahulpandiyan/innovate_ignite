@@ -5,6 +5,7 @@ import { getHomeRoute } from "@/lib/rbac-data";
 import { OrderActions } from "@/components/finance/order-actions";
 import { RegistrationActions } from "@/components/finance/registration-actions";
 import { UserContactDialog } from "@/components/finance/user-contact-dialog";
+import { ExportExcelButton } from "@/components/ui/export-excel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { IndianRupee, Wallet, RefreshCcw, FileClock } from "lucide-react";
@@ -55,6 +56,37 @@ export default async function PaymentsPage() {
   const pendingRegPayments = payments.filter((p) => p.status === "PENDING").length;
   const coordinatorCollected = payments.filter((p) => p.status === "COORDINATOR_COLLECTED");
   const coordinatorCollectedCount = coordinatorCollected.length;
+
+  const ordersExport = orders.map((o) => ({
+    Submitted: format(o.createdAt, "yyyy-MM-dd HH:mm"),
+    Participant: o.user.name,
+    Email: o.user.email,
+    Phone: o.user.phone,
+    College: o.user.collegeName,
+    ParticipantID: o.user.participant?.participantId ?? "",
+    Events: o.orderItems.map((i) => i.event.name).join(", "),
+    Amount: Number(o.totalAmount),
+    UPI_TXN: o.upiTransactionId ?? "",
+    Screenshot: o.paymentScreenshotUrl ?? "",
+    Status: o.status,
+  }));
+
+  const paymentsExport = payments.map((p) => ({
+    Participant: p.registration.user.name,
+    Email: p.registration.user.email,
+    Phone: p.registration.user.phone,
+    College: p.registration.user.collegeName,
+    ParticipantID: p.registration.user.participant?.participantId ?? "",
+    Event: p.registration.event.name,
+    Amount: Number(p.amount),
+    Method: p.transactionId === "OFFLINE" ? "OFFLINE" : "UPI",
+    TransactionID: p.transactionId ?? "",
+    Screenshot: p.receiptUrl ?? "",
+    Status: p.status,
+    ConfirmedAt: p.confirmedAt ? format(p.confirmedAt, "yyyy-MM-dd HH:mm") : "",
+    CollectedBy: p.collector?.name ?? "",
+    VerifiedBy: p.verifier?.name ?? "",
+  }));
 
   return (
     <div className="space-y-6">
@@ -119,8 +151,13 @@ export default async function PaymentsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Orders</CardTitle>
-          <CardDescription>Payment submissions from participants.</CardDescription>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <CardTitle className="text-base">Orders</CardTitle>
+              <CardDescription>Payment submissions from participants.</CardDescription>
+            </div>
+            <ExportExcelButton data={ordersExport} filename={`orders-${format(new Date(), "yyyy-MM-dd")}`} sheetName="Orders" label={`Export ${orders.length}`} />
+          </div>
         </CardHeader>
         <CardContent className="overflow-x-auto p-0">
           <table className="w-full text-sm">
@@ -213,8 +250,13 @@ export default async function PaymentsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Registration payments</CardTitle>
-          <CardDescription>Per-registration ledger. Verify to confirm registrations.</CardDescription>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <CardTitle className="text-base">Registration payments</CardTitle>
+              <CardDescription>Per-registration ledger. Verify to confirm registrations.</CardDescription>
+            </div>
+            <ExportExcelButton data={paymentsExport} filename={`registration-payments-${format(new Date(), "yyyy-MM-dd")}`} sheetName="Payments" label={`Export ${payments.length}`} />
+          </div>
         </CardHeader>
         <CardContent className="overflow-x-auto p-0">
           <table className="w-full text-sm">

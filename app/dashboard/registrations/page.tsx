@@ -15,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { QrPassButton } from "@/components/participant/qr-pass-button";
 import { PayRegistrationButton } from "@/components/participant/pay-registration";
 import { WhatsAppGroupButton } from "@/components/participant/whatsapp-group-button";
+import { ExportExcelButton } from "@/components/ui/export-excel";
 import { festSchedule } from "@/data/schedule";
 import { format } from "date-fns";
 
@@ -67,6 +68,15 @@ export default async function RegistrationsPage() {
     orderBy: { createdAt: "desc" },
   });
 
+  // helper to show chosen game for BGMI & FreeFire instead of generic name
+  const displayName = (reg: (typeof registrations)[number]) => {
+    const fr = reg.formResponses as Record<string, unknown> | null;
+    if (reg.event.name === "BGMI & FreeFire" && fr && typeof fr.game === "string" && (fr.game === "BGMI" || fr.game === "Free Fire")) {
+      return fr.game as string;
+    }
+    return reg.event.name;
+  };
+
   const rows = await Promise.all(
     registrations.map(async (reg) => {
       const attendee = reg.attendees[0];
@@ -82,13 +92,36 @@ export default async function RegistrationsPage() {
     })
   );
 
+  const exportData = rows.map((r) => {
+    const fb = !r.event.date || !r.event.venue ? scheduleFallback(r.event.name) : null;
+    const d = r.event.date ?? fb?.date ?? null;
+    const fr = r.formResponses as Record<string, unknown> | null;
+    const game = r.event.name === "BGMI & FreeFire" && fr?.game ? String(fr.game) : "";
+    return {
+      Event: displayName(r as never),
+      Game: game,
+      Category: r.event.category,
+      Date: d ? format(d, "yyyy-MM-dd") : "",
+      Venue: r.event.venue ?? fb?.venue ?? "",
+      Time: r.event.time ?? fb?.time ?? "",
+      RegistrationID: r.registrationId,
+      Status: r.status,
+      Team: r.team?.name ?? "",
+      PaymentStatus: r.payment?.status ?? (Number(r.event.price) > 0 ? "Not submitted" : "Free"),
+      Amount: r.payment ? Number(r.payment.amount) : Number(r.event.price),
+    };
+  });
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">My Registrations</h1>
-        <p className="text-muted-foreground">
-          Every event you&apos;re registered for, with payment and QR pass status.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">My Registrations</h1>
+          <p className="text-muted-foreground">
+            Every event you&apos;re registered for, with payment and QR pass status.
+          </p>
+        </div>
+        <ExportExcelButton data={exportData} filename={`my-registrations-${format(new Date(), "yyyy-MM-dd")}`} sheetName="Registrations" label={`Export ${rows.length}`} />
       </div>
 
       {rows.length === 0 ? (
@@ -124,9 +157,10 @@ export default async function RegistrationsPage() {
                   const d = reg.event.date ?? fb?.date ?? null
                   const venue = reg.event.venue ?? fb?.venue ?? "Venue TBA"
                   const time = reg.event.time ?? fb?.time ?? null
+                  const nameToShow = displayName(reg as never)
                   return (
                   <TableRow key={reg.id}>
-                    <TableCell className="font-medium">{reg.event.name}</TableCell>
+                    <TableCell className="font-medium">{nameToShow}</TableCell>
                     <TableCell>
                       <div className="text-sm">
                         {d ? format(d, "MMM d, yyyy") : "TBA"}
@@ -168,7 +202,7 @@ export default async function RegistrationsPage() {
                         <QrPassButton
                           data={{
                             qrDataUrl: reg.qrDataUrl,
-                            eventName: reg.event.name,
+                            eventName: displayName(reg as never),
                             registrationId: reg.registrationId,
                             attendeeId: reg.attendeeId,
                             token: reg.qrToken,

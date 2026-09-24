@@ -20,6 +20,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { AssignCoordinatorForm } from "@/components/admin/assign-coordinator-form";
+import { ExportExcelButton } from "@/components/ui/export-excel";
+import { format } from "date-fns";
 
 const ROLE_OPTIONS = [
   "SUPER_ADMIN",
@@ -40,7 +42,7 @@ export default async function UsersPage({ searchParams }: { searchParams?: Promi
   const perPage = 12;
   const skip = (page - 1) * perPage;
 
-  const [totalUsers, users, colleges, events, allCoordinators] = await Promise.all([
+  const [totalUsers, users, colleges, events, allCoordinators, allUsersForExport] = await Promise.all([
     prisma.user.count(),
     prisma.user.findMany({
       orderBy: { createdAt: "desc" },
@@ -66,9 +68,34 @@ export default async function UsersPage({ searchParams }: { searchParams?: Promi
       select: { id: true, name: true, email: true, userRole: { select: { name: true } } },
       orderBy: { name: "asc" },
     }),
+    prisma.user.findMany({
+      orderBy: { createdAt: "desc" },
+      select: {
+        name: true,
+        email: true,
+        phone: true,
+        collegeName: true,
+        userRole: { select: { name: true } },
+        role: true,
+        college: { select: { code: true, name: true } },
+        createdAt: true,
+        coordinators: { select: { event: { select: { name: true } } } },
+      },
+    }),
   ]);
 
   const totalPages = Math.max(1, Math.ceil(totalUsers / perPage));
+
+  const usersExport = allUsersForExport.map((u) => ({
+    Name: u.name,
+    Email: u.email,
+    Phone: u.phone,
+    College: u.collegeName,
+    CollegeCode: u.college?.code ?? "",
+    Role: u.userRole?.name ?? u.role,
+    AssignedEvents: u.coordinators.map((c: any) => c.event.name).join(", "),
+    CreatedAt: format(u.createdAt, "yyyy-MM-dd HH:mm"),
+  }));
 
   return (
     <div className="space-y-6">
@@ -176,10 +203,15 @@ export default async function UsersPage({ searchParams }: { searchParams?: Promi
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Accounts</CardTitle>
-          <CardDescription>
-            {totalUsers} total · page {page} of {totalPages} · 12 per page
-          </CardDescription>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <CardTitle className="text-base">Accounts</CardTitle>
+              <CardDescription>
+                {totalUsers} total · page {page} of {totalPages} · 12 per page
+              </CardDescription>
+            </div>
+            <ExportExcelButton data={usersExport} filename={`users-${format(new Date(), "yyyy-MM-dd")}`} sheetName="Users" label={`Export ${totalUsers}`} />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between border-b py-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">

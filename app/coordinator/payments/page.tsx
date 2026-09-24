@@ -5,6 +5,7 @@ import { getEventScope } from "@/lib/rbac";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { RegistrationActions } from "@/components/finance/registration-actions";
+import { ExportExcelButton } from "@/components/ui/export-excel";
 import { IndianRupee, HandCoins, Clock, CheckCircle2 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -25,7 +26,7 @@ export default async function CoordinatorPaymentsPage() {
     include: {
       registration: {
         include: {
-          user: { select: { name: true, email: true } },
+          user: { select: { name: true, email: true, phone: true, collegeName: true } },
           event: { select: { name: true } },
         },
       },
@@ -36,6 +37,21 @@ export default async function CoordinatorPaymentsPage() {
     take: 200,
   });
 
+  const paymentsExport = payments.map((p) => ({
+    Student: p.registration.user.name,
+    Email: p.registration.user.email,
+    Phone: p.registration.user.phone,
+    College: p.registration.user.collegeName,
+    Event: p.registration.event.name,
+    Amount: Number(p.amount),
+    Status: p.status,
+    Method: p.transactionId === "OFFLINE" ? "OFFLINE" : "UPI",
+    TransactionID: p.transactionId ?? "",
+    CollectedBy: p.collector?.name ?? "",
+    VerifiedBy: p.verifier?.name ?? "",
+    InitiatedAt: p.initiatedAt ? format(p.initiatedAt, "yyyy-MM-dd HH:mm") : "",
+  }));
+
   const pendingPayments = payments.filter((p) => p.status === "PENDING");
   const coordinatorCollected = payments.filter((p) => p.status === "COORDINATOR_COLLECTED");
   const verifiedPayments = payments.filter((p) => p.status === "SUCCESS");
@@ -43,11 +59,14 @@ export default async function CoordinatorPaymentsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Collect payments</h1>
-        <p className="text-muted-foreground">
-          Mark payments as collected from students. Finance will verify and confirm.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Collect payments</h1>
+          <p className="text-muted-foreground">
+            Mark payments as collected from students. Finance will verify and confirm.
+          </p>
+        </div>
+        <ExportExcelButton data={paymentsExport} filename={`coordinator-all-payments-${format(new Date(), "yyyy-MM-dd")}`} sheetName="Payments" label={`Export all ${payments.length}`} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-4">
@@ -87,8 +106,13 @@ export default async function CoordinatorPaymentsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Pending payments</CardTitle>
-          <CardDescription>Click &quot;Collect&quot; to mark a payment as received from the student.</CardDescription>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <CardTitle className="text-base">Pending payments</CardTitle>
+              <CardDescription>Click &quot;Collect&quot; to mark a payment as received from the student.</CardDescription>
+            </div>
+            <ExportExcelButton data={paymentsExport.filter((r) => r.Status === "PENDING")} filename={`coordinator-pending-${format(new Date(), "yyyy-MM-dd")}`} sheetName="Pending" label={`Export ${pendingPayments.length}`} />
+          </div>
         </CardHeader>
         <CardContent className="overflow-x-auto p-0">
           <table className="w-full text-sm">

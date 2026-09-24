@@ -32,6 +32,7 @@ import { Megaphone,
 } from "lucide-react";
 import { format } from "date-fns";
 import { CoordinatorEventEditForm } from "@/components/coordinator/coordinator-event-edit-form";
+import { ExportExcelButton } from "@/components/ui/export-excel";
 
 type PageProps = { params: Promise<{ eventId: string }> };
 
@@ -48,9 +49,9 @@ export default async function CoordinatorEventPage({ params }: PageProps) {
     include: {
       registrations: {
         include: {
-          user: { select: { id: true, name: true, email: true, collegeName: true } },
+          user: { select: { id: true, name: true, email: true, phone: true, collegeName: true } },
           team: { select: { id: true, name: true } },
-          payment: { select: { status: true, amount: true } },
+          payment: { select: { status: true, amount: true, transactionId: true } },
           attendees: {
             select: { id: true, attendeeId: true, attendance: { select: { id: true, checkedInAt: true } } },
           },
@@ -79,6 +80,38 @@ export default async function CoordinatorEventPage({ params }: PageProps) {
   const checkedIn = event.registrations.reduce(
     (s, r) => s + r.attendees.filter((a) => a.attendance.length > 0).length,
     0
+  );
+
+  const isGamingEvent = event.name === "BGMI & FreeFire";
+  const gameOf = (r: (typeof event.registrations)[number]) => {
+    const fr = r.formResponses as Record<string, unknown> | null;
+    if (isGamingEvent && fr && typeof fr.game === "string") return fr.game as string;
+    return null;
+  };
+
+  const registrationsExport = event.registrations.map((r) => ({
+    RegistrationID: r.registrationId,
+    Participant: r.user.name,
+    Email: r.user.email,
+    Phone: r.user.phone,
+    College: r.user.collegeName,
+    Team: r.team?.name ?? "",
+    Status: r.status,
+    PaymentStatus: r.payment?.status ?? "Not submitted",
+    Amount: r.payment ? Number(r.payment.amount) : 0,
+    TransactionID: r.payment?.transactionId ?? "",
+    Game: gameOf(r) ?? "",
+  }));
+
+  const attendeesExport = event.registrations.flatMap((r) =>
+    r.attendees.map((a) => ({
+      AttendeeID: a.attendeeId,
+      Participant: r.user.name,
+      Email: r.user.email,
+      Phone: r.user.phone,
+      RegistrationID: r.registrationId,
+      CheckedIn: a.attendance.length > 0 ? format(a.attendance[0].checkedInAt ?? new Date(), "yyyy-MM-dd HH:mm") : "Not checked in",
+    }))
   );
 
   const byCollege = new Map<string, number>();
@@ -164,10 +197,15 @@ export default async function CoordinatorEventPage({ params }: PageProps) {
         <TabsContent value="registrations">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">
-                Registrations ({event.registrations.length})
-              </CardTitle>
-              <CardDescription>All registered participants for this event.</CardDescription>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <CardTitle className="text-base">
+                    Registrations ({event.registrations.length})
+                  </CardTitle>
+                  <CardDescription>All registered participants for this event.</CardDescription>
+                </div>
+                <ExportExcelButton data={registrationsExport} filename={`${event.name}-registrations-${format(new Date(), "yyyy-MM-dd")}`} sheetName="Registrations" label={`Export ${event.registrations.length}`} />
+              </div>
             </CardHeader>
             <CardContent className="overflow-x-auto p-0">
               <Table>
@@ -177,6 +215,7 @@ export default async function CoordinatorEventPage({ params }: PageProps) {
                     <TableHead>Participant</TableHead>
                     <TableHead>College</TableHead>
                     <TableHead>Team</TableHead>
+                    {isGamingEvent && <TableHead>Game</TableHead>}
                     <TableHead>Status</TableHead>
                     <TableHead>Payment</TableHead>
                   </TableRow>
@@ -184,26 +223,34 @@ export default async function CoordinatorEventPage({ params }: PageProps) {
                 <TableBody>
                   {event.registrations.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+                      <TableCell colSpan={isGamingEvent ? 7 : 6} className="py-8 text-center text-muted-foreground">
                         No registrations yet.
                       </TableCell>
                     </TableRow>
                   )}
-                  {event.registrations.map((r) => (
-                    <TableRow key={r.id}>
-                      <TableCell className="text-sm">{r.registrationId}</TableCell>
-                      <TableCell>
-                        <div className="text-sm font-medium">{r.user.name}</div>
-                        <div className="text-xs text-muted-foreground">{r.user.email}</div>
-                      </TableCell>
-                      <TableCell className="text-sm">{r.user.collegeName}</TableCell>
-                      <TableCell className="text-sm">{r.team?.name ?? "—"}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{r.status}</Badge>
-                      </TableCell>
-                      <TableCell className="text-sm">{r.payment?.status ?? "—"}</TableCell>
-                    </TableRow>
-                  ))}
+                  {event.registrations.map((r) => {
+                    const g = gameOf(r);
+                    return (
+                      <TableRow key={r.id}>
+                        <TableCell className="text-sm">{r.registrationId}</TableCell>
+                        <TableCell>
+                          <div className="text-sm font-medium">{r.user.name}</div>
+                          <div className="text-xs text-muted-foreground">{r.user.email}</div>
+                        </TableCell>
+                        <TableCell className="text-sm">{r.user.collegeName}</TableCell>
+                        <TableCell className="text-sm">{r.team?.name ?? "—"}</TableCell>
+                        {isGamingEvent && (
+                          <TableCell>
+                            {g ? <Badge variant="secondary" className="text-[11px]">{g}</Badge> : <span className="text-xs text-muted-foreground">—</span>}
+                          </TableCell>
+                        )}
+                        <TableCell>
+                          <Badge variant="outline">{r.status}</Badge>
+                        </TableCell>
+                        <TableCell className="text-sm">{r.payment?.status ?? "—"}</TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </CardContent>
@@ -232,10 +279,15 @@ export default async function CoordinatorEventPage({ params }: PageProps) {
             </Card>
             <Card className="lg:col-span-2">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <UsersRound className="h-4 w-4 text-muted-foreground" /> Participants
-                </CardTitle>
-                <CardDescription>Individual attendee records and check-in state.</CardDescription>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <UsersRound className="h-4 w-4 text-muted-foreground" /> Participants
+                    </CardTitle>
+                    <CardDescription>Individual attendee records and check-in state.</CardDescription>
+                  </div>
+                  <ExportExcelButton data={attendeesExport} filename={`${event.name}-attendees-${format(new Date(), "yyyy-MM-dd")}`} sheetName="Attendees" label={`Export ${attendeesExport.length}`} />
+                </div>
               </CardHeader>
               <CardContent className="overflow-x-auto p-0">
                 <Table>
