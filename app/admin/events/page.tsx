@@ -62,8 +62,12 @@ export default async function EventsPage() {
         <CardContent>
           <form
             className="grid gap-4 md:grid-cols-4"
-            action={async (formData) => {
+              action={async (formData) => {
               "use server";
+              const coordinatorIds = formData.getAll("coordinatorIds").map(String).filter(Boolean);
+              // fallback for old single field
+              const single = String(formData.get("coordinatorId") ?? "");
+              if (single) coordinatorIds.push(single);
               await createEvent({
                 name: String(formData.get("name") ?? ""),
                 description: String(formData.get("description") ?? "") || undefined,
@@ -79,7 +83,7 @@ export default async function EventsPage() {
                 registrationStart: String(formData.get("registrationStart") ?? ""),
                 registrationEnd: String(formData.get("registrationEnd") ?? ""),
                 status: (String(formData.get("status") ?? "DRAFT") as never) ?? "DRAFT",
-                coordinatorId: String(formData.get("coordinatorId") ?? "") || undefined,
+                coordinatorIds: coordinatorIds.length ? coordinatorIds : undefined,
                 judgeId: String(formData.get("judgeId") ?? "") || undefined,
               });
             }}
@@ -175,20 +179,39 @@ export default async function EventsPage() {
               <Label htmlFor="registrationEnd">Reg closes</Label>
               <Input id="registrationEnd" name="registrationEnd" type="datetime-local" />
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="coordinatorId">Coordinator</Label>
-              <Select name="coordinatorId">
-                <SelectTrigger id="coordinatorId">
-                  <SelectValue placeholder="Assign coordinator" />
-                </SelectTrigger>
-                <SelectContent>
-                  {coordinators.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="space-y-1 md:col-span-2">
+              <Label>Faculty Coordinators</Label>
+              <div className="grid gap-1 rounded-md border p-2 max-h-32 overflow-auto">
+                {coordinators.filter((c: any) => c.userRole?.name === "EVENT_COORDINATOR").length === 0 ? (
+                  <span className="text-xs text-muted-foreground">No faculty coordinators — create users with EVENT_COORDINATOR role first</span>
+                ) : (
+                  coordinators.filter((c: any) => c.userRole?.name === "EVENT_COORDINATOR").map((c) => (
+                    <label key={c.id} className="flex items-center gap-2 text-xs cursor-pointer hover:bg-muted px-1.5 py-1 rounded">
+                      <input type="checkbox" name="coordinatorIds" value={c.id} className="h-3.5 w-3.5" />
+                      <span className="font-medium truncate">{c.name}</span>
+                      <span className="text-muted-foreground truncate text-[11px]">{c.email}</span>
+                      <Badge variant="default" className="ml-auto text-[10px] h-4">Faculty</Badge>
+                    </label>
+                  ))
+                )}
+              </div>
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <Label>Student Coordinators</Label>
+              <div className="grid gap-1 rounded-md border p-2 max-h-32 overflow-auto">
+                {coordinators.filter((c: any) => c.userRole?.name === "STUDENT_COORDINATOR").length === 0 ? (
+                  <span className="text-xs text-muted-foreground">No student coordinators — create users with STUDENT_COORDINATOR role first</span>
+                ) : (
+                  coordinators.filter((c: any) => c.userRole?.name === "STUDENT_COORDINATOR").map((c) => (
+                    <label key={c.id} className="flex items-center gap-2 text-xs cursor-pointer hover:bg-muted px-1.5 py-1 rounded">
+                      <input type="checkbox" name="coordinatorIds" value={c.id} className="h-3.5 w-3.5" />
+                      <span className="font-medium truncate">{c.name}</span>
+                      <span className="text-muted-foreground truncate text-[11px]">{c.email}</span>
+                      <Badge variant="secondary" className="ml-auto text-[10px] h-4">Student</Badge>
+                    </label>
+                  ))
+                )}
+              </div>
             </div>
             <div className="space-y-1">
               <Label htmlFor="judgeId">Judge</Label>

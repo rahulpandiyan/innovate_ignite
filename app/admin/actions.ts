@@ -67,6 +67,7 @@ export async function createEvent(input: {
   registrationEnd: string;
   status: "DRAFT" | "OPEN" | "REGISTRATION_CLOSED" | "ONGOING" | "COMPLETED";
   coordinatorId?: string;
+  coordinatorIds?: string[];
   judgeId?: string;
 }) {
   const admin = await requireAdmin(PERMISSIONS.EVENTS_CREATE);
@@ -89,13 +90,12 @@ export async function createEvent(input: {
       createdById: admin.id,
     },
   });
-  if (input.coordinatorId) {
+  const coordIds = input.coordinatorIds ?? (input.coordinatorId ? [input.coordinatorId] : []);
+  for (const cid of coordIds) {
     await prisma.eventCoordinator.upsert({
-      where: {
-        eventId_userId: { eventId: event.id, userId: input.coordinatorId },
-      },
+      where: { eventId_userId: { eventId: event.id, userId: cid } },
       update: {},
-      create: { eventId: event.id, userId: input.coordinatorId },
+      create: { eventId: event.id, userId: cid },
     });
   }
   if (input.judgeId) {
