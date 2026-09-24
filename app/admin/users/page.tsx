@@ -213,7 +213,7 @@ export default async function UsersPage({ searchParams }: { searchParams?: Promi
                     <span className="text-xs text-muted-foreground">—</span>
                   )}
                 </div>
-                <div className="w-1/6 text-right">
+                <div className="w-1/6">
                   <form
                     action={async (formData) => {
                       "use server";
@@ -222,6 +222,7 @@ export default async function UsersPage({ searchParams }: { searchParams?: Promi
                         roleName: String(formData.get("role") ?? ""),
                       });
                     }}
+                    className="flex flex-col gap-1"
                   >
                     <Select name="role" defaultValue={u.userRole?.name ?? "PARTICIPANT"}>
                       <SelectTrigger className="h-8 text-xs">
@@ -235,9 +236,7 @@ export default async function UsersPage({ searchParams }: { searchParams?: Promi
                         ))}
                       </SelectContent>
                     </Select>
-                    <button type="submit" className="sr-only">
-                      Update
-                    </button>
+                    <Button type="submit" size="sm" variant="outline" className="h-7 text-[11px] w-full">Save</Button>
                   </form>
                 </div>
               </div>
