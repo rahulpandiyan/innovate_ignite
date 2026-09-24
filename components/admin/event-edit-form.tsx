@@ -191,7 +191,7 @@ export function EventEditForm({
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2 text-sm">
               <Badge variant="secondary">{registrationCount} registrations</Badge>
-              <Badge variant="secondary">{teamCount} teams</Badge>
+              {event.type === "TEAM" && <Badge variant="secondary">{teamCount} teams</Badge>}
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs font-medium text-muted-foreground">Coordinators:</span>
