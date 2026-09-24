@@ -39,7 +39,7 @@ export default async function UsersPage({ searchParams }: { searchParams?: Promi
   const perPage = 12;
   const skip = (page - 1) * perPage;
 
-  const [totalUsers, users, colleges, events] = await Promise.all([
+  const [totalUsers, users, colleges, events, allCoordinators] = await Promise.all([
     prisma.user.count(),
     prisma.user.findMany({
       orderBy: { createdAt: "desc" },
@@ -60,26 +60,28 @@ export default async function UsersPage({ searchParams }: { searchParams?: Promi
     }),
     prisma.college.findMany({ select: { code: true, name: true }, orderBy: { name: "asc" } }),
     prisma.event.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
+    prisma.user.findMany({
+      where: { userRole: { name: { in: ["EVENT_COORDINATOR", "STUDENT_COORDINATOR"] } } },
+      select: { id: true, name: true, email: true, userRole: { select: { name: true } } },
+      orderBy: { name: "asc" },
+    }),
   ]);
 
   const totalPages = Math.max(1, Math.ceil(totalUsers / perPage));
-
-  // coordinator candidates for assignment dropdown
-  const coordinators = users.filter((u) => ["EVENT_COORDINATOR", "STUDENT_COORDINATOR"].includes(u.userRole?.name ?? ""));
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Users & Roles</h1>
         <p className="text-sm text-muted-foreground">
-          Platform accounts and their RBAC role. Role changes are audit logged. Assign student/faculty coordinators to events here or in Events.
+          Create accounts, change roles, and assign coordinators to events. All changes are audited.
         </p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Create user</CardTitle>
-          <CardDescription>Adds an account to the new RBAC user store.</CardDescription>
+          <CardDescription>Pick Faculty (EVENT_COORDINATOR) or Student (STUDENT_COORDINATOR) here, then assign below.</CardDescription>
         </CardHeader>
         <CardContent>
           <form
@@ -156,54 +158,55 @@ export default async function UsersPage({ searchParams }: { searchParams?: Promi
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Assign coordinator to events</CardTitle>
-          <CardDescription>Pick a faculty or student coordinator and the events they should manage. You can assign more than one event.</CardDescription>
+          <CardTitle className="text-base">Assign coordinator to event</CardTitle>
+          <CardDescription>Select one coordinator and one event, then click Assign. Repeat to add more than 2. Shows all faculty & student coordinators.</CardDescription>
         </CardHeader>
         <CardContent>
           <form
             action={async (formData) => {
               "use server";
               const userId = String(formData.get("userId") ?? "");
-              const eventIds = formData.getAll("eventIds").map(String).filter(Boolean);
-              if (!userId) return;
-              await assignUserToEvents({ userId, eventIds });
+              const eventId = String(formData.get("eventId") ?? "");
+              if (!userId || !eventId) return;
+              await assignUserToEvents({ userId, eventIds: [eventId] });
             }}
-            className="space-y-3"
+            className="flex flex-col gap-3 sm:flex-row sm:items-end"
           >
-            <div className="grid gap-3 md:grid-cols-2">
-              <div className="space-y-1">
-                <Label>Coordinator</Label>
-                <Select name="userId">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select coordinator" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(() => {
-                      const list = coordinators.length ? coordinators : users.filter((u) => u.userRole?.name?.includes("COORDINATOR"));
-                      if (list.length === 0) return <SelectItem value="none" disabled>No coordinators yet — create one above</SelectItem>;
-                      return list.map((u) => (
-                        <SelectItem key={u.id} value={u.id}>
-                          {u.name} — {u.userRole?.name ?? u.role} ({u.email})
-                        </SelectItem>
-                      ));
-                    })()}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1">
-                <Label>Events (select multiple)</Label>
-                <div className="grid max-h-40 overflow-auto rounded-md border p-2 gap-1">
-                  {events.map((e) => (
-                    <label key={e.id} className="flex items-center gap-2 text-xs cursor-pointer hover:bg-muted px-1.5 py-1 rounded">
-                      <input type="checkbox" name="eventIds" value={e.id} className="h-3.5 w-3.5" />
-                      <span className="truncate">{e.name}</span>
-                    </label>
-                  ))}
-                </div>
-                <p className="text-[11px] text-muted-foreground">Checked events will be assigned; unchecked will be removed for that user.</p>
-              </div>
+            <div className="flex-1 space-y-1">
+              <Label>Coordinator (all)</Label>
+              <Select name="userId" required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select coordinator" />
+                </SelectTrigger>
+                <SelectContent>
+                  {allCoordinators.length === 0 ? (
+                    <SelectItem value="__none" disabled>No coordinators yet — create one above</SelectItem>
+                  ) : (
+                    allCoordinators.map((u) => (
+                      <SelectItem key={u.id} value={u.id}>
+                        {u.name} — {u.userRole?.name === "EVENT_COORDINATOR" ? "Faculty" : "Student"} ({u.email})
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
             </div>
-            <Button type="submit" size="sm" variant="outline">Save assignment</Button>
+            <div className="flex-1 space-y-1">
+              <Label>Event</Label>
+              <Select name="eventId" required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select event" />
+                </SelectTrigger>
+                <SelectContent>
+                  {events.map((e) => (
+                    <SelectItem key={e.id} value={e.id}>
+                      {e.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button type="submit" size="sm" className="h-9 shrink-0">Assign</Button>
           </form>
         </CardContent>
       </Card>
@@ -212,7 +215,7 @@ export default async function UsersPage({ searchParams }: { searchParams?: Promi
         <CardHeader>
           <CardTitle className="text-base">Accounts</CardTitle>
           <CardDescription>
-            {totalUsers} total · page {page} of {totalPages}
+            {totalUsers} total · page {page} of {totalPages} · 12 per page
           </CardDescription>
         </CardHeader>
         <CardContent>
