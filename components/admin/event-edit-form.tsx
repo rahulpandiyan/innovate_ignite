@@ -261,27 +261,24 @@ function AssignForm({
   const faculty = coordinators.filter((c) => c.role === "EVENT_COORDINATOR");
   const students = coordinators.filter((c) => c.role === "STUDENT_COORDINATOR");
 
-  async function addOne(id: string) {
-    if (!id) return;
-    setBusy(true);
-    try {
-      await onAssign({ eventId, coordinatorIds: [id] });
-      toast.success("Coordinator added");
-      router.refresh();
-    } catch {
-      toast.error("Assignment failed");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function handleJudge(e: React.FormEvent) {
+  async function handleSave(e: React.FormEvent) {
     e.preventDefault();
-    if (!judgeId) return;
+    const ids = [facultyId, studentId, judgeId].filter(Boolean);
+    if (ids.length === 0) {
+      toast.error("Select at least one coordinator or judge");
+      return;
+    }
     setBusy(true);
     try {
-      await onAssign({ eventId, judgeId });
-      toast.success("Judge assigned");
+      const coordIds = [facultyId, studentId].filter(Boolean);
+      await onAssign({
+        eventId,
+        coordinatorIds: coordIds.length ? coordIds : undefined,
+        judgeId: judgeId || undefined,
+      });
+      toast.success(coordIds.length && judgeId ? "Assigned coordinator(s) and judge" : coordIds.length ? `Added ${coordIds.length} coordinator(s)` : "Judge assigned");
+      setFacultyId("");
+      setStudentId("");
       setJudgeId("");
       router.refresh();
     } catch {
@@ -292,51 +289,39 @@ function AssignForm({
   }
 
   return (
-    <div className="flex flex-col gap-4 w-full">
-      <div className="grid gap-3 md:grid-cols-2">
-        <div className="flex items-end gap-2">
-          <div className="flex-1 space-y-1">
-            <Label className="text-xs">Faculty coordinator</Label>
-            <Select value={facultyId} onValueChange={setFacultyId}>
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue placeholder={faculty.length ? "Select faculty" : "No faculty coordinators"} />
-              </SelectTrigger>
-              <SelectContent>
-                {faculty.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>{c.name} — {c.email}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <Button size="sm" variant="outline" disabled={busy || !facultyId} onClick={() => { const v = facultyId; setFacultyId(""); addOne(v); }}>
-            {busy ? "..." : "Add"}
-          </Button>
+    <form onSubmit={handleSave} className="flex flex-col gap-3 w-full rounded-lg border bg-card p-4">
+      <div className="grid gap-3 md:grid-cols-3">
+        <div className="space-y-1">
+          <Label className="text-xs font-medium">Faculty coordinator</Label>
+          <Select value={facultyId} onValueChange={setFacultyId}>
+            <SelectTrigger className="h-8 text-xs">
+              <SelectValue placeholder={faculty.length ? "Select faculty" : "No faculty coordinators"} />
+            </SelectTrigger>
+            <SelectContent>
+              {faculty.map((c) => (
+                <SelectItem key={c.id} value={c.id}>{c.name} — {c.email}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        <div className="flex items-end gap-2">
-          <div className="flex-1 space-y-1">
-            <Label className="text-xs">Student coordinator</Label>
-            <Select value={studentId} onValueChange={setStudentId}>
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue placeholder={students.length ? "Select student" : "No student coordinators"} />
-              </SelectTrigger>
-              <SelectContent>
-                {students.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>{c.name} — {c.email}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <Button size="sm" variant="outline" disabled={busy || !studentId} onClick={() => { const v = studentId; setStudentId(""); addOne(v); }}>
-            {busy ? "..." : "Add"}
-          </Button>
+        <div className="space-y-1">
+          <Label className="text-xs font-medium">Student coordinator</Label>
+          <Select value={studentId} onValueChange={setStudentId}>
+            <SelectTrigger className="h-8 text-xs">
+              <SelectValue placeholder={students.length ? "Select student" : "No student coordinators"} />
+            </SelectTrigger>
+            <SelectContent>
+              {students.map((c) => (
+                <SelectItem key={c.id} value={c.id}>{c.name} — {c.email}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-      </div>
-      <form onSubmit={handleJudge} className="flex items-end gap-2">
-        <div className="flex-1 space-y-1">
-          <Label className="text-xs">Judge</Label>
+        <div className="space-y-1">
+          <Label className="text-xs font-medium">Judge</Label>
           <Select value={judgeId} onValueChange={setJudgeId}>
             <SelectTrigger className="h-8 text-xs">
-              <SelectValue placeholder="Assign judge" />
+              <SelectValue placeholder="Select judge" />
             </SelectTrigger>
             <SelectContent>
               {judges.map((j) => (
@@ -345,10 +330,13 @@ function AssignForm({
             </SelectContent>
           </Select>
         </div>
-        <Button type="submit" size="sm" variant="outline" disabled={busy || !judgeId}>
-          {busy ? "Assigning…" : "Assign judge"}
+      </div>
+      <div className="flex justify-end">
+        <Button type="submit" size="sm" disabled={busy || (!facultyId && !studentId && !judgeId)} className="min-w-[120px]">
+          {busy ? <><Loader2 className="mr-1 h-3 w-3 animate-spin" /> Saving…</> : "Save assignments"}
         </Button>
-      </form>
-    </div>
+      </div>
+      <p className="text-[11px] text-muted-foreground">Pick faculty and/or student coordinators, then click Save. Repeat to add more than 2.</p>
+    </form>
   );
 }
