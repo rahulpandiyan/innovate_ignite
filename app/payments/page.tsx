@@ -4,6 +4,7 @@ import prisma from "@/lib/db";
 import { getHomeRoute } from "@/lib/rbac-data";
 import { OrderActions } from "@/components/finance/order-actions";
 import { RegistrationActions } from "@/components/finance/registration-actions";
+import { UserContactDialog } from "@/components/finance/user-contact-dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { IndianRupee, Wallet, RefreshCcw, FileClock } from "lucide-react";
@@ -21,7 +22,7 @@ export default async function PaymentsPage() {
   const [orders, payments] = await Promise.all([
     prisma.order.findMany({
       include: {
-        user: { select: { name: true, email: true } },
+        user: { select: { name: true, email: true, phone: true, collegeName: true, participant: { select: { participantId: true } } } },
         orderItems: { select: { event: { select: { name: true } } } },
       },
       orderBy: { createdAt: "desc" },
@@ -31,14 +32,14 @@ export default async function PaymentsPage() {
       include: {
         registration: {
           include: {
-            user: { select: { name: true } },
+            user: { select: { name: true, email: true, phone: true, collegeName: true, participant: { select: { participantId: true } } } },
             event: { select: { name: true } },
           },
         },
         verifier: { select: { name: true } },
         collector: { select: { name: true } },
       },
-      orderBy: { confirmedAt: "desc" },
+      orderBy: { initiatedAt: "desc" },
       take: 100,
     }),
   ]);
@@ -151,8 +152,18 @@ export default async function PaymentsPage() {
                       {format(o.createdAt, "MMM d, h:mm a")}
                     </td>
                     <td className="px-4 py-2 font-medium">
-                      {o.user.name}
+                      <div className="flex items-center gap-1.5">
+                        <span>{o.user.name}</span>
+                        <UserContactDialog
+                          user={{ name: o.user.name, email: o.user.email, phone: o.user.phone, collegeName: o.user.collegeName }}
+                          participantId={o.user.participant?.participantId ?? null}
+                          eventName={o.orderItems.map((i) => i.event.name).join(", ")}
+                        />
+                      </div>
                       <div className="text-xs text-muted-foreground">{o.user.email}</div>
+                      <a href={`tel:${o.user.phone}`} className="text-xs font-mono text-[#2362EC] hover:underline">
+                        {o.user.phone}
+                      </a>
                     </td>
                     <td className="px-4 py-2 text-xs">
                       {o.orderItems.map((i) => i.event.name).join(", ") || "—"}
@@ -232,7 +243,26 @@ export default async function PaymentsPage() {
                 const isOffline = p.transactionId === "OFFLINE";
                 return (
                   <tr key={p.id} className="border-b last:border-0">
-                    <td className="px-4 py-2 font-medium">{p.registration.user.name}</td>
+                    <td className="px-4 py-2 font-medium">
+                      <div className="flex items-center gap-1.5">
+                        <span>{p.registration.user.name}</span>
+                        <UserContactDialog
+                          user={{
+                            name: p.registration.user.name,
+                            email: p.registration.user.email,
+                            phone: p.registration.user.phone,
+                            collegeName: p.registration.user.collegeName,
+                          }}
+                          participantId={p.registration.user.participant?.participantId ?? null}
+                          registrationId={p.registrationId}
+                          eventName={p.registration.event.name}
+                        />
+                      </div>
+                      <div className="text-xs text-muted-foreground">{p.registration.user.email}</div>
+                      <a href={`tel:${p.registration.user.phone}`} className="text-xs font-mono text-[#2362EC] hover:underline">
+                        {p.registration.user.phone}
+                      </a>
+                    </td>
                     <td className="px-4 py-2">{p.registration.event.name}</td>
                     <td className="px-4 py-2 font-mono">₹{Number(p.amount).toFixed(0)}</td>
                     <td className="px-4 py-2">

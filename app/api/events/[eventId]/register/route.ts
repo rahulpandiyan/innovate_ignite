@@ -111,17 +111,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ eve
       },
     });
 
-    // For paid events, create a PENDING payment so dashboard shows pending until paid
-    let payment: any = null;
-    if (price > 0) {
-      payment = await prisma.payment.create({
-        data: {
-          registrationId: registration.id,
-          amount: price,
-          status: "PENDING",
-        },
-      });
-    }
+    // Do NOT create a payment yet — payment is created only when the user
+    // actually submits UPI transaction ID + screenshot via POST /api/registrations/[id]/pay
+    // This prevents phantom PENDING rows that look like submitted payments.
+    const payment = null;
 
     return successResponse({ registration, payment, isPaidEvent: price > 0, price, teamSize }, 201);
   } catch (error: any) {
