@@ -23,10 +23,10 @@ export default async function TeamsPage() {
       team: {
         include: {
           event: { select: { id: true, name: true, type: true, price: true } },
-          leader: { select: { id: true, name: true, email: true } },
+          leader: { select: { id: true, name: true, email: true, phone: true } },
           members: {
             include: {
-              user: { select: { id: true, name: true, email: true } },
+              user: { select: { id: true, name: true, email: true, phone: true } },
             },
           },
           registration: { select: { id: true, status: true } },
@@ -36,10 +36,19 @@ export default async function TeamsPage() {
     orderBy: { joinedAt: "desc" },
   });
 
-  // Critical fix: only show TEAM events the user has actually registered for and isn't already in a team for
+  // Only allow team creation for TEAM events where the user is registered AND confirmed (paid).
+  // For paid team events, payment must be verified (registration.status = CONFIRMED).
   const registeredTeamEventIds = await prisma.registration
     .findMany({
-      where: { userId: session.id, event: { type: "TEAM", isActive: true, status: "OPEN" } },
+      where: { userId: session.id, status: "CONFIRMED", event: { type: "TEAM", isActive: true, status: "OPEN" } },
+      select: { eventId: true },
+    })
+    .then((rows) => rows.map((r) => r.eventId));
+
+  // Also find pending registrations so we can nudge to pay first
+  const pendingTeamEventIds = await prisma.registration
+    .findMany({
+      where: { userId: session.id, status: "PENDING", event: { type: "TEAM", isActive: true, status: "OPEN" } },
       select: { eventId: true },
     })
     .then((rows) => rows.map((r) => r.eventId));
@@ -47,6 +56,7 @@ export default async function TeamsPage() {
   const alreadyInTeamEventIds = new Set(memberships.map((m) => m.team.event.id));
 
   const availableEventIds = registeredTeamEventIds.filter((id) => !alreadyInTeamEventIds.has(id));
+  const pendingWithoutTeam = pendingTeamEventIds.filter((id) => !alreadyInTeamEventIds.has(id) && !availableEventIds.includes(id));
 
   const teamEvents =
     availableEventIds.length > 0
@@ -59,6 +69,15 @@ export default async function TeamsPage() {
           .then((rows) => rows.map((r) => ({ id: r.id, name: r.name, price: Number(r.price), maxTeamSize: r.maxTeamSize })))
       : [];
 
+  const pendingEvents =
+    pendingWithoutTeam.length > 0
+      ? await prisma.event.findMany({
+          where: { id: { in: pendingWithoutTeam } },
+          select: { id: true, name: true },
+          orderBy: { name: "asc" },
+        })
+      : [];
+
   const teams = memberships.map((m) => ({ ...m.team, myRole: m.role }));
 
   return (
@@ -67,18 +86,33 @@ export default async function TeamsPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">My Teams</h1>
           <p className="text-muted-foreground">
-            Teams you lead or belong to, with member management.
+            Teams you lead or belong to. Create a team only after your registration is confirmed (paid).
           </p>
         </div>
         {teamEvents.length > 0 && <CreateTeamDialog events={teamEvents} />}
       </div>
+
+      {pendingEvents.length > 0 && (
+        <Card className="border-amber-200 bg-amber-50">
+          <CardHeader>
+            <CardTitle className="text-amber-900 text-base">Complete payment to create teams</CardTitle>
+            <CardDescription className="text-amber-800">
+              You’re registered for {pendingEvents.map((e) => e.name).join(", ")} but payment is still pending. Go to My Registrations to pay and wait for confirmation — then you can create a team. Teams cannot be created before payment.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      )}
 
       {teams.length === 0 ? (
         <Card>
           <CardHeader>
             <CardTitle>You&apos;re not in any team yet</CardTitle>
             <CardDescription>
-              Create a team for a team event, or accept an invite sent to you.
+              {teamEvents.length > 0
+                ? "Create a team for one of your confirmed team events above."
+                : pendingEvents.length > 0
+                  ? "You have pending registrations — complete payment first, then create a team."
+                  : "Register for a team event and complete payment to create a team."}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -112,11 +146,11 @@ export default async function TeamsPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <ul className="divide-y rounded-lg border">
-                  {team.members.map((m) => (
+                  {team.members.map((m: any) => (
                     <li key={m.id} className="flex items-center justify-between px-3 py-2">
                       <div>
                         <p className="text-sm font-medium">{m.user.name}</p>
-                        <p className="text-xs text-muted-foreground">{m.user.email}</p>
+                        <p className="text-xs text-muted-foreground">{m.user.phone ?? m.user.email}</p>
                       </div>
                       <Badge variant={m.role === "LEADER" ? "default" : "outline"}>
                         {m.role === "LEADER" ? "Leader" : "Member"}

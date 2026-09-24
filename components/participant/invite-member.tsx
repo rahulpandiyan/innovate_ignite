@@ -10,24 +10,29 @@ import { UserPlus } from "lucide-react";
 export function InviteMember({ teamId }: { teamId: string }) {
   const router = useRouter();
   const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
+  const [phone, setPhone] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.trim() || !name.trim()) return;
+    if (!phone.trim() || !name.trim()) return;
+    const digits = phone.replace(/\D/g, "");
+    if (digits.length !== 10) {
+      toast.error("Mobile must be exactly 10 digits");
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch(`/api/teams/${teamId}/invite`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), name: name.trim() }),
+        body: JSON.stringify({ phone: digits, name: name.trim() }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error?.message ?? "Add failed");
       toast.success(data.message ?? "Member added to team");
       setName("");
-      setEmail("");
+      setPhone("");
       router.refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Add failed");
@@ -45,13 +50,14 @@ export function InviteMember({ teamId }: { teamId: string }) {
         className="flex-1"
       />
       <Input
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="member@college.edu"
-        type="email"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+        placeholder="Mobile (10 digits)"
+        type="tel"
+        inputMode="numeric"
         className="flex-1"
       />
-      <Button type="submit" size="sm" disabled={loading || !email.trim() || !name.trim()}>
+      <Button type="submit" size="sm" disabled={loading || !phone.trim() || !name.trim()}>
         <UserPlus className="mr-1 h-4 w-4" />
         {loading ? "Adding…" : "Add to team"}
       </Button>

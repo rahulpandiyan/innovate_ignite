@@ -24,8 +24,10 @@ export async function POST(req: NextRequest, context: RouteContext) {
     const parsed = await parseBody(req, inviteUserSchema);
     if (parsed.error) return parsed.error;
 
-    const { email, name: providedName } = parsed.data as { email: string; name?: string };
-    const memberName = (providedName ?? "").trim() || email.split("@")[0];
+    const { phone, email, name: providedName } = parsed.data as { phone: string; email?: string; name?: string };
+    const normalizedPhone = phone.replace(/\D/g, "").slice(-10);
+    const memberName = (providedName ?? "").trim() || `Member ${normalizedPhone.slice(-4)}`;
+    const memberEmail = email?.trim() || `${normalizedPhone}@team.local`;
 
     // Verify team exists
     const team = await prisma.team.findUnique({
@@ -52,30 +54,35 @@ export async function POST(req: NextRequest, context: RouteContext) {
       return errorResponse("Team has reached maximum size.", 400);
     }
 
-    // Find or create the member user — owner directly adds by name+email, no invite/accept
+    // Find or create the member user — owner directly adds by name+mobile, no invite/accept
     let invitee = await prisma.user.findUnique({
-      where: { email },
-      select: { id: true, name: true, email: true },
+      where: { phone: normalizedPhone },
+      select: { id: true, name: true, email: true, phone: true },
     });
+    // also try email fallback for backward compatibility
+    if (!invitee && memberEmail.includes("@")) {
+      invitee = await prisma.user.findUnique({
+        where: { email: memberEmail },
+        select: { id: true, name: true, email: true, phone: true },
+      });
+    }
 
     if (!invitee) {
       const leader = await prisma.user.findUnique({ where: { id: auth.session.id }, select: { collegeId: true, collegeName: true } });
       const hash = await bcrypt.hash(randomUUID(), 8);
-      // generate a unique placeholder phone
-      const placeholderPhone = `+91${Date.now().toString().slice(-10)}`;
       invitee = await prisma.user.create({
         data: {
           name: memberName,
-          email,
-          phone: placeholderPhone,
+          email: memberEmail,
+          phone: normalizedPhone,
           collegeName: leader?.collegeName ?? "VVIT",
           collegeId: leader?.collegeId ?? null,
           password: hash,
           emailVerified: true,
           role: "PARTICIPANT",
-          photoUrl: avatarUrlFor(email),
+          photoUrl: avatarUrlFor(memberEmail),
         },
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, email: true, phone: true },
       });
     }
 
