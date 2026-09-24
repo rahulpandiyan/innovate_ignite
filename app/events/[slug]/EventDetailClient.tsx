@@ -56,6 +56,8 @@ export default function EventDetailClient({ category, details }: Props) {
   const [latentAnswers, setLatentAnswers] = useState<Record<number, string>>({});
   const isLatent = category.eventName === "VVIT GOT LATENT";
   const latentComplete = LATENT_QUESTIONS.every((_, i) => (latentAnswers[i] ?? "").trim().length > 0);
+  const isGaming = category.eventName === "BGMI & FreeFire";
+  const [selectedGame, setSelectedGame] = useState<"BGMI" | "Free Fire">("BGMI");
   const router = useRouter();
   const { isLoggedIn } = useAuthContext();
 
@@ -94,6 +96,7 @@ export default function EventDetailClient({ category, details }: Props) {
     }
     setSelectedSize(minTeamSize);
     setLatentAnswers({});
+    setSelectedGame("BGMI");
     setShowConfirm(true);
   };
 
@@ -107,6 +110,7 @@ export default function EventDetailClient({ category, details }: Props) {
     setRegistering(true);
     try {
       const body: Record<string, unknown> = { teamSize: selectedOption.value };
+      if (isGaming) body.game = selectedGame;
       if (isLatent) {
         body.answers = Object.fromEntries(
           LATENT_QUESTIONS.map((q, i) => [q, (latentAnswers[i] ?? "").trim()])
@@ -371,6 +375,29 @@ export default function EventDetailClient({ category, details }: Props) {
                 : <>The team <strong>leader</strong> registers for the whole team — the leader is counted in the team size you pick below.</>}
             </DialogDescription>
           </DialogHeader>
+
+          {isGaming && (
+            <div className="space-y-1.5">
+              <p className="font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/40">Choose your game</p>
+              <div className="grid grid-cols-2 gap-2">
+                {(["BGMI", "Free Fire"] as const).map((g) => (
+                  <button
+                    key={g}
+                    type="button"
+                    onClick={() => setSelectedGame(g)}
+                    className={`rounded-xl border px-3.5 py-3 text-left transition-colors ${
+                      selectedGame === g
+                        ? "border-[#0F172A] bg-[#0F172A] text-white"
+                        : "border-[#0F172A]/15 bg-white text-[#0F172A] hover:border-[#0F172A]/40"
+                    }`}
+                  >
+                    <span className="text-sm font-bold leading-none">{g}</span>
+                    <span className={`mt-1 block font-mono text-[11px] ${selectedGame === g ? "text-white/70" : "text-[#0F172A]/50"}`}>Squad of 4 · ₹200/team</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="space-y-1.5">
             <p className="font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/40">

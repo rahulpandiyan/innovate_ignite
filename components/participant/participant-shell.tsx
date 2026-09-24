@@ -9,7 +9,6 @@ import {
   LayoutDashboard,
   TicketCheck,
   UsersRound,
-  MailPlus,
   Receipt,
   CircleUserRound,
 } from "lucide-react";
@@ -37,7 +36,6 @@ export const PARTICIPANT_NAV = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/registrations", label: "My Registrations", icon: TicketCheck },
   { href: "/dashboard/teams", label: "My Teams", icon: UsersRound },
-  { href: "/dashboard/invites", label: "Invites", icon: MailPlus },
   { href: "/dashboard/orders", label: "Orders", icon: Receipt },
   { href: "/dashboard/profile", label: "Profile", icon: CircleUserRound },
 ];

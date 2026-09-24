@@ -7,6 +7,7 @@ export const createTeamSchema = z.object({
 
 export const inviteUserSchema = z.object({
   email: z.string().email("Invalid email address"),
+  name: z.string().min(1).optional(),
 });
 
 export const respondInviteSchema = z.object({

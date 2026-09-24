@@ -8,10 +8,12 @@ import {
 } from "@/lib/apiHelpers";
 import { inviteUserSchema } from "@/lib/schemas/teams";
 import { randomUUID } from "crypto";
+import bcrypt from "bcryptjs";
+import { avatarUrlFor } from "@/lib/avatar";
 
 type RouteContext = { params: Promise<{ teamId: string }> };
 
-// POST /api/teams/:teamId/invite — Leader invites a user by email
+// POST /api/teams/:teamId/invite — Leader directly adds a member by email (no invite/accept flow)
 export async function POST(req: NextRequest, context: RouteContext) {
   try {
     const auth = await requireAuth();
@@ -22,7 +24,8 @@ export async function POST(req: NextRequest, context: RouteContext) {
     const parsed = await parseBody(req, inviteUserSchema);
     if (parsed.error) return parsed.error;
 
-    const { email } = parsed.data;
+    const { email, name: providedName } = parsed.data as { email: string; name?: string };
+    const memberName = (providedName ?? "").trim() || email.split("@")[0];
 
     // Verify team exists
     const team = await prisma.team.findUnique({
@@ -49,22 +52,39 @@ export async function POST(req: NextRequest, context: RouteContext) {
       return errorResponse("Team has reached maximum size.", 400);
     }
 
-    // Find the invitee
-    const invitee = await prisma.user.findUnique({
+    // Find or create the member user — owner directly adds by name+email, no invite/accept
+    let invitee = await prisma.user.findUnique({
       where: { email },
       select: { id: true, name: true, email: true },
     });
 
     if (!invitee) {
-      return errorResponse("No user found with this email.", 404);
+      const leader = await prisma.user.findUnique({ where: { id: auth.session.id }, select: { collegeId: true, collegeName: true } });
+      const hash = await bcrypt.hash(randomUUID(), 8);
+      // generate a unique placeholder phone
+      const placeholderPhone = `+91${Date.now().toString().slice(-10)}`;
+      invitee = await prisma.user.create({
+        data: {
+          name: memberName,
+          email,
+          phone: placeholderPhone,
+          collegeName: leader?.collegeName ?? "VVIT",
+          collegeId: leader?.collegeId ?? null,
+          password: hash,
+          emailVerified: true,
+          role: "PARTICIPANT",
+          photoUrl: avatarUrlFor(email),
+        },
+        select: { id: true, name: true, email: true },
+      });
     }
 
-    // Can't invite yourself
+    // Can't add yourself
     if (invitee.id === auth.session.id) {
-      return errorResponse("You cannot invite yourself.", 400);
+      return errorResponse("You cannot add yourself.", 400);
     }
 
-    // Check if invitee is already in a team for this event (one-team-per-event)
+    // Check if already in a team for this event (one-team-per-event)
     const existingMembership = await prisma.teamMember.findFirst({
       where: {
         userId: invitee.id,
@@ -73,51 +93,29 @@ export async function POST(req: NextRequest, context: RouteContext) {
     });
 
     if (existingMembership) {
-      return errorResponse(
-        "This user is already in a team for this event.",
-        409
-      );
+      return errorResponse("This user is already in a team for this event.", 409);
     }
 
-    // Check if invite already exists
-    const existingInvite = await prisma.teamInvite.findUnique({
-      where: {
-        teamId_invitedUserId: { teamId, invitedUserId: invitee.id },
-      },
+    // Already a member of this team?
+    const alreadyInThisTeam = await prisma.teamMember.findUnique({
+      where: { teamId_userId: { teamId, userId: invitee.id } },
     });
-
-    if (existingInvite && existingInvite.status === "PENDING") {
-      return errorResponse("An invite is already pending for this user.", 409);
+    if (alreadyInThisTeam) {
+      return errorResponse("User is already in this team.", 409);
     }
 
-    // Create or upsert the invite (if previously rejected, allow re-invite)
-    const invite = await prisma.teamInvite.upsert({
-      where: {
-        teamId_invitedUserId: { teamId, invitedUserId: invitee.id },
-      },
-      create: {
-        id: randomUUID(),
-        teamId,
-        invitedUserId: invitee.id,
-        invitedById: auth.session.id,
-        status: "PENDING",
-      },
-      update: {
-        status: "PENDING",
-        respondedAt: null,
-        invitedById: auth.session.id,
-      },
+    // Directly add to team — no invite
+    const member = await prisma.teamMember.create({
+      data: { teamId, userId: invitee.id, role: "MEMBER" },
     });
+
+    // clean up any stale invite if it exists
+    await prisma.teamInvite.deleteMany({ where: { teamId, invitedUserId: invitee.id } });
 
     return successResponse(
       {
-        invite: {
-          id: invite.id,
-          teamId: invite.teamId,
-          invitedUser: invitee,
-          status: invite.status,
-        },
-        message: "Invite sent successfully.",
+        member: { id: member.id, teamId, user: invitee },
+        message: `${invitee.name} added to team.`,
       },
       201
     );

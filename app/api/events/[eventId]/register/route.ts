@@ -11,7 +11,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ eve
     const { eventId } = await params;
     const userId = auth.session.id;
 
-    let body: { teamSize?: number; answers?: Record<string, string> } = {};
+    let body: { teamSize?: number; answers?: Record<string, string>; game?: string } = {};
     try {
       body = await req.json();
     } catch {}
@@ -95,6 +95,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ eve
         .map(([q, a]) => [q.slice(0, 300), (a as string).slice(0, 2000)] as const);
       if (entries.length > 0) latentAnswers = Object.fromEntries(entries);
     }
+    let game: string | undefined;
+    if (body.game && typeof body.game === "string" && (body.game === "BGMI" || body.game === "Free Fire")) {
+      game = body.game;
+    }
 
     const registration = await prisma.registration.create({
       data: {
@@ -103,7 +107,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ eve
         eventId,
         collegeId: participant.collegeId,
         status: "PENDING",
-        formResponses: { teamSize, price, priceMode: event.priceMode, ...(latentAnswers ? { latentAnswers } : {}) },
+        formResponses: { teamSize, price, priceMode: event.priceMode, ...(latentAnswers ? { latentAnswers } : {}), ...(game ? { game } : {}) },
       },
     });
 
