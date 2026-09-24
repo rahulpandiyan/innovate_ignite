@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { AssignCoordinatorForm } from "@/components/admin/assign-coordinator-form";
 
 const ROLE_OPTIONS = [
   "SUPER_ADMIN",
@@ -162,52 +163,14 @@ export default async function UsersPage({ searchParams }: { searchParams?: Promi
           <CardDescription>Select one coordinator and one event, then click Assign. Repeat to add more than 2. Shows all faculty & student coordinators.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form
-            action={async (formData) => {
+          <AssignCoordinatorForm
+            coordinators={allCoordinators.map((u) => ({ id: u.id, name: u.name, email: u.email, role: u.userRole?.name ?? undefined }))}
+            events={events}
+            onAssign={async (input) => {
               "use server";
-              const userId = String(formData.get("userId") ?? "");
-              const eventId = String(formData.get("eventId") ?? "");
-              if (!userId || !eventId) return;
-              await assignUserToEvents({ userId, eventIds: [eventId] });
+              await assignUserToEvents(input);
             }}
-            className="flex flex-col gap-3 sm:flex-row sm:items-end"
-          >
-            <div className="flex-1 space-y-1">
-              <Label>Coordinator (all)</Label>
-              <Select name="userId" required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select coordinator" />
-                </SelectTrigger>
-                <SelectContent>
-                  {allCoordinators.length === 0 ? (
-                    <SelectItem value="__none" disabled>No coordinators yet — create one above</SelectItem>
-                  ) : (
-                    allCoordinators.map((u) => (
-                      <SelectItem key={u.id} value={u.id}>
-                        {u.name} — {u.userRole?.name === "EVENT_COORDINATOR" ? "Faculty" : "Student"} ({u.email})
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex-1 space-y-1">
-              <Label>Event</Label>
-              <Select name="eventId" required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select event" />
-                </SelectTrigger>
-                <SelectContent>
-                  {events.map((e) => (
-                    <SelectItem key={e.id} value={e.id}>
-                      {e.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <Button type="submit" size="sm" className="h-9 shrink-0">Assign</Button>
-          </form>
+          />
         </CardContent>
       </Card>
 
