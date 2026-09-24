@@ -493,19 +493,8 @@ async function main() {
         status: registration.status,
       },
     });
-    const evForPrice = await prisma.event.findUnique({ where: { id: registration.event.id } });
-    await prisma.payment.create({
-      data: {
-        registrationId: reg.id,
-        amount: evForPrice?.price ?? 100,
-          status: registration.paymentStatus,
-          transactionId:
-            registration.paymentStatus === "SUCCESS" ? "UPI" + Math.floor(Math.random() * 1e8) : null,
-          confirmedAt:
-            registration.paymentStatus === "SUCCESS" ? new Date() : null,
-          verifiedBy: registration.paymentStatus === "SUCCESS" ? null : null,
-        },
-      });
+    // demo payments removed — finance will see only real submissions
+    // (no Payment row created here; created only when user submits via /pay)
     const participantRow = await prisma.participant.findUnique({ where: { userId: registration.user.id } });
     const attendee = await prisma.attendee.create({
       data: {

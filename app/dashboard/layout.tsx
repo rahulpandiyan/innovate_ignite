@@ -6,6 +6,7 @@ import { ParticipantShell } from "@/components/participant/participant-shell";
 const ROLE_HOME: Record<string, string> = {
   SUPER_ADMIN: "/admin",
   EVENT_COORDINATOR: "/coordinator",
+  STUDENT_COORDINATOR: "/coordinator",
   JUDGE: "/judge",
   ATTENDANCE_STAFF: "/attendance",
   FINANCE_ADMIN: "/admin/payments",

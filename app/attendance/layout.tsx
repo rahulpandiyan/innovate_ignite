@@ -4,7 +4,7 @@ import prisma from "@/lib/db";
 import { getHomeRoute } from "@/lib/rbac-data";
 import { AttendanceShell } from "@/components/attendance/attendance-shell";
 
-const ALLOWED = new Set(["ATTENDANCE_STAFF", "EVENT_COORDINATOR", "SUPER_ADMIN"]);
+const ALLOWED = new Set(["ATTENDANCE_STAFF", "EVENT_COORDINATOR", "STUDENT_COORDINATOR", "SUPER_ADMIN"]);
 
 export default async function AttendanceLayout({
   children,

@@ -1,5 +1,5 @@
 import prisma from "@/lib/db";
-import { createAdminUser, setUserRole } from "@/app/admin/actions";
+import { createAdminUser, setUserRole, assignUserToEvents } from "@/app/admin/actions";
 import {
   Card,
   CardContent,
@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 const ROLE_OPTIONS = [
   "SUPER_ADMIN",
@@ -25,16 +26,25 @@ const ROLE_OPTIONS = [
   "TEAM_LEADER",
   "PARTICIPANT",
   "EVENT_COORDINATOR",
+  "STUDENT_COORDINATOR",
   "JUDGE",
   "ATTENDANCE_STAFF",
   "FINANCE_ADMIN",
   "CERTIFICATE_ADMIN",
 ];
 
-export default async function UsersPage() {
-  const [users, colleges] = await Promise.all([
+export default async function UsersPage({ searchParams }: { searchParams?: Promise<{ page?: string }> }) {
+  const sp = searchParams ? await searchParams : {};
+  const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
+  const perPage = 12;
+  const skip = (page - 1) * perPage;
+
+  const [totalUsers, users, colleges, events] = await Promise.all([
+    prisma.user.count(),
     prisma.user.findMany({
       orderBy: { createdAt: "desc" },
+      skip,
+      take: perPage,
       select: {
         id: true,
         name: true,
@@ -45,17 +55,24 @@ export default async function UsersPage() {
         userRole: { select: { name: true } },
         college: { select: { code: true } },
         createdAt: true,
+        coordinators: { select: { eventId: true, event: { select: { name: true } } } },
       },
     }),
     prisma.college.findMany({ select: { code: true, name: true }, orderBy: { name: "asc" } }),
+    prisma.event.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
   ]);
+
+  const totalPages = Math.max(1, Math.ceil(totalUsers / perPage));
+
+  // coordinator candidates for assignment dropdown
+  const coordinators = users.filter((u) => ["EVENT_COORDINATOR", "STUDENT_COORDINATOR"].includes(u.userRole?.name ?? ""));
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Users & Roles</h1>
         <p className="text-sm text-muted-foreground">
-          Platform accounts and their RBAC role. Role changes are audit logged.
+          Platform accounts and their RBAC role. Role changes are audit logged. Assign student/faculty coordinators to events here or in Events.
         </p>
       </div>
 
@@ -139,27 +156,96 @@ export default async function UsersPage() {
 
       <Card>
         <CardHeader>
+          <CardTitle className="text-base">Assign coordinator to events</CardTitle>
+          <CardDescription>Pick a faculty or student coordinator and the events they should manage. You can assign more than one event.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form
+            action={async (formData) => {
+              "use server";
+              const userId = String(formData.get("userId") ?? "");
+              const eventIds = formData.getAll("eventIds").map(String).filter(Boolean);
+              if (!userId) return;
+              await assignUserToEvents({ userId, eventIds });
+            }}
+            className="space-y-3"
+          >
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="space-y-1">
+                <Label>Coordinator</Label>
+                <Select name="userId">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select coordinator" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(() => {
+                      const list = coordinators.length ? coordinators : users.filter((u) => u.userRole?.name?.includes("COORDINATOR"));
+                      if (list.length === 0) return <SelectItem value="none" disabled>No coordinators yet — create one above</SelectItem>;
+                      return list.map((u) => (
+                        <SelectItem key={u.id} value={u.id}>
+                          {u.name} — {u.userRole?.name ?? u.role} ({u.email})
+                        </SelectItem>
+                      ));
+                    })()}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label>Events (select multiple)</Label>
+                <div className="grid max-h-40 overflow-auto rounded-md border p-2 gap-1">
+                  {events.map((e) => (
+                    <label key={e.id} className="flex items-center gap-2 text-xs cursor-pointer hover:bg-muted px-1.5 py-1 rounded">
+                      <input type="checkbox" name="eventIds" value={e.id} className="h-3.5 w-3.5" />
+                      <span className="truncate">{e.name}</span>
+                    </label>
+                  ))}
+                </div>
+                <p className="text-[11px] text-muted-foreground">Checked events will be assigned; unchecked will be removed for that user.</p>
+              </div>
+            </div>
+            <Button type="submit" size="sm" variant="outline">Save assignment</Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle className="text-base">Accounts</CardTitle>
+          <CardDescription>
+            {totalUsers} total · page {page} of {totalPages}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between border-b py-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            <span className="w-1/3">User</span>
+            <span className="w-1/4">User</span>
             <span className="w-1/6">College</span>
-            <span className="w-1/3">Role</span>
+            <span className="w-1/6">Role</span>
+            <span className="w-1/4">Assigned events</span>
             <span className="w-1/6 text-right">Change role</span>
           </div>
           <div className="divide-y">
             {users.map((u) => (
-              <div key={u.id} className="flex items-center justify-between py-3">
-                <div className="w-1/3 min-w-0">
+              <div key={u.id} className="flex items-center justify-between py-3 gap-2">
+                <div className="w-1/4 min-w-0">
                   <p className="truncate text-sm font-medium">{u.name}</p>
                   <p className="truncate text-xs text-muted-foreground">{u.email}</p>
                 </div>
-                <div className="w-1/6 text-sm text-muted-foreground">
+                <div className="w-1/6 text-sm text-muted-foreground truncate">
                   {u.college?.code ?? "—"}
                 </div>
-                <div className="w-1/3">
-                  <Badge variant="secondary">{u.userRole?.name ?? u.role}</Badge>
+                <div className="w-1/6">
+                  <Badge variant={u.userRole?.name === "STUDENT_COORDINATOR" ? "secondary" : u.userRole?.name === "EVENT_COORDINATOR" ? "default" : "secondary"} className="text-[10px]">{u.userRole?.name ?? u.role}</Badge>
+                </div>
+                <div className="w-1/4 min-w-0">
+                  {u.coordinators.length ? (
+                    <div className="flex flex-wrap gap-1">
+                      {u.coordinators.map((c: any) => (
+                        <Badge key={c.eventId} variant="outline" className="text-[10px] font-normal">{c.event.name}</Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">—</span>
+                  )}
                 </div>
                 <div className="w-1/6 text-right">
                   <form
@@ -190,6 +276,27 @@ export default async function UsersPage() {
                 </div>
               </div>
             ))}
+          </div>
+          <div className="mt-4 flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">
+              Showing {(page - 1) * perPage + 1}–{Math.min(page * perPage, totalUsers)} of {totalUsers}
+            </p>
+            <div className="flex gap-2">
+              {page > 1 ? (
+                <Button asChild variant="outline" size="sm">
+                  <Link href={`/admin/users?page=${page - 1}`}>Previous</Link>
+                </Button>
+              ) : (
+                <Button variant="outline" size="sm" disabled>Previous</Button>
+              )}
+              {page < totalPages ? (
+                <Button asChild variant="outline" size="sm">
+                  <Link href={`/admin/users?page=${page + 1}`}>Next</Link>
+                </Button>
+              ) : (
+                <Button variant="outline" size="sm" disabled>Next</Button>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>

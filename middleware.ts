@@ -114,8 +114,8 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(signInUrl);
     }
 
-    // Coordinator routes: EVENT_COORDINATOR (or SUPER_ADMIN) only
-    if (coordinatorRoutes.some(route => path.startsWith(route)) && (!session?.id || (session?.role !== "EVENT_COORDINATOR" && session?.role !== "SUPER_ADMIN"))) {
+    // Coordinator routes: EVENT_COORDINATOR / STUDENT_COORDINATOR (or SUPER_ADMIN)
+    if (coordinatorRoutes.some(route => path.startsWith(route)) && (!session?.id || (!["EVENT_COORDINATOR", "STUDENT_COORDINATOR"].includes(session.role) && session?.role !== "SUPER_ADMIN"))) {
         const signInUrl = new URL("/auth/signin", request.nextUrl);
         signInUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
         return NextResponse.redirect(signInUrl);

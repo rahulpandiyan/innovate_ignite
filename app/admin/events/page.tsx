@@ -28,14 +28,14 @@ export default async function EventsPage() {
     prisma.event.findMany({
       orderBy: { date: "asc" },
       include: {
-        coordinators: { include: { user: { select: { name: true } } } },
+        coordinators: { include: { user: { select: { id: true, name: true, userRole: { select: { name: true } } } } } },
         judges: { include: { user: { select: { name: true } } } },
         _count: { select: { registrations: true, teams: true } },
       },
     }),
     prisma.user.findMany({
       where: { userRole: { name: { in: ["EVENT_COORDINATOR", "STUDENT_COORDINATOR"] } } },
-      select: { id: true, name: true, email: true },
+      select: { id: true, name: true, email: true, userRole: { select: { name: true } } },
       orderBy: { name: "asc" },
     }),
     prisma.user.findMany({
@@ -233,9 +233,10 @@ export default async function EventsPage() {
               status: ev.status,
               time: ev.time ?? "",
             }}
-            coordinators={coordinators}
+            coordinators={coordinators.map((c: any) => ({ id: c.id, name: c.name, email: c.email, role: c.userRole?.name }))}
             judges={judges}
             assignedCoordinators={ev.coordinators.map((c) => c.user.name)}
+            assignedCoordinatorsDetailed={ev.coordinators.map((c: any) => ({ id: c.user.id, name: c.user.name, role: c.user.userRole?.name }))}
             assignedJudges={ev.judges.map((j) => j.user.name)}
             registrationCount={ev._count.registrations}
             teamCount={ev._count.teams}

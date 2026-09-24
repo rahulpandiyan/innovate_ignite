@@ -11,7 +11,7 @@ import { z } from "zod";
 type RouteContext = { params: Promise<{ userId: string }> };
 
 const updateUserSchema = z.object({
-  role: z.enum(["PARTICIPANT", "SUPER_ADMIN"]).optional(),
+  role: z.enum(["PARTICIPANT", "SUPER_ADMIN", "COLLEGE_ADMIN", "TEAM_LEADER", "EVENT_COORDINATOR", "STUDENT_COORDINATOR", "JUDGE", "ATTENDANCE_STAFF", "FINANCE_ADMIN", "CERTIFICATE_ADMIN"]).optional(),
   name: z.string().min(1).optional(),
   phone: z.string().regex(/^\d{10}$/).optional(),
   collegeName: z.string().min(2).optional(),
@@ -113,9 +113,26 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       }
     }
 
+    // Handle RBAC role via UserRole (covers STUDENT_COORDINATOR etc); legacy 'role' column only knows PARTICIPANT/SUPER_ADMIN
+    let updateData: Record<string, unknown> = { ...parsed.data };
+    if (parsed.data.role && !["PARTICIPANT", "SUPER_ADMIN"].includes(parsed.data.role as string)) {
+      const r = await prisma.userRole.findUnique({ where: { name: parsed.data.role as string } });
+      if (!r) return errorResponse("Unknown role", 400);
+      updateData.roleId = r.id;
+      updateData.role = "PARTICIPANT";
+      delete (updateData as Record<string, unknown>).role;
+      // re-set correctly
+      (updateData as Record<string, unknown>).role = "PARTICIPANT";
+      (updateData as Record<string, unknown>).roleId = r.id;
+    } else if (parsed.data.role) {
+      // for PARTICIPANT/SUPER_ADMIN also keep roleId in sync if exists
+      const r = await prisma.userRole.findUnique({ where: { name: parsed.data.role as string } });
+      if (r) (updateData as Record<string, unknown>).roleId = r.id;
+    }
+
     const user = await prisma.user.update({
       where: { id: userId },
-      data: parsed.data,
+      data: updateData,
       select: {
         id: true,
         name: true,

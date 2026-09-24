@@ -121,18 +121,20 @@ export async function createEvent(input: {
 export async function assignEventUsers(input: {
   eventId: string;
   coordinatorId?: string;
+  coordinatorIds?: string[];
   judgeId?: string;
   unassignCoordinator?: boolean;
+  unassignCoordinatorId?: string;
   unassignJudge?: boolean;
 }) {
   await requireAdmin(PERMISSIONS.EVENTS_MANAGE);
-  if (input.coordinatorId) {
+  // support single or multi coordinator assignment (>2)
+  const ids = input.coordinatorIds ?? (input.coordinatorId ? [input.coordinatorId] : []);
+  for (const cid of ids) {
     await prisma.eventCoordinator.upsert({
-      where: {
-        eventId_userId: { eventId: input.eventId, userId: input.coordinatorId },
-      },
+      where: { eventId_userId: { eventId: input.eventId, userId: cid } },
       update: {},
-      create: { eventId: input.eventId, userId: input.coordinatorId },
+      create: { eventId: input.eventId, userId: cid },
     });
   }
   if (input.judgeId) {
@@ -142,14 +144,39 @@ export async function assignEventUsers(input: {
       create: { eventId: input.eventId, userId: input.judgeId },
     });
   }
-  if (input.unassignCoordinator) {
+  if (input.unassignCoordinatorId) {
     await prisma.eventCoordinator.deleteMany({
-      where: { eventId: input.eventId },
+      where: { eventId: input.eventId, userId: input.unassignCoordinatorId },
     });
+  }
+  if (input.unassignCoordinator) {
+    await prisma.eventCoordinator.deleteMany({ where: { eventId: input.eventId } });
   }
   if (input.unassignJudge) {
     await prisma.judge.deleteMany({ where: { eventId: input.eventId } });
   }
+  revalidatePath("/admin/events");
+  revalidatePath("/admin/users");
+  return { ok: true };
+}
+
+export async function assignUserToEvents(input: { userId: string; eventIds: string[] }) {
+  await requireAdmin(PERMISSIONS.EVENTS_MANAGE);
+  const existing = await prisma.eventCoordinator.findMany({ where: { userId: input.userId }, select: { eventId: true } });
+  const existingIds = new Set(existing.map((e) => e.eventId));
+  const toAdd = input.eventIds.filter((id) => !existingIds.has(id));
+  const toRemove = [...existingIds].filter((id) => !input.eventIds.includes(id));
+  for (const eid of toAdd) {
+    await prisma.eventCoordinator.upsert({
+      where: { eventId_userId: { eventId: eid, userId: input.userId } },
+      update: {},
+      create: { eventId: eid, userId: input.userId },
+    });
+  }
+  for (const eid of toRemove) {
+    await prisma.eventCoordinator.deleteMany({ where: { eventId: eid, userId: input.userId } });
+  }
+  revalidatePath("/admin/users");
   revalidatePath("/admin/events");
   return { ok: true };
 }
@@ -215,6 +242,7 @@ const ROLES = [
   "TEAM_LEADER",
   "PARTICIPANT",
   "EVENT_COORDINATOR",
+  "STUDENT_COORDINATOR",
   "JUDGE",
   "ATTENDANCE_STAFF",
   "FINANCE_ADMIN",

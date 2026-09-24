@@ -16,7 +16,7 @@ export default async function CoordinatorLayout({
     redirect("/auth/signin");
   }
 
-  if (session.role !== "EVENT_COORDINATOR" && session.role !== "SUPER_ADMIN") {
+  if (!["EVENT_COORDINATOR", "STUDENT_COORDINATOR"].includes(session.role) && session.role !== "SUPER_ADMIN") {
     redirect(getHomeRoute(session.role));
   }
 
