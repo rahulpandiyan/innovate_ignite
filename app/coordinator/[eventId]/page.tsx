@@ -64,6 +64,15 @@ export default async function CoordinatorEventPage({ params }: PageProps) {
     },
   });
 
+  const teams = await prisma.team.findMany({
+    where: { eventId },
+    include: {
+      leader: { select: { name: true, email: true, phone: true } },
+      members: { include: { user: { select: { name: true, email: true, phone: true } } } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
   if (!event) notFound();
 
   const announcements = await prisma.announcement.findMany({
@@ -114,6 +123,15 @@ export default async function CoordinatorEventPage({ params }: PageProps) {
     }))
   );
 
+  const teamsExport = teams.map((t) => ({
+    Team: t.name,
+    Leader: t.leader.name,
+    LeaderEmail: t.leader.email,
+    LeaderPhone: (t.leader as any).phone ?? "",
+    Members: t.members.map((m) => `${m.user.name} (${m.user.email} / ${m.user.phone})`).join(" | "),
+    MemberCount: t.members.length,
+  }));
+
   const byCollege = new Map<string, number>();
   for (const r of event.registrations) {
     const key = r.user.collegeName ?? "Unknown";
@@ -149,9 +167,10 @@ export default async function CoordinatorEventPage({ params }: PageProps) {
       />
 
       <Tabs defaultValue="overview">
-        <TabsList>
+        <TabsList className="flex flex-wrap h-auto">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="registrations">Registrations</TabsTrigger>
+          <TabsTrigger value="teams">Teams ({teams.length})</TabsTrigger>
           <TabsTrigger value="participants">Participants</TabsTrigger>
           <TabsTrigger value="announcements">Announcements</TabsTrigger>
           <TabsTrigger value="results">Results</TabsTrigger>
@@ -251,6 +270,62 @@ export default async function CoordinatorEventPage({ params }: PageProps) {
                       </TableRow>
                     );
                   })}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="teams">
+          <Card>
+            <CardHeader>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <CardTitle className="text-base">Teams ({teams.length})</CardTitle>
+                  <CardDescription>Total teams for this event and their members.</CardDescription>
+                </div>
+                <ExportExcelButton data={teamsExport} filename={`${event.name}-teams-${format(new Date(), "yyyy-MM-dd")}`} sheetName="Teams" label={`Export ${teams.length}`} />
+              </div>
+            </CardHeader>
+            <CardContent className="overflow-x-auto p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Team</TableHead>
+                    <TableHead>Leader</TableHead>
+                    <TableHead>Members</TableHead>
+                    <TableHead>Count</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {teams.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">No teams yet.</TableCell>
+                    </TableRow>
+                  )}
+                  {teams.map((t) => (
+                    <TableRow key={t.id}>
+                      <TableCell className="font-medium">{t.name}</TableCell>
+                      <TableCell>
+                        <div className="text-sm font-medium">{t.leader.name}</div>
+                        <div className="text-xs text-muted-foreground">{t.leader.email} · {(t.leader as any).phone ?? ""}</div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          {t.members.map((m) => (
+                            <div key={m.id} className="text-xs">
+                              <span className="font-medium">{m.user.name}</span>
+                              <span className="text-muted-foreground"> — {m.user.email} · {m.user.phone}</span>
+                              {m.role === "LEADER" && <Badge variant="default" className="ml-1 h-4 text-[10px]">Leader</Badge>}
+                            </div>
+                          ))}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{t.members.length}</Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </CardContent>

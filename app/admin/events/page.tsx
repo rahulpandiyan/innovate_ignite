@@ -30,6 +30,7 @@ export default async function EventsPage() {
       include: {
         coordinators: { include: { user: { select: { id: true, name: true, userRole: { select: { name: true } } } } } },
         judges: { include: { user: { select: { name: true } } } },
+        teams: { include: { leader: { select: { name: true } }, members: { include: { user: { select: { name: true, email: true, phone: true } } } } } },
         _count: { select: { registrations: true, teams: true } },
       },
     }),
@@ -242,33 +243,67 @@ export default async function EventsPage() {
 
       <div className="space-y-4">
         {events.map((ev) => (
-          <EventEditForm
-            key={ev.id}
-            event={{
-              id: ev.id,
-              name: ev.name,
-              description: ev.description ?? "",
-              type: ev.type,
-              category: ev.category,
-              venue: ev.venue ?? "",
-              price: Number(ev.price),
-              minTeamSize: ev.minTeamSize ?? 1,
-              maxTeamSize: ev.maxTeamSize ?? 1,
-              status: ev.status,
-              time: ev.time ?? "",
-            }}
-            coordinators={coordinators.map((c: any) => ({ id: c.id, name: c.name, email: c.email, role: c.userRole?.name }))}
-            judges={judges}
-            assignedCoordinators={ev.coordinators.map((c) => c.user.name)}
-            assignedCoordinatorsDetailed={ev.coordinators.map((c: any) => ({ id: c.user.id, name: c.user.name, role: c.user.userRole?.name }))}
-            assignedJudges={ev.judges.map((j) => j.user.name)}
-            registrationCount={ev._count.registrations}
-            teamCount={ev._count.teams}
-            onAssign={async (input) => {
-              "use server";
-              await assignEventUsers(input);
-            }}
-          />
+          <div key={ev.id} className="space-y-3">
+            <EventEditForm
+              event={{
+                id: ev.id,
+                name: ev.name,
+                description: ev.description ?? "",
+                type: ev.type,
+                category: ev.category,
+                venue: ev.venue ?? "",
+                price: Number(ev.price),
+                minTeamSize: ev.minTeamSize ?? 1,
+                maxTeamSize: ev.maxTeamSize ?? 1,
+                status: ev.status,
+                time: ev.time ?? "",
+              }}
+              coordinators={coordinators.map((c: any) => ({ id: c.id, name: c.name, email: c.email, role: c.userRole?.name }))}
+              judges={judges}
+              assignedCoordinators={ev.coordinators.map((c) => c.user.name)}
+              assignedCoordinatorsDetailed={ev.coordinators.map((c: any) => ({ id: c.user.id, name: c.user.name, role: c.user.userRole?.name }))}
+              assignedJudges={ev.judges.map((j) => j.user.name)}
+              registrationCount={ev._count.registrations}
+              teamCount={ev._count.teams}
+              onAssign={async (input) => {
+                "use server";
+                await assignEventUsers(input);
+              }}
+            />
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  Teams — {ev._count.teams} total
+                  <Badge variant="secondary" className="text-[11px]">{ev._count.teams} teams</Badge>
+                </CardTitle>
+                <CardDescription>Event → Teams → members. Expand to see users in each team.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {ev.teams.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No teams yet for this event.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {ev.teams.map((t: any) => (
+                      <div key={t.id} className="rounded-lg border p-3">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-semibold">{t.name} <span className="text-xs text-muted-foreground">· by {t.leader.name}</span></p>
+                          <Badge variant="outline" className="text-[11px]">{t.members.length} member{t.members.length === 1 ? "" : "s"}</Badge>
+                        </div>
+                        <div className="mt-2 grid gap-1 sm:grid-cols-2">
+                          {t.members.map((m: any) => (
+                            <div key={m.id} className="rounded border bg-muted/20 px-2 py-1.5">
+                              <p className="text-xs font-medium">{m.user.name} {m.role === "LEADER" && <Badge variant="default" className="ml-1 h-4 text-[10px]">Leader</Badge>}</p>
+                              <p className="font-mono text-[11px] text-muted-foreground">{m.user.email} · {m.user.phone}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         ))}
       </div>
     </div>
