@@ -172,7 +172,6 @@ export default function Navbar() {
             <span className="rounded-full bg-[#F3C317] px-3 py-1.5 font-mono text-[10px] font-bold tracking-widest text-[#0F172A]">
             13 EVENTS
           </span>
-          <ProfilePill />
         </div>
       </nav>
     </>
