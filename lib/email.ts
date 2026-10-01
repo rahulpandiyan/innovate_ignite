@@ -1,6 +1,7 @@
-// do.dev Send API (https://docs.do.dev/send)
-// POST https://api.do.dev/v1/send/emails/send
-// Bearer do_live_... -> 202 { id, status: "queued" }
+// Emails are sent through the site's cPanel SMTP server
+// (smtp.innovateignite.tech:465, implicit TLS) using nodemailer.
+// Falls back to the do.dev Send API when SMTP env vars are absent.
+import nodemailer from "nodemailer";
 
 const SEND_URL = "https://api.do.dev/v1/send/emails/send";
 
@@ -17,25 +18,73 @@ interface SendResult {
   status: string;
 }
 
+function plainTextFromHtml(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export async function sendEmail(options: {
   to: string;
   subject: string;
   html: string;
   text?: string;
 }): Promise<SendResult> {
-  const apiKey = requireEnv("SEND_API_KEY");
-  const fromEmail = process.env.SEND_FROM_EMAIL ?? "hello@innovateignite.tech";
-  const fromName = process.env.SEND_FROM_NAME ?? "VVIT Innovate Ignite";
+  const fromEmail =
+    process.env.SMTP_FROM_EMAIL ??
+    process.env.SEND_FROM_EMAIL ??
+    "hello@innovateignite.tech";
+  const fromName =
+    process.env.SMTP_FROM_NAME ??
+    process.env.SEND_FROM_NAME ??
+    "VVIT Innovate Ignite";
   // Plain-text fallback improves deliverability for clients that don't render HTML
-  const text =
-    options.text ??
-    options.html
-      .replace(/<[^>]*>/g, " ")
-      .replace(/&nbsp;/g, " ")
-      .replace(/&amp;/g, "&")
-      .replace(/\s+/g, " ")
-      .trim();
+  const text = options.text ?? plainTextFromHtml(options.html);
 
+  const smtpHost = process.env.SMTP_HOST;
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASS;
+
+  // SMTP path (primary). smtp.innovateignite.tech:465 is implicit TLS.
+  if (smtpHost) {
+    const port = Number(process.env.SMTP_PORT ?? "465");
+    const transport = nodemailer.createTransport({
+      host: smtpHost,
+      port,
+      secure: port === 465,
+      auth: smtpUser && smtpPass ? { user: smtpUser, pass: smtpPass } : undefined,
+      connectionTimeout: 20000,
+      greetingTimeout: 20000,
+      socketTimeout: 30000,
+    });
+
+    try {
+      const info = await transport.sendMail({
+        from: { name: fromName, address: fromEmail },
+        to: options.to,
+        subject: options.subject,
+        html: options.html,
+        text,
+      });
+      console.log(
+        `[mail] smtp sent id=${info.messageId} to=${options.to} subject=${options.subject}`
+      );
+      return {
+        id: info.messageId ?? "",
+        status: info.accepted.length ? "sent" : "rejected",
+      };
+    } catch (err) {
+      const detail = err instanceof Error ? err.message : String(err);
+      console.error(`[mail] smtp failed to=${options.to} subject=${options.subject}: ${detail}`);
+      throw new Error(`SMTP send failed: ${detail}`);
+    }
+  }
+
+  // Fallback: do.dev Send API (https://docs.do.dev/send)
+  const apiKey = requireEnv("SEND_API_KEY");
   let res: Response;
   try {
     res = await fetch(SEND_URL, {
