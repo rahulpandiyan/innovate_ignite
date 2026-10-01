@@ -21,24 +21,42 @@ export async function sendEmail(options: {
   to: string;
   subject: string;
   html: string;
+  text?: string;
 }): Promise<SendResult> {
   const apiKey = requireEnv("SEND_API_KEY");
   const fromEmail = process.env.SEND_FROM_EMAIL ?? "hello@innovateignite.tech";
   const fromName = process.env.SEND_FROM_NAME ?? "VVIT Innovate Ignite";
+  // Plain-text fallback improves deliverability for clients that don't render HTML
+  const text =
+    options.text ??
+    options.html
+      .replace(/<[^>]*>/g, " ")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/\s+/g, " ")
+      .trim();
 
-  const res = await fetch(SEND_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: { email: fromEmail, name: fromName },
-      to: [options.to],
-      subject: options.subject,
-      html: options.html,
-    }),
-  });
+  let res: Response;
+  try {
+    res = await fetch(SEND_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: { email: fromEmail, name: fromName },
+        to: [options.to],
+        subject: options.subject,
+        html: options.html,
+        text,
+      }),
+    });
+  } catch (err) {
+    throw new Error(
+      `do.dev send unreachable: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
 
   const body = (await res.json().catch(() => ({}))) as {
     id?: string;
@@ -47,11 +65,12 @@ export async function sendEmail(options: {
   };
 
   if (!res.ok || !body.id) {
-    throw new Error(
-      body.error?.message ?? `do.dev send failed (HTTP ${res.status})`
-    );
+    const detail = body.error?.message ?? `do.dev send failed (HTTP ${res.status})`;
+    console.error(`[mail] send failed to=${options.to} subject=${options.subject}: ${detail}`);
+    throw new Error(detail);
   }
 
+  console.log(`[mail] queued id=${body.id} to=${options.to} subject=${options.subject}`);
   return { id: body.id, status: body.status ?? "queued" };
 }
 
@@ -86,8 +105,8 @@ export async function sendRegistrationConfirmedEmail(
   name: string,
   eventName: string,
   registrationId: string
-): Promise<void> {
-  await sendEmail({
+): Promise<SendResult> {
+  return sendEmail({
     to: email,
     subject: `You're confirmed for ${eventName} — VVIT Innovate Ignite`,
     html: layout(`
@@ -108,9 +127,11 @@ export async function sendPaymentReminderEmail(options: {
   eventName: string;
   amount: number;
   registrationId: string;
-}): Promise<void> {
-  const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? "https://www.innovateignite.tech"}/dashboard/registrations`;
-  await sendEmail({
+  payId?: string;
+}): Promise<SendResult> {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.innovateignite.tech";
+  const payUrl = `${baseUrl}/dashboard/registrations?pay=${options.payId ?? options.registrationId}`;
+  return sendEmail({
     to: options.to,
     subject: `Complete your payment for ${options.eventName} — VVIT Innovate Ignite`,
     html: layout(`
@@ -121,8 +142,8 @@ export async function sendPaymentReminderEmail(options: {
         <p style="margin:8px 0 0;color:#111827;"><strong>Amount due:</strong> ₹${options.amount}</p>
         <p style="margin:8px 0 0;color:#111827;"><strong>Registration ID:</strong> ${options.registrationId}</p>
       </div>
-      <a href="${dashboardUrl}" style="display:inline-block;background:#111827;color:#fff;text-decoration:none;padding:12px 28px;border-radius:6px;font-weight:600;margin-bottom:24px;">Pay now</a>
-      <p style="color:#6b7280;font-size:14px;">Pay via UPI, upload the transaction ID + screenshot, and finance will confirm your spot. Unpaid slots may be released.</p>
+      <a href="${payUrl}" style="display:inline-block;background:#111827;color:#fff;text-decoration:none;padding:12px 28px;border-radius:6px;font-weight:600;margin-bottom:24px;">Pay now — opens your payment</a>
+      <p style="color:#6b7280;font-size:14px;">Tap the button, pay via UPI, upload the transaction ID + screenshot, and finance will confirm your spot. Unpaid slots may be released.</p>
     `),
   });
 }

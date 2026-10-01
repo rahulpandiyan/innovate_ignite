@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { QrPassButton } from "@/components/participant/qr-pass-button";
 import { PayRegistrationButton } from "@/components/participant/pay-registration";
+import { AutoPaySheet } from "@/components/participant/auto-pay-sheet";
 import { WhatsAppGroupButton } from "@/components/participant/whatsapp-group-button";
 import { ExportExcelButton } from "@/components/ui/export-excel";
 import { festSchedule } from "@/data/schedule";
@@ -38,9 +39,14 @@ const STATUS_STYLE: Record<string, string> = {
   CANCELLED: "bg-gray-500/15 text-gray-600",
 };
 
-export default async function RegistrationsPage() {
+export default async function RegistrationsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ pay?: string }>;
+}) {
   const session = await getAuthSession();
   if (!session) redirect("/auth/signin");
+  const payId = (await searchParams)?.pay ?? null;
 
   const registrations = await prisma.registration.findMany({
     where: { userId: session.id },
@@ -107,8 +113,20 @@ export default async function RegistrationsPage() {
     };
   });
 
+  // Deep link from reminder mail: ?pay=<registrationId> opens that payment sheet
+  const autoPay = payId ? rows.find((r) => r.id === payId) ?? null : null;
+  const autoPayAmount =
+    autoPay != null
+      ? autoPay.payment
+        ? Number(autoPay.payment.amount)
+        : Number(autoPay.event.price)
+      : 0;
+
   return (
     <div className="space-y-6">
+      {autoPay && autoPayAmount > 0 && (
+        <AutoPaySheet registrationId={autoPay.id} amount={autoPayAmount} />
+      )}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">My Registrations</h1>

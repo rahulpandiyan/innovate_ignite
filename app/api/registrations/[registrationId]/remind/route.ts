@@ -45,18 +45,21 @@ export async function POST(
     ? Number(registration.payment.amount)
     : Number(registration.event.price);
 
+  let mailId = "";
   try {
-    await sendPaymentReminderEmail({
+    const sent = await sendPaymentReminderEmail({
       to: registration.user.email,
       name: registration.user.name,
       eventName: displayEventName(registration.event.name, registration.formResponses),
       amount,
       registrationId: registration.registrationId,
+      payId: registration.id,
     });
+    mailId = sent.id;
   } catch (err) {
     console.error("[remind] mail failed:", err);
     return errorResponse("Could not send reminder mail. Try again.", 502);
   }
 
-  return successResponse({ message: `Reminder sent to ${registration.user.email}.` });
+  return successResponse({ message: `Reminder sent to ${registration.user.email}.`, mailId });
 }

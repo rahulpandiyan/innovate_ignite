@@ -66,12 +66,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ reg
   // Best-effort confirmation mail — never fail verification because of mail
   try {
     if (registration.user?.email) {
-      await sendRegistrationConfirmedEmail(
+      const sent = await sendRegistrationConfirmedEmail(
         registration.user.email,
         registration.user.name ?? "Participant",
         registration.event?.name ?? "your event",
         registration.registrationId
       );
+      console.log(`[verify] confirmation mail queued id=${sent.id} to=${registration.user.email}`);
     }
   } catch (err) {
     console.error("[verify] confirmation mail failed:", err);

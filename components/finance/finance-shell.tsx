@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import dashboardLogo from "@/public/gat-logos/dashboard-logo.webp";
-import { Wallet, ReceiptText } from "lucide-react";
+import { ReceiptText, MailWarning } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
@@ -33,7 +33,8 @@ export function FinanceShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isActive = pathname === "/payments" || pathname.startsWith("/payments/");
+  const isLedgerActive = pathname === "/payments";
+  const isPendingActive = pathname === "/payments/pending";
 
   return (
     <SidebarProvider>
@@ -66,10 +67,18 @@ export function FinanceShell({
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild isActive={isActive} tooltip="Payment ledger">
+                  <SidebarMenuButton asChild isActive={isLedgerActive} tooltip="Payment ledger">
                     <Link href="/payments">
                       <ReceiptText />
                       <span>Payment ledger</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={isPendingActive} tooltip="Pending payments">
+                    <Link href="/payments/pending">
+                      <MailWarning />
+                      <span>Pending payments</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
