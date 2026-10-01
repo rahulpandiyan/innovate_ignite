@@ -9,6 +9,7 @@ import { humanizeType } from "@/lib/certificates";
 import Link from "next/link";
 import { FileBadge } from "lucide-react";
 import { format } from "date-fns";
+import { GAMING_EVENT_NAME, getGameChoice } from "@/lib/eventDisplay";
 
 export const dynamic = "force-dynamic";
 
@@ -67,6 +68,17 @@ export default async function CertificatesPage() {
     where: { isActive: true },
     select: { id: true, name: true, type: true },
   });
+
+  // Resolve chosen game for gaming certificates via the holder's registration
+  const gamingRegs = await prisma.registration.findMany({
+    where: { event: { name: GAMING_EVENT_NAME } },
+    select: { userId: true, formResponses: true },
+  });
+  const gameByUser = new Map<string, string>();
+  for (const r of gamingRegs) {
+    const g = getGameChoice(GAMING_EVENT_NAME, r.formResponses);
+    if (g) gameByUser.set(r.userId, g);
+  }
 
   return (
     <div className="space-y-6">
@@ -132,7 +144,7 @@ export default async function CertificatesPage() {
                     </td>
                     <td className="px-4 py-2 font-medium">{c.participant.user.name}</td>
                     <td className="px-4 py-2">{c.college.name}</td>
-                    <td className="px-4 py-2">{c.event.name}</td>
+                    <td className="px-4 py-2">{c.event.name === GAMING_EVENT_NAME ? (gameByUser.get(c.participant.userId) ?? c.event.name) : c.event.name}</td>
                     <td className="px-4 py-2">
                       <Badge variant="outline">{humanizeType(c.type)}</Badge>
                     </td>

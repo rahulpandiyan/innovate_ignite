@@ -102,6 +102,31 @@ export async function sendRegistrationConfirmedEmail(
   });
 }
 
+export async function sendPaymentReminderEmail(options: {
+  to: string;
+  name: string;
+  eventName: string;
+  amount: number;
+  registrationId: string;
+}): Promise<void> {
+  const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? "https://www.innovateignite.tech"}/dashboard/registrations`;
+  await sendEmail({
+    to: options.to,
+    subject: `Complete your payment for ${options.eventName} — VVIT Innovate Ignite`,
+    html: layout(`
+      <p style="color:#111827;font-size:16px;">Hi ${options.name},</p>
+      <p style="color:#6b7280;">You're registered, but your payment is still pending — your slot is <strong>not booked</strong> until finance verifies it.</p>
+      <div style="background:#f3f4f6;border-radius:6px;padding:16px 24px;margin-bottom:24px;">
+        <p style="margin:0;color:#111827;"><strong>Event:</strong> ${options.eventName}</p>
+        <p style="margin:8px 0 0;color:#111827;"><strong>Amount due:</strong> ₹${options.amount}</p>
+        <p style="margin:8px 0 0;color:#111827;"><strong>Registration ID:</strong> ${options.registrationId}</p>
+      </div>
+      <a href="${dashboardUrl}" style="display:inline-block;background:#111827;color:#fff;text-decoration:none;padding:12px 28px;border-radius:6px;font-weight:600;margin-bottom:24px;">Pay now</a>
+      <p style="color:#6b7280;font-size:14px;">Pay via UPI, upload the transaction ID + screenshot, and finance will confirm your spot. Unpaid slots may be released.</p>
+    `),
+  });
+}
+
 export async function sendPasswordResetEmail(
   email: string,
   resetUrl: string

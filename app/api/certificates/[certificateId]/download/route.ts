@@ -3,6 +3,7 @@ import prisma from "@/lib/db";
 import { requireAuth, errorResponse } from "@/lib/apiHelpers";
 import { assertPermission } from "@/lib/rbac";
 import { generateCertificatePdf, humanizeType } from "@/lib/certificates";
+import { GAMING_EVENT_NAME, getGameChoice } from "@/lib/eventDisplay";
 
 // GET /api/certificates/[certificateId]/download — Certificate PDF (gated by certificates.download).
 export async function GET(
@@ -23,14 +24,23 @@ export async function GET(
       include: {
         participant: { include: { user: { select: { name: true } } } },
         college: { select: { name: true } },
-        event: { select: { name: true } },
+        event: { select: { id: true, name: true } },
       },
     });
     if (!certificate) return errorResponse("Certificate not found.", 404);
 
+    let game: string | null = null;
+    if (certificate.event.name === GAMING_EVENT_NAME) {
+      const reg = await prisma.registration.findFirst({
+        where: { userId: certificate.participant.userId, eventId: certificate.event.id },
+        select: { formResponses: true },
+      });
+      game = getGameChoice(GAMING_EVENT_NAME, reg?.formResponses);
+    }
+
     const pdf = await generateCertificatePdf({
       name: certificate.participant.user.name,
-      eventName: certificate.event.name,
+      eventName: game ?? certificate.event.name,
       collegeName: certificate.college.name,
       certificateId: certificate.certificateId,
       verificationToken: certificate.verificationToken,

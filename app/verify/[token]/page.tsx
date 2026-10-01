@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ShieldCheck, FileBadge } from "lucide-react";
 import { format } from "date-fns";
 import { humanizeType } from "@/lib/certificates";
+import { GAMING_EVENT_NAME, getGameChoice } from "@/lib/eventDisplay";
 
 export const dynamic = "force-dynamic";
 
@@ -20,11 +21,21 @@ export default async function VerifyCertificatePage({
     include: {
       participant: { include: { user: { select: { name: true } } } },
       college: { select: { name: true } },
-      event: { select: { name: true } },
+      event: { select: { id: true, name: true } },
     },
   });
 
   if (!certificate || !certificate.isPublished) notFound();
+
+  let game: string | null = null;
+  if (certificate.event.name === GAMING_EVENT_NAME) {
+    const reg = await prisma.registration.findFirst({
+      where: { userId: certificate.participant.userId, eventId: certificate.event.id },
+      select: { formResponses: true },
+    });
+    game = getGameChoice(GAMING_EVENT_NAME, reg?.formResponses);
+  }
+  const eventDisplay = game ?? certificate.event.name;
 
   return (
     <div className="mx-auto flex max-w-lg flex-col items-center justify-center px-4 py-16">
@@ -43,7 +54,7 @@ export default async function VerifyCertificatePage({
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <Row label="Type" value={humanizeType(certificate.type)} badge />
-          <Row label="Event" value={certificate.event.name} />
+          <Row label="Event" value={eventDisplay} />
           <Row label="College" value={certificate.college.name} />
           <Row label="Certificate ID" value={certificate.certificateId} mono />
           <Row

@@ -17,6 +17,7 @@ import { PayRegistrationButton } from "@/components/participant/pay-registration
 import { WhatsAppGroupButton } from "@/components/participant/whatsapp-group-button";
 import { ExportExcelButton } from "@/components/ui/export-excel";
 import { festSchedule } from "@/data/schedule";
+import { displayEventName, getGameChoice } from "@/lib/eventDisplay";
 import { format } from "date-fns";
 
 function scheduleFallback(name: string) {
@@ -69,13 +70,8 @@ export default async function RegistrationsPage() {
   });
 
   // helper to show chosen game for BGMI & FreeFire instead of generic name
-  const displayName = (reg: (typeof registrations)[number]) => {
-    const fr = reg.formResponses as Record<string, unknown> | null;
-    if (reg.event.name === "BGMI & FreeFire" && fr && typeof fr.game === "string" && (fr.game === "BGMI" || fr.game === "Free Fire")) {
-      return fr.game as string;
-    }
-    return reg.event.name;
-  };
+  const displayName = (reg: (typeof registrations)[number]) =>
+    displayEventName(reg.event.name, reg.formResponses);
 
   const rows = await Promise.all(
     registrations.map(async (reg) => {
@@ -95,11 +91,10 @@ export default async function RegistrationsPage() {
   const exportData = rows.map((r) => {
     const fb = !r.event.date || !r.event.venue ? scheduleFallback(r.event.name) : null;
     const d = r.event.date ?? fb?.date ?? null;
-    const fr = r.formResponses as Record<string, unknown> | null;
-    const game = r.event.name === "BGMI & FreeFire" && fr?.game ? String(fr.game) : "";
+    const game = getGameChoice(r.event.name, r.formResponses);
     return {
       Event: displayName(r as never),
-      Game: game,
+      Game: game ?? "",
       Category: r.event.category,
       Date: d ? format(d, "yyyy-MM-dd") : "",
       Venue: r.event.venue ?? fb?.venue ?? "",
@@ -188,7 +183,7 @@ export default async function RegistrationsPage() {
                             <PayRegistrationButton registrationId={reg.id} amount={Number(reg.payment.amount)} />
                           )}
                           {reg.payment.status === "SUCCESS" && (
-                            <WhatsAppGroupButton eventName={reg.event.name} />
+                            <WhatsAppGroupButton eventName={displayName(reg as never)} />
                           )}
                         </div>
                       ) : reg.status === "PENDING" && Number(reg.event.price) > 0 ? (

@@ -7,6 +7,7 @@ import { EligibilityActions } from "@/components/college-admin/eligibility-actio
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { UsersRound, ClipboardList, BadgeCheck, IndianRupee, MapPin, Hash } from "lucide-react";
+import { displayEventName } from "@/lib/eventDisplay";
 
 export const dynamic = "force-dynamic";
 
@@ -232,7 +233,7 @@ export default async function CollegeAdminPage() {
                 return (
                   <tr key={r.id} className="border-b last:border-0 align-top">
                     <td className="px-4 py-2 font-medium">{r.user.name}</td>
-                    <td className="px-4 py-2">{r.event.name}</td>
+                    <td className="px-4 py-2">{displayEventName(r.event.name, r.formResponses)}</td>
                     <td className="px-4 py-2">
                       <div>{r.registrationId}</div>
                       <Badge variant={r.status === "CONFIRMED" ? "default" : "outline"}>{r.status}</Badge>

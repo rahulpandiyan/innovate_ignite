@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Crown, UsersRound } from "lucide-react";
 import { CreateTeamDialog } from "@/components/participant/create-team-dialog";
 import { InviteMember } from "@/components/participant/invite-member";
+import { GAMING_EVENT_NAME, getGameChoice } from "@/lib/eventDisplay";
 
 export default async function TeamsPage() {
   const session = await getAuthSession();
@@ -80,6 +81,24 @@ export default async function TeamsPage() {
 
   const teams = memberships.map((m) => ({ ...m.team, myRole: m.role }));
 
+  // Squads play one game — resolve it from the leader's registration choice
+  const gamingRegs = await prisma.registration.findMany({
+    where: { event: { name: GAMING_EVENT_NAME } },
+    select: { userId: true, formResponses: true },
+  });
+  const gameByUser = new Map<string, string>();
+  for (const r of gamingRegs) {
+    const g = getGameChoice(GAMING_EVENT_NAME, r.formResponses);
+    if (g) gameByUser.set(r.userId, g);
+  }
+  const myGame = gameByUser.get(session.id);
+  const pendingDisplayName = (name: string) =>
+    name === GAMING_EVENT_NAME && myGame ? myGame : name;
+  const teamEventName = (team: (typeof teams)[number]) =>
+    team.event.name === GAMING_EVENT_NAME
+      ? (gameByUser.get(team.leader.id) ?? team.event.name)
+      : team.event.name;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -97,7 +116,7 @@ export default async function TeamsPage() {
           <CardHeader>
             <CardTitle className="text-amber-900 text-base">Complete payment to create teams</CardTitle>
             <CardDescription className="text-amber-800">
-              You’re registered for {pendingEvents.map((e) => e.name).join(", ")} but payment is still pending. Go to My Registrations to pay and wait for confirmation — then you can create a team. Teams cannot be created before payment.
+              You’re registered for {pendingEvents.map((e) => pendingDisplayName(e.name)).join(", ")} but payment is still pending. Go to My Registrations to pay and wait for confirmation — then you can create a team. Teams cannot be created before payment.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -131,7 +150,7 @@ export default async function TeamsPage() {
                         <Crown className="h-3 w-3" /> Leader
                       </Badge>
                     )}
-                    <Badge variant="secondary">{team.event.name}</Badge>
+                    <Badge variant="secondary">{teamEventName(team)}</Badge>
                     {team.registration && (
                       <Badge variant="outline">{team.registration.status}</Badge>
                     )}

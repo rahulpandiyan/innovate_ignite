@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { UsersRound } from "lucide-react";
+import { displayEventName } from "@/lib/eventDisplay";
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +46,7 @@ export default async function AttendancePage() {
         include: {
           registration: {
             select: {
+              formResponses: true,
               user: { select: { name: true, email: true, collegeName: true } },
             },
           },
@@ -133,7 +135,7 @@ export default async function AttendancePage() {
                         {r.attendee.registration.user.name}
                       </td>
                       <td className="py-2 pr-4">{r.attendee.registration.user.collegeName}</td>
-                      <td className="py-2 pr-4">{r.event.name}</td>
+                      <td className="py-2 pr-4">{displayEventName(r.event.name, r.attendee.registration.formResponses)}</td>
                       <td className="py-2 pr-4">
                         <Badge variant={r.status === "CHECKED_IN" ? "default" : "outline"}>
                           {r.status}

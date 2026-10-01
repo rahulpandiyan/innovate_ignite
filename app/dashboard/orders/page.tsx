@@ -11,6 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { PayOrderButton } from "@/components/participant/pay-order";
 import { format } from "date-fns";
+import { GAMING_EVENT_NAME, getGameChoice } from "@/lib/eventDisplay";
 
 const ORDER_STATUS_STYLE: Record<string, string> = {
   PENDING_PAYMENT: "bg-amber-500/15 text-amber-700",
@@ -35,6 +36,14 @@ export default async function OrdersPage() {
     },
     orderBy: { createdAt: "desc" },
   });
+
+  const myGamingReg = await prisma.registration.findFirst({
+    where: { userId: session.id, event: { name: GAMING_EVENT_NAME } },
+    select: { formResponses: true },
+  });
+  const myGame = getGameChoice(GAMING_EVENT_NAME, myGamingReg?.formResponses);
+  const itemEventName = (name: string) =>
+    name === GAMING_EVENT_NAME && myGame ? myGame : name;
 
   return (
     <div className="space-y-6">
@@ -65,7 +74,7 @@ export default async function OrdersPage() {
                   </CardTitle>
                   <CardDescription>
                     ₹{order.totalAmount.toString()} ·{" "}
-                    {order.orderItems.map((i) => i.event.name).join(", ")}
+                    {order.orderItems.map((i) => itemEventName(i.event.name)).join(", ")}
                     {order.rejectionReason && (
                       <span className="mt-1 block text-red-600">
                         Rejected: {order.rejectionReason}
@@ -91,7 +100,7 @@ export default async function OrdersPage() {
                 {order.orderItems.map((item) => (
                   <li key={item.id} className="flex items-center justify-between px-3 py-2">
                     <span>
-                      {item.event.name}
+                      {itemEventName(item.event.name)}
                       {item.Team?.name ? (
                         <span className="text-muted-foreground"> · {item.Team.name}</span>
                       ) : null}

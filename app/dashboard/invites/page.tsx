@@ -5,6 +5,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import { Badge } from "@/components/ui/badge";
 import { InviteActions } from "@/components/participant/invite-actions";
 import { format } from "date-fns";
+import { GAMING_EVENT_NAME, getGameChoice } from "@/lib/eventDisplay";
 
 export default async function InvitesPage() {
   const session = await getAuthSession();
@@ -26,6 +27,20 @@ export default async function InvitesPage() {
     },
     orderBy: { createdAt: "desc" },
   });
+
+  const gamingRegs = await prisma.registration.findMany({
+    where: { event: { name: GAMING_EVENT_NAME } },
+    select: { userId: true, formResponses: true },
+  });
+  const gameByUser = new Map<string, string>();
+  for (const r of gamingRegs) {
+    const g = getGameChoice(GAMING_EVENT_NAME, r.formResponses);
+    if (g) gameByUser.set(r.userId, g);
+  }
+  const inviteEventName = (inv: (typeof invites)[number]) =>
+    inv.Team.event.name === GAMING_EVENT_NAME
+      ? (gameByUser.get(inv.Team.leader.id) ?? inv.Team.event.name)
+      : inv.Team.event.name;
 
   return (
     <div className="space-y-6">
@@ -51,12 +66,12 @@ export default async function InvitesPage() {
             <CardHeader>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <CardTitle className="text-base">
-                    {inv.Team.name}
-                    <Badge variant="secondary" className="ml-2">
-                      {inv.Team.event.name}
-                    </Badge>
-                  </CardTitle>
+                    <CardTitle className="text-base">
+                      {inv.Team.name}
+                      <Badge variant="secondary" className="ml-2">
+                        {inviteEventName(inv)}
+                      </Badge>
+                    </CardTitle>
                   <CardDescription>
                     Led by {inv.Team.leader.name} · {inv.Team.members.length} member
                     {inv.Team.members.length === 1 ? "" : "s"} · invited by{" "}

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { BadgeCheck } from "lucide-react";
+import { GAMING_EVENT_NAME, getGameChoice } from "@/lib/eventDisplay";
 
 function humanizeCertType(type: string): string {
   switch (type) {
@@ -133,6 +134,16 @@ export default async function DashboardOverviewPage() {
           orderBy: { issuedAt: "desc" },
         })
       : [];
+
+  // The viewer's own chosen game (certificates/results are per-event rows
+  // without formResponses, so resolve the game from their registration).
+  const myGamingReg = await prisma.registration.findFirst({
+    where: { userId: session.id, event: { name: GAMING_EVENT_NAME } },
+    select: { formResponses: true },
+  });
+  const myGame = getGameChoice(GAMING_EVENT_NAME, myGamingReg?.formResponses);
+  const withGame = (eventName: string) =>
+    eventName === GAMING_EVENT_NAME && myGame ? myGame : eventName;
 
   const visible = announcedToMe(announcements, {
     userId: session.id,
@@ -272,7 +283,7 @@ export default async function DashboardOverviewPage() {
               <tbody>
                 {myResults.map((r) => (
                   <tr key={r.id} className="border-b last:border-0">
-                    <td className="py-2 pr-4">{r.event.name}</td>
+                    <td className="py-2 pr-4">{withGame(r.event.name)}</td>
                     <td className="py-2 pr-4">
                       <Badge variant={r.winnerStatus === "WINNER" ? "default" : "outline"}>
                         {r.winnerStatus}
@@ -305,7 +316,7 @@ export default async function DashboardOverviewPage() {
               <tbody>
                 {certificates.map((c) => (
                   <tr key={c.id} className="border-b last:border-0">
-                    <td className="py-2 pr-4">{c.event.name}</td>
+                    <td className="py-2 pr-4">{withGame(c.event.name)}</td>
                     <td className="py-2 pr-4">
                       <Badge variant="outline">{humanizeCertType(c.type)}</Badge>
                     </td>

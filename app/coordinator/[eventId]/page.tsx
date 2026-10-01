@@ -33,6 +33,7 @@ import { Megaphone,
 import { format } from "date-fns";
 import { CoordinatorEventEditForm } from "@/components/coordinator/coordinator-event-edit-form";
 import { ExportExcelButton } from "@/components/ui/export-excel";
+import { GAMING_EVENT_NAME, getGameChoice } from "@/lib/eventDisplay";
 
 type PageProps = { params: Promise<{ eventId: string }> };
 
@@ -91,12 +92,9 @@ export default async function CoordinatorEventPage({ params }: PageProps) {
     0
   );
 
-  const isGamingEvent = event.name === "BGMI & FreeFire";
-  const gameOf = (r: (typeof event.registrations)[number]) => {
-    const fr = r.formResponses as Record<string, unknown> | null;
-    if (isGamingEvent && fr && typeof fr.game === "string") return fr.game as string;
-    return null;
-  };
+  const isGamingEvent = event.name === GAMING_EVENT_NAME;
+  const gameOf = (r: (typeof event.registrations)[number]) =>
+    getGameChoice(event.name, r.formResponses);
 
   const registrationsExport = event.registrations.map((r) => ({
     RegistrationID: r.registrationId,

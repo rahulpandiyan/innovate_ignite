@@ -8,6 +8,7 @@ import { RegistrationActions } from "@/components/finance/registration-actions";
 import { ExportExcelButton } from "@/components/ui/export-excel";
 import { IndianRupee, HandCoins, Clock, CheckCircle2 } from "lucide-react";
 import { format } from "date-fns";
+import { displayEventName } from "@/lib/eventDisplay";
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +43,7 @@ export default async function CoordinatorPaymentsPage() {
     Email: p.registration.user.email,
     Phone: p.registration.user.phone,
     College: p.registration.user.collegeName,
-    Event: p.registration.event.name,
+    Event: displayEventName(p.registration.event.name, p.registration.formResponses),
     Amount: Number(p.amount),
     Status: p.status,
     Method: p.transactionId === "OFFLINE" ? "OFFLINE" : "UPI",
@@ -139,7 +140,7 @@ export default async function CoordinatorPaymentsPage() {
                     {p.registration.user.name}
                     <div className="text-xs text-muted-foreground">{p.registration.user.email}</div>
                   </td>
-                  <td className="px-4 py-2">{p.registration.event.name}</td>
+                  <td className="px-4 py-2">{displayEventName(p.registration.event.name, p.registration.formResponses)}</td>
                   <td className="px-4 py-2 font-mono">₹{Number(p.amount).toFixed(0)}</td>
                   <td className="px-4 py-2">
                     <Badge variant="outline">Cash / UPI</Badge>
@@ -180,7 +181,7 @@ export default async function CoordinatorPaymentsPage() {
                 {coordinatorCollected.map((p) => (
                   <tr key={p.id} className="border-b last:border-0">
                     <td className="px-4 py-2 font-medium">{p.registration.user.name}</td>
-                    <td className="px-4 py-2">{p.registration.event.name}</td>
+                    <td className="px-4 py-2">{displayEventName(p.registration.event.name, p.registration.formResponses)}</td>
                     <td className="px-4 py-2 font-mono">₹{Number(p.amount).toFixed(0)}</td>
                     <td className="px-4 py-2 text-muted-foreground">
                       {p.collectedAt ? format(p.collectedAt, "MMM d, h:mm a") : "—"}

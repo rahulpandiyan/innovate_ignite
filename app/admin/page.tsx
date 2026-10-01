@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { SectionCards, type SectionCard } from "@/components/admin/section-cards";
 import { ChartAreaInteractive } from "@/components/admin/chart-area-interactive";
 import { DataTable, type RegistrationRow } from "@/components/admin/data-table";
+import { displayEventName } from "@/lib/eventDisplay";
 
 export const dynamic = "force-dynamic";
 
@@ -50,6 +51,7 @@ export default async function AdminOverviewPage() {
         id: true,
         status: true,
         createdAt: true,
+        formResponses: true,
         user: { select: { name: true, email: true } },
         event: { select: { name: true } },
       },
@@ -133,7 +135,7 @@ export default async function AdminOverviewPage() {
     id: reg.id,
     name: reg.user.name,
     email: reg.user.email,
-    event: reg.event.name,
+    event: displayEventName(reg.event.name, reg.formResponses),
     status: reg.status,
     createdAt: reg.createdAt.toLocaleDateString(undefined, {
       day: "2-digit",

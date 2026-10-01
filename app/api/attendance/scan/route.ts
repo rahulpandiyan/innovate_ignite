@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import prisma from "@/lib/db";
 import { requireAuth, parseBody, successResponse, errorResponse } from "@/lib/apiHelpers";
 import { assertPermission, getEventScope } from "@/lib/rbac";
+import { displayEventName } from "@/lib/eventDisplay";
 import { z } from "zod";
 
 const scanSchema = z.object({
@@ -122,7 +123,7 @@ export async function POST(req: NextRequest) {
         name: registration.user.name,
         email: registration.user.email,
         college: registration.user.collegeName,
-        eventName: registration.event.name,
+        eventName: displayEventName(registration.event.name, registration.formResponses),
         registrationId: registration.registrationId,
       },
     });
