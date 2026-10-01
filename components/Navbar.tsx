@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X } from "lucide-react";
+import { Menu, X, CircleUserRound } from "lucide-react";
+import { useAuthContext } from "@/contexts/auth-context";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 
@@ -16,6 +17,20 @@ const navLinks = [
   { href: "/events", label: "Events" },
   { href: "/schedule", label: "Schedule" },
 ];
+
+function ProfilePill() {
+  const { isLoggedIn } = useAuthContext();
+  return (
+    <Link
+      href={isLoggedIn ? "/dashboard/registrations" : "/auth/signin"}
+      aria-label="My profile and payments"
+      title={isLoggedIn ? "My registrations & payments" : "Sign in"}
+      className="grid h-9 w-9 place-items-center rounded-full bg-[#F3C317] text-[#0F172A] transition-transform hover:scale-105"
+    >
+      <CircleUserRound className="h-5 w-5" />
+    </Link>
+  );
+}
 
 export default function Navbar() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -86,6 +101,7 @@ export default function Navbar() {
 
           {/* right — actions */}
           <div className="flex items-center gap-1.5 sm:gap-2 pr-1">
+            <ProfilePill />
             <div className="hidden sm:block">
               <LoginLogoutButton />
             </div>
@@ -156,6 +172,7 @@ export default function Navbar() {
             <span className="rounded-full bg-[#F3C317] px-3 py-1.5 font-mono text-[10px] font-bold tracking-widest text-[#0F172A]">
             13 EVENTS
           </span>
+          <ProfilePill />
         </div>
       </nav>
     </>

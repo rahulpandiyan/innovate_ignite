@@ -13,6 +13,7 @@ import { useAuthContext } from "@/contexts/auth-context";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { WhatsAppJoinDialog } from "@/components/participant/whatsapp-join-dialog";
+import { PaySheet } from "@/components/participant/pay-registration";
 
 interface Props {
   category: EventCategory;
@@ -58,6 +59,7 @@ export default function EventDetailClient({ category, details }: Props) {
   const latentComplete = LATENT_QUESTIONS.every((_, i) => (latentAnswers[i] ?? "").trim().length > 0);
   const isGaming = category.eventName === "BGMI & FreeFire";
   const [selectedGame, setSelectedGame] = useState<"BGMI" | "Free Fire">("BGMI");
+  const [payInfo, setPayInfo] = useState<{ registrationId: string; amount: number } | null>(null);
   const router = useRouter();
   const { isLoggedIn } = useAuthContext();
 
@@ -119,14 +121,18 @@ export default function EventDetailClient({ category, details }: Props) {
       const res = await axios.post(`/api/events/${dbEvent.id}/register`, body);
       if (res.data.success) {
         const isPaid = res.data.data?.isPaidEvent;
-        if (isPaid) {
-          toast.success("Registered — payment pending", { description: `You are registered for ${category.eventName}. Complete payment in dashboard to confirm.` });
+        const registrationId = res.data.data?.registration?.id as string | undefined;
+        const amount = Number(res.data.data?.price ?? selectedOption?.price ?? 0);
+        setShowConfirm(false);
+        if (isPaid && registrationId) {
+          // Razorpay-style: open payment bottom sheet immediately after registration
+          toast.success("Registered! Complete your payment", { description: `You are registered for ${category.eventName}. Pay now to confirm your spot.` });
+          setPayInfo({ registrationId, amount });
         } else {
           toast.success("Registered!", { description: `You are registered for ${category.eventName}.` });
+          // WhatsApp group dialog only when no payment is due (finance-verified later otherwise)
+          if (!isPaid) setShowWhatsApp(true);
         }
-        setShowConfirm(false);
-        // WhatsApp group dialog only when no payment is due (finance-verified later otherwise)
-        if (!isPaid) setShowWhatsApp(true);
       } else {
         toast.error(res.data.error?.message || "Could not register");
       }
@@ -363,6 +369,24 @@ export default function EventDetailClient({ category, details }: Props) {
         title={`Registered for ${category.eventName}! 🎉`}
         description="You're all set. Join the WhatsApp group for real-time event updates, schedule changes, and coordinator announcements so you don't miss anything."
       />
+
+      {payInfo && (
+        <PaySheet
+          open={!!payInfo}
+          onOpenChange={(val) => {
+            if (!val) {
+              setPayInfo(null);
+              router.push("/dashboard/registrations");
+            }
+          }}
+          registrationId={payInfo.registrationId}
+          amount={payInfo.amount}
+          onSubmitted={() => {
+            setPayInfo(null);
+            router.push("/dashboard/registrations");
+          }}
+        />
+      )}
 
       <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
         <DialogContent className={`${isLatent ? "sm:max-w-lg max-h-[90vh] overflow-y-auto" : "sm:max-w-md"} rounded-2xl`}>
