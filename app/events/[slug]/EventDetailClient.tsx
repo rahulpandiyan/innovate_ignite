@@ -148,7 +148,7 @@ export default function EventDetailClient({ category, details }: Props) {
         if (status === 409) {
           toast.error(msg || "Already registered");
           setShowConfirm(false);
-          router.push("/dashboard/registrations");
+          router.push("/events");
           return;
         }
         toast.error(msg || "Registration failed");
@@ -364,7 +364,7 @@ export default function EventDetailClient({ category, details }: Props) {
         open={showWhatsApp}
         onOpenChange={(val) => {
           setShowWhatsApp(val);
-          if (!val) router.push("/dashboard/registrations");
+          if (!val) router.push("/events");
         }}
         title={`Registered for ${category.eventName}! 🎉`}
         description="You're all set. Join the WhatsApp group for real-time event updates, schedule changes, and coordinator announcements so you don't miss anything."
@@ -376,14 +376,14 @@ export default function EventDetailClient({ category, details }: Props) {
           onOpenChange={(val) => {
             if (!val) {
               setPayInfo(null);
-              router.push("/dashboard/registrations");
+              router.push("/events");
             }
           }}
           registrationId={payInfo.registrationId}
           amount={payInfo.amount}
           onSubmitted={() => {
             setPayInfo(null);
-            router.push("/dashboard/registrations");
+            router.push("/events");
           }}
         />
       )}

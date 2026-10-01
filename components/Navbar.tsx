@@ -20,12 +20,13 @@ const navLinks = [
 
 function ProfilePill() {
   const { isLoggedIn } = useAuthContext();
+  if (!isLoggedIn) return null;
   return (
     <Link
-      href={isLoggedIn ? "/dashboard/registrations" : "/auth/signin"}
+      href="/dashboard/registrations"
       aria-label="My profile and payments"
-      title={isLoggedIn ? "My registrations & payments" : "Sign in"}
-      className="grid h-9 w-9 place-items-center rounded-full bg-[#F3C317] text-[#0F172A] transition-transform hover:scale-105"
+      title="My registrations & payments"
+      className="grid h-9 w-9 place-items-center rounded-full bg-[#F3C317] text-[#0F172A] transition-transform hover:scale-105 md:hidden"
     >
       <CircleUserRound className="h-5 w-5" />
     </Link>

@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import prisma from "@/lib/db";
 import { requireAuth, successResponse, errorResponse } from "@/lib/apiHelpers";
 import { assertPermission } from "@/lib/rbac";
+import { sendRegistrationConfirmedEmail } from "@/lib/email";
 import { randomUUID } from "crypto";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ registrationId: string }> }) {
@@ -14,7 +15,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ reg
   const { registrationId } = await params;
   const registration = await prisma.registration.findUnique({
     where: { id: registrationId },
-    include: { payment: true, event: { select: { price: true } } },
+    include: {
+      payment: true,
+      event: { select: { price: true, name: true } },
+      user: { select: { name: true, email: true } },
+    },
   });
   if (!registration) return errorResponse("Registration not found.", 404);
   if (!registration.payment) return errorResponse("No payment to verify.", 400);
@@ -56,6 +61,20 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ reg
       await prisma.qRPass.create({ data: { attendeeId: attendee.id, token: randomUUID() } });
       await prisma.attendance.create({ data: { attendeeId: attendee.id, eventId: registration.eventId, registrationId: registration.id, status: "NOT_CHECKED_IN" } });
     }
+  }
+
+  // Best-effort confirmation mail — never fail verification because of mail
+  try {
+    if (registration.user?.email) {
+      await sendRegistrationConfirmedEmail(
+        registration.user.email,
+        registration.user.name ?? "Participant",
+        registration.event?.name ?? "your event",
+        registration.registrationId
+      );
+    }
+  } catch (err) {
+    console.error("[verify] confirmation mail failed:", err);
   }
 
   return successResponse({ message: "Payment verified, registration confirmed." });

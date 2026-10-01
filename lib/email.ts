@@ -81,6 +81,27 @@ export async function sendOtpEmail(
   });
 }
 
+export async function sendRegistrationConfirmedEmail(
+  email: string,
+  name: string,
+  eventName: string,
+  registrationId: string
+): Promise<void> {
+  await sendEmail({
+    to: email,
+    subject: `You're confirmed for ${eventName} — VVIT Innovate Ignite`,
+    html: layout(`
+      <p style="color:#111827;font-size:16px;">Hi ${name},</p>
+      <p style="color:#6b7280;">Great news — finance has verified your payment and your spot is confirmed.</p>
+      <div style="background:#f3f4f6;border-radius:6px;padding:16px 24px;margin-bottom:24px;">
+        <p style="margin:0;color:#111827;"><strong>Event:</strong> ${eventName}</p>
+        <p style="margin:8px 0 0;color:#111827;"><strong>Registration ID:</strong> ${registrationId}</p>
+      </div>
+      <p style="color:#6b7280;font-size:14px;">Your QR pass is ready in your dashboard under My Registrations. Show it at the venue for entry. See you on Oct 8–9 at VVIT Bengaluru!</p>
+    `),
+  });
+}
+
 export async function sendPasswordResetEmail(
   email: string,
   resetUrl: string
