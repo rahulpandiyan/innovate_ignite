@@ -48,6 +48,7 @@ export async function GET(req: NextRequest) {
         minTeamSize: true,
         maxTeamSize: true,
         isActive: true,
+        status: true,
         createdAt: true,
         coordinators: { select: { user: { select: { id: true, name: true, email: true } } } },
         judges: { select: { user: { select: { id: true, name: true } } } },
@@ -75,6 +76,7 @@ export async function POST(req: NextRequest) {
     const event = await prisma.event.create({
       data: {
         name: data.name,
+        slug: data.name.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, ""),
         description: data.description,
         type: data.type,
         category: data.category,

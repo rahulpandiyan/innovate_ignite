@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { categories } from "@/data/homeData";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { PendingPaymentAlert } from "@/components/home/pending-payment-alert";
 import innovateLogo from "@/public/gat-logos/innovate-ignite.png";
 
 const totalEvents = categories.reduce((a, c) => a + c.count, 0);
@@ -43,6 +44,9 @@ export default function Home() {
               <span className="hidden sm:inline">· Registrations open → close Oct 6</span>
             </span>
           </motion.div>
+
+          {/* pending payment nudge — only renders for signed-in users with dues */}
+          <PendingPaymentAlert />
 
           {/* headline collage */}
           <div className="grid grid-cols-12 gap-6 py-8 lg:py-10">

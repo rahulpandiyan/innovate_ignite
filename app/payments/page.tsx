@@ -5,6 +5,7 @@ import { getHomeRoute } from "@/lib/rbac-data";
 import { OrderActions } from "@/components/finance/order-actions";
 import { RegistrationActions } from "@/components/finance/registration-actions";
 import { UserContactDialog } from "@/components/finance/user-contact-dialog";
+import { PaymentPreviewSheet } from "@/components/finance/payment-preview-sheet";
 import { ExportExcelButton } from "@/components/ui/export-excel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -227,23 +228,35 @@ export default async function PaymentsPage() {
                     <td className="px-4 py-2 text-xs font-mono">
                       {isOffline ? (
                         <Badge variant="outline" className="text-[10px] bg-amber-50 text-amber-700 border-amber-200">OFFLINE</Badge>
+                      ) : o.upiTransactionId ? (
+                        o.upiTransactionId
                       ) : (
-                        o.upiTransactionId ?? "—"
+                        <Badge variant="outline" className="text-[10px] bg-red-50 text-red-700 border-red-200">
+                          UTR missing
+                        </Badge>
                       )}
                     </td>
                     <td className="px-4 py-2 text-xs">
-                      {o.paymentScreenshotUrl ? (
-                        <a
-                          href={o.paymentScreenshotUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline underline-offset-2 hover:text-blue-800"
-                        >
-                          View
-                        </a>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
+                      <PaymentPreviewSheet
+                        row={{
+                          participant: o.user.name,
+                          email: o.user.email,
+                          phone: o.user.phone,
+                          college: o.user.collegeName,
+                          participantId: o.user.participant?.participantId ?? "",
+                          events: orderEventNames(o).join(", "),
+                          amount: Number(o.totalAmount),
+                          method: isOffline ? "OFFLINE" : "UPI",
+                          upiId: o.upiTransactionId,
+                          screenshotUrl: o.paymentScreenshotUrl,
+                          status: o.status,
+                          rejectionReason: o.rejectionReason,
+                          extra: [{ label: "Submitted", value: format(o.createdAt, "MMM d, yyyy h:mm a") }],
+                        }}
+                        actions={
+                          o.status === "PAYMENT_SUBMITTED" ? <OrderActions orderId={o.id} /> : undefined
+                        }
+                      />
                     </td>
                     <td className="px-4 py-2">
                       <Badge variant={o.status === "VERIFIED" ? "default" : "outline"}>{o.status}</Badge>
@@ -284,6 +297,8 @@ export default async function PaymentsPage() {
                 <th className="px-4 py-2 font-medium">Event</th>
                 <th className="px-4 py-2 font-medium">Amount</th>
                 <th className="px-4 py-2 font-medium">Method</th>
+                <th className="px-4 py-2 font-medium">UPI txn (UTR)</th>
+                <th className="px-4 py-2 font-medium">Evidence</th>
                 <th className="px-4 py-2 font-medium">Status</th>
                 <th className="px-4 py-2 font-medium">Confirmed</th>
                 <th className="px-4 py-2 font-medium">Collected by</th>
@@ -294,7 +309,7 @@ export default async function PaymentsPage() {
             <tbody>
               {payments.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
+                  <td colSpan={11} className="px-4 py-8 text-center text-muted-foreground">
                     No payments recorded yet.
                   </td>
                 </tr>
@@ -331,18 +346,42 @@ export default async function PaymentsPage() {
                       ) : (
                         <span className="text-xs text-muted-foreground">UPI</span>
                       )}
-                      {p.receiptUrl && (
-                        <div className="mt-1">
-                          <a
-                            href={p.receiptUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[10px] text-blue-600 underline underline-offset-2 hover:text-blue-800"
-                          >
-                            Screenshot
-                          </a>
-                        </div>
+                    </td>
+                    <td className="px-4 py-2 text-xs font-mono">
+                      {p.transactionId && !isOffline ? (
+                        p.transactionId
+                      ) : (
+                        <span className="font-sans text-[10px] text-muted-foreground">
+                          {isOffline ? "Cash / offline" : "Not submitted"}
+                        </span>
                       )}
+                    </td>
+                    <td className="px-4 py-2">
+                      <PaymentPreviewSheet
+                        row={{
+                          participant: p.registration.user.name,
+                          email: p.registration.user.email,
+                          phone: p.registration.user.phone,
+                          college: p.registration.user.collegeName,
+                          participantId: p.registration.user.participant?.participantId ?? "",
+                          events: displayEventName(p.registration.event.name, p.registration.formResponses),
+                          amount: Number(p.amount),
+                          method: isOffline ? "OFFLINE" : "UPI",
+                          upiId: isOffline ? null : p.transactionId,
+                          screenshotUrl: p.receiptUrl,
+                          status: p.status,
+                          extra: [
+                            { label: "Initiated", value: format(p.initiatedAt, "MMM d, yyyy h:mm a") },
+                            { label: "Collected by", value: p.collector?.name ?? "" },
+                            { label: "Verified by", value: p.verifier?.name ?? "" },
+                          ],
+                        }}
+                        actions={
+                          p.status === "PENDING" || p.status === "COORDINATOR_COLLECTED" ? (
+                            <RegistrationActions registrationId={p.registrationId} paymentId={p.id} paymentStatus={p.status} />
+                          ) : undefined
+                        }
+                      />
                     </td>
                     <td className="px-4 py-2">
                       <Badge variant={p.status === "SUCCESS" ? "default" : p.status === "COORDINATOR_COLLECTED" ? "secondary" : "outline"}>{p.status}</Badge>

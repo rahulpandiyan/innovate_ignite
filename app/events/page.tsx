@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Search, ArrowRight, Users, Banknote, Sparkles, ChevronRight } from "lucide-react";
+import axios from "axios";
 import { eventCategories } from "@/data/eventCategories";
-import { formatPriceLabel, memberCountLabel } from "@/lib/pricing";
+import { formatPriceLabel, memberCountLabel, PricingMode } from "@/lib/pricing";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -20,9 +21,41 @@ const getCategoryStyle = (category: string) => {
   return map[category] || { bg: "bg-white", text: "text-[#0F172A]", border: "border-[#0F172A]/10", dot: "bg-[#0F172A]/20" };
 };
 
+interface LiveEvent {
+  price: number;
+  priceMode: PricingMode;
+  groupPrice: number | null;
+  minTeamSize: number | null;
+  maxTeamSize: number | null;
+}
+
 export default function EventPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("ALL");
+  const [liveEvents, setLiveEvents] = useState<Record<string, LiveEvent>>({});
+
+  // Overlay DB prices/team sizes so admin/coordinator edits show here too.
+  useEffect(() => {
+    axios
+      .get("/api/events")
+      .then((res) => {
+        const events = res.data?.data?.events || res.data?.events || [];
+        const map: Record<string, LiveEvent> = {};
+        for (const e of events) {
+          map[e.name] = {
+            price: Number(e.price),
+            priceMode: e.priceMode,
+            groupPrice: e.groupPrice != null ? Number(e.groupPrice) : null,
+            minTeamSize: e.minTeamSize,
+            maxTeamSize: e.maxTeamSize,
+          };
+        }
+        setLiveEvents(map);
+      })
+      .catch(() => {});
+  }, []);
+
+  const liveOf = (eventName: string): LiveEvent => liveEvents[eventName];
 
   const categories = useMemo(() => {
     const cats = Array.from(new Set(eventCategories.map((e) => e.category)));
@@ -116,6 +149,7 @@ export default function EventPage() {
             <AnimatePresence mode="popLayout">
               {filteredEvents.map((event, i) => {
                 const style = getCategoryStyle(event.category);
+                const live = liveOf(event.eventName);
                 const rotations = ["rotate-[-0.4deg]", "rotate-[0.5deg]", "rotate-[-0.3deg]", "rotate-[0.6deg]"];
                 return (
                   <motion.div
@@ -151,11 +185,11 @@ export default function EventPage() {
                         <div className="mt-3 flex flex-wrap items-center gap-2">
                           <span className="inline-flex items-center gap-1.5 rounded-full bg-[#0F172A]/5 px-2.5 py-1 font-mono text-xs">
                             <Users className="h-3 w-3" />
-                            {memberCountLabel(event.minTeamSize, event.maxTeamSize)}
+                            {memberCountLabel(live?.minTeamSize ?? event.minTeamSize, live?.maxTeamSize ?? event.maxTeamSize)}
                           </span>
                           <span className="inline-flex items-center gap-1 rounded-full bg-[#F3C317] px-2.5 py-1 font-mono text-xs font-bold text-[#0F172A]">
                             <Banknote className="h-3 w-3" />
-                            {formatPriceLabel({ price: event.price, priceMode: event.priceMode, groupPrice: event.groupPrice })}
+                            {formatPriceLabel({ price: live?.price ?? event.price, priceMode: live?.priceMode ?? event.priceMode, groupPrice: live?.groupPrice ?? event.groupPrice })}
                           </span>
                         </div>
 

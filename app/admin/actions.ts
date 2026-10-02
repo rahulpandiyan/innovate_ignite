@@ -74,6 +74,7 @@ export async function createEvent(input: {
   const event = await prisma.event.create({
     data: {
       name: input.name,
+      slug: input.name.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, ""),
       description: input.description ?? null,
       type: input.type,
       category: input.category,

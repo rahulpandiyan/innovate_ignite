@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { EventEditForm } from "@/components/admin/event-edit-form";
+import { CoordinatorContactsEditor } from "@/components/coordinator/coordinator-contacts-editor";
 
 const STATUS_OPTIONS = ["DRAFT", "OPEN", "REGISTRATION_CLOSED", "ONGOING", "COMPLETED"] as const;
 const CATEGORIES = ["TECHNICAL", "GENERAL", "DANCE", "GAMING", "THEATRE", "FINE_ARTS"];
@@ -29,6 +30,7 @@ export default async function EventsPage() {
       orderBy: { date: "asc" },
       include: {
         coordinators: { include: { user: { select: { id: true, name: true, userRole: { select: { name: true } } } } } },
+        coordinatorContacts: { orderBy: [{ isStaff: "desc" }, { sortOrder: "asc" }] },
         judges: { include: { user: { select: { name: true } } } },
         teams: { include: { leader: { select: { name: true } }, members: { include: { user: { select: { name: true, email: true, phone: true } } } } } },
         _count: { select: { registrations: true, teams: true } },
@@ -244,6 +246,16 @@ export default async function EventsPage() {
       <div className="space-y-4">
         {events.map((ev) => (
           <div key={ev.id} className="space-y-3">
+            <CoordinatorContactsEditor
+              eventId={ev.id}
+              contacts={ev.coordinatorContacts.map((c) => ({
+                id: c.id,
+                name: c.name,
+                phone: c.phone,
+                isStaff: c.isStaff,
+              }))}
+              title={`Coordinator contacts — ${ev.name}`}
+            />
             <EventEditForm
               event={{
                 id: ev.id,
@@ -253,10 +265,14 @@ export default async function EventsPage() {
                 category: ev.category,
                 venue: ev.venue ?? "",
                 price: Number(ev.price),
+                priceMode: ev.priceMode,
+                groupPrice: ev.groupPrice != null ? Number(ev.groupPrice) : undefined,
                 minTeamSize: ev.minTeamSize ?? 1,
                 maxTeamSize: ev.maxTeamSize ?? 1,
                 status: ev.status,
                 time: ev.time ?? "",
+                date: ev.date ? ev.date.toISOString().slice(0, 10) : "",
+                rules: ev.rules ?? "",
               }}
               coordinators={coordinators.map((c: any) => ({ id: c.id, name: c.name, email: c.email, role: c.userRole?.name }))}
               judges={judges}

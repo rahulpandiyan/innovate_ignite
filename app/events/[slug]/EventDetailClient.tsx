@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { ArrowLeft, Users, Phone, MapPin, Calendar, Banknote, ShieldCheck, ChevronDown, Loader2 } from "lucide-react";
+import { ArrowLeft, Users, Phone, MapPin, Calendar, Clock, Banknote, ShieldCheck, ChevronDown, Loader2 } from "lucide-react";
 import { EventCategory } from "@/data/eventCategories";
 import { EventList } from "@/data/eventList";
+import type { PublicEventDetail } from "@/lib/eventDetail";
 import { formatPriceLabel, memberCountLabel, teamSizeOptions, PricingMode, TeamSizeOption } from "@/lib/pricing";
 import { toast } from "sonner";
 import { useAuthContext } from "@/contexts/auth-context";
@@ -18,7 +19,27 @@ import { PaySheet } from "@/components/participant/pay-registration";
 interface Props {
   category: EventCategory;
   details: EventList[];
+  dbEvent: PublicEventDetail | null;
 }
+
+// DB rules are stored pipe- or newline-delimited; the static sheet uses an array.
+const withProfPrefix = (name: string) => (/^prof\.?\s/i.test(name) ? name : `Prof. ${name}`);
+
+function splitDbRules(rules: string): string[] {
+  return rules
+    .split(/\||\n/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+const STATUS_LABELS: Record<string, { label: string; color: string }> = {
+  OPEN: { label: "Open", color: "#19E3A8" },
+  DRAFT: { label: "Not open yet", color: "#F3C317" },
+  REGISTRATION_CLOSED: { label: "Closed", color: "#94a3b8" },
+  ONGOING: { label: "Live now", color: "#2362EC" },
+  COMPLETED: { label: "Completed", color: "#94a3b8" },
+  CANCELLED: { label: "Cancelled", color: "#E11D48" },
+};
 
 const getCategoryStyle = (category: string) => {
   const map: Record<string, { bg: string; text: string; dot: string; border: string }> = {
@@ -45,11 +66,10 @@ const LATENT_QUESTIONS = [
   "Why do you think you should be selected for VVIT Got Latent?",
 ];
 
-export default function EventDetailClient({ category, details }: Props) {
+export default function EventDetailClient({ category, details, dbEvent }: Props) {
   const style = getCategoryStyle(category.category);
   const mainDetail = details[0] || null;
   const [open, setOpen] = useState<string>("guidelines");
-  const [dbEvent, setDbEvent] = useState<any>(null);
   const [registering, setRegistering] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showWhatsApp, setShowWhatsApp] = useState(false);
@@ -63,29 +83,36 @@ export default function EventDetailClient({ category, details }: Props) {
   const router = useRouter();
   const { isLoggedIn } = useAuthContext();
 
+  // DB is the source of truth at render time; static sheet data is the fallback.
+  const eventName = dbEvent?.name || category.eventName;
   const priceMode = (dbEvent?.priceMode as PricingMode) || category.priceMode;
   const price = dbEvent?.price != null ? Number(dbEvent.price) : category.price;
   const groupPrice = dbEvent?.groupPrice != null ? Number(dbEvent.groupPrice) : category.groupPrice;
-  const minTeamSize = category.minTeamSize;
-  const maxTeamSize = category.maxTeamSize;
+  const minTeamSize = dbEvent?.minTeamSize ?? category.minTeamSize;
+  const maxTeamSize = dbEvent?.maxTeamSize ?? category.maxTeamSize;
+  const isSoloOnly = minTeamSize === 1 && maxTeamSize === 1 && priceMode !== "SOLO_OR_GROUP";
+  const venue = dbEvent?.venue?.trim() ? dbEvent.venue : "VVIT Campus";
+  const statusInfo = STATUS_LABELS[dbEvent?.status ?? "OPEN"] ?? STATUS_LABELS.OPEN;
+  const registrationsOpen = !dbEvent || dbEvent.status === "OPEN";
+  const eventDate = dbEvent?.date ? new Date(dbEvent.date) : null;
+  const dateLabel =
+    eventDate && !isNaN(eventDate.getTime())
+      ? eventDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+      : "Oct 8–9";
+
+  const dbRules = dbEvent?.rules ? splitDbRules(dbEvent.rules) : [];
+  const rules = (dbRules.length ? dbRules : mainDetail?.rules) as string[] | undefined;
+  const showAbout =
+    !!dbEvent?.description?.trim() && dbEvent.description.trim() !== (dbEvent.rules ?? "").trim();
 
   const sizeOptions: TeamSizeOption[] = teamSizeOptions({ price, priceMode, minTeamSize, maxTeamSize, groupPrice });
   const selectedOption = sizeOptions.find((o) => o.value === selectedSize) ?? sizeOptions[0];
 
-  useEffect(() => {
-    async function fetchDbEvent() {
-      try {
-        const res = await axios.get("/api/events");
-        const events = res.data?.data?.events || res.data?.events || [];
-        const match = events.find((e: any) => e.name === category.eventName);
-        if (match) setDbEvent(match);
-      } catch {}
-    }
-    fetchDbEvent();
-  }, [category.eventName]);
-
-  const coordinatorsFromDb: { name: string; mobile?: string }[] =
-    dbEvent?.coordinators?.map((c: any) => ({ name: c.user.name, mobile: "" })) || [];
+  // Coordinator contacts are managed in the admin / coordinator panels
+  // (EventCoordinatorContact) and shown here as staff vs student groups.
+  const contactList = dbEvent?.coordinatorContacts ?? [];
+  const contactsStaff = contactList.filter((c) => c.isStaff);
+  const contactsStudents = contactList.filter((c) => !c.isStaff);
 
   const handleRegister = () => {
     if (!dbEvent?.id) {
@@ -126,10 +153,10 @@ export default function EventDetailClient({ category, details }: Props) {
         setShowConfirm(false);
         if (isPaid && registrationId) {
           // Razorpay-style: open payment bottom sheet immediately after registration
-          toast.success("Registered! Complete your payment", { description: `You are registered for ${category.eventName}. Pay now to confirm your spot.` });
+          toast.success("Registered! Complete your payment", { description: `You are registered for ${eventName}. Pay now to confirm your spot.` });
           setPayInfo({ registrationId, amount });
         } else {
-          toast.success("Registered!", { description: `You are registered for ${category.eventName}.` });
+          toast.success("Registered!", { description: `You are registered for ${eventName}.` });
           // WhatsApp group dialog only when no payment is due (finance-verified later otherwise)
           if (!isPaid) setShowWhatsApp(true);
         }
@@ -166,7 +193,7 @@ export default function EventDetailClient({ category, details }: Props) {
           <Link href="/events" className="inline-flex items-center gap-2 text-[#0F172A]/60 hover:text-[#0F172A]">
             <ArrowLeft className="h-3.5 w-3.5" /> Back to lineup
           </Link>
-          <span className="hidden sm:inline-flex items-center gap-2 text-[#0F172A]/40">VVIT · Oct 8–9 · Bengaluru</span>
+          <span className="hidden sm:inline-flex items-center gap-2 text-[#0F172A]/40">VVIT · {dateLabel} · Bengaluru</span>
         </div>
 
         <div className="relative overflow-hidden rounded-2xl border border-[#0F172A]/10 bg-white shadow-sm">
@@ -178,15 +205,15 @@ export default function EventDetailClient({ category, details }: Props) {
                   <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
                   {category.category.replace(/_/g, " ")}
                 </span>
-                {!(category.minTeamSize === 1 && category.maxTeamSize === 1 && category.priceMode !== "SOLO_OR_GROUP") && (
+                {!isSoloOnly && (
                   <span className="rounded-full border border-[#0F172A]/10 bg-[#0F172A]/5 px-2.5 py-1 font-mono text-[10px] tracking-wide">
-                    {memberCountLabel(category.minTeamSize, category.maxTeamSize)}
+                    {memberCountLabel(minTeamSize, maxTeamSize)}
                   </span>
                 )}
               </div>
 
               <h1 className="mt-4 text-3xl font-black leading-[0.9] tracking-tight sm:text-4xl">
-                {category.eventName}
+                {eventName}
               </h1>
               <p className="mt-2 font-mono text-xs tracking-wide text-[#0F172A]/50">Part of {category.category.replace(/_/g, " ")} · VVIT Innovate Ignite &apos;26</p>
 
@@ -194,13 +221,13 @@ export default function EventDetailClient({ category, details }: Props) {
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F3C317] px-3 py-1.5 font-mono text-xs font-bold text-[#0F172A]">
                   <Banknote className="h-3.5 w-3.5" /> {price > 0 ? formatPriceLabel({ price, priceMode, groupPrice }) : "Free"}
                 </span>
-                {!(category.minTeamSize === 1 && category.maxTeamSize === 1 && category.priceMode !== "SOLO_OR_GROUP") && (
+                {!isSoloOnly && (
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 bg-white px-3 py-1.5 font-mono text-xs">
-                    <Users className="h-3.5 w-3.5" /> {memberCountLabel(category.minTeamSize, category.maxTeamSize)}
+                    <Users className="h-3.5 w-3.5" /> {memberCountLabel(minTeamSize, maxTeamSize)}
                   </span>
                 )}
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 bg-white px-3 py-1.5 font-mono text-xs">
-                  <Calendar className="h-3.5 w-3.5" /> Oct 8–9
+                  <Calendar className="h-3.5 w-3.5" /> {dateLabel}
                 </span>
               </div>
             </div>
@@ -210,28 +237,56 @@ export default function EventDetailClient({ category, details }: Props) {
               <div className="mt-3 space-y-3 font-mono text-xs">
                 <div className="flex items-center justify-between rounded-xl border border-[#0F172A]/10 bg-white px-3 py-2.5">
                   <span className="flex items-center gap-1.5 text-[#0F172A]/60"><MapPin className="h-3.5 w-3.5" /> Venue</span>
-                  <span className="font-bold text-[#0F172A]">VVIT Campus</span>
+                  <span className="font-bold text-[#0F172A]">{venue}</span>
                 </div>
+                {dbEvent?.time ? (
+                  <div className="flex items-center justify-between rounded-xl border border-[#0F172A]/10 bg-white px-3 py-2.5">
+                    <span className="flex items-center gap-1.5 text-[#0F172A]/60"><Clock className="h-3.5 w-3.5" /> Time</span>
+                    <span className="font-bold text-[#0F172A]">{dbEvent.time}</span>
+                  </div>
+                ) : null}
                 <div className="flex items-center justify-between rounded-xl border border-[#0F172A]/10 bg-white px-3 py-2.5">
                   <span className="flex items-center gap-1.5 text-[#0F172A]/60"><ShieldCheck className="h-3.5 w-3.5" /> Registration</span>
-                  <span className="font-bold text-[#19E3A8]">Open</span>
+                  <span className="font-bold" style={{ color: statusInfo.color }}>{statusInfo.label}</span>
                 </div>
               </div>
               <button
                 onClick={handleRegister}
-                disabled={registering}
+                disabled={registering || !registrationsOpen}
                 className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#0F172A] px-4 py-3 text-sm font-bold text-white hover:bg-black transition-colors disabled:opacity-50"
               >
                 {registering ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                 {registering ? "Registering…" : "Register now"}
               </button>
-              <p className="mt-2 text-center font-mono text-[11px] text-[#0F172A]/40">Adds to cart → checkout in dashboard</p>
+              {!registrationsOpen ? (
+                <p className="mt-2 text-center font-mono text-[11px] text-[#0F172A]/50">Registrations are {statusInfo.label.toLowerCase()}.</p>
+              ) : (
+                <p className="mt-2 text-center font-mono text-[11px] text-[#0F172A]/40">Adds to cart → checkout in dashboard</p>
+              )}
             </div>
           </div>
         </div>
 
         <div className="mt-6 grid grid-cols-12 gap-6 pb-16">
           <div className="col-span-12 lg:col-span-8 space-y-4">
+            {showAbout && (
+              <div className="overflow-hidden rounded-2xl border border-[#0F172A]/10 bg-white">
+                <button onClick={() => setOpen(open === "about" ? "" : "about")} className="flex w-full items-center justify-between px-5 py-4 text-left">
+                  <span className="font-heading text-sm font-bold tracking-wide">About this event</span>
+                  <ChevronDown className={`h-4 w-4 text-[#0F172A]/40 transition-transform ${open === "about" ? "rotate-180" : ""}`} />
+                </button>
+                {open === "about" && (
+                  <div className="border-t border-[#0F172A]/10 px-5 py-5">
+                    <div className="space-y-3 font-body text-sm leading-6 text-[#0F172A]/80">
+                      {splitDbRules(dbEvent!.description ?? "").map((line, i) => (
+                        <p key={i}>{line}</p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="overflow-hidden rounded-2xl border border-[#0F172A]/10 bg-white">
               <button onClick={() => setOpen(open === "guidelines" ? "" : "guidelines")} className="flex w-full items-center justify-between px-5 py-4 text-left">
                 <span className="font-heading text-sm font-bold tracking-wide">Guidelines & Rules</span>
@@ -239,9 +294,9 @@ export default function EventDetailClient({ category, details }: Props) {
               </button>
               {open === "guidelines" && (
                 <div className="border-t border-[#0F172A]/10 px-5 py-5">
-                  {mainDetail ? (
+                  {rules && rules.length ? (
                     <ol className="list-decimal space-y-2 pl-5 font-body text-sm leading-6 text-[#0F172A]/80">
-                      {mainDetail.rules.map((r, i) => (
+                      {rules.map((r, i) => (
                         <li key={i}>{r}</li>
                       ))}
                     </ol>
@@ -254,72 +309,60 @@ export default function EventDetailClient({ category, details }: Props) {
 
             <div className="overflow-hidden rounded-2xl border border-[#0F172A]/10 bg-white">
               <button onClick={() => setOpen(open === "coords" ? "" : "coords")} className="flex w-full items-center justify-between px-5 py-4 text-left">
-                <span className="font-heading text-sm font-bold tracking-wide">Coordinators {dbEvent?.coordinators?.length ? `· ${dbEvent.coordinators.length} assigned` : ""}</span>
+                <span className="font-heading text-sm font-bold tracking-wide">
+                  Coordinators
+                </span>
                 <ChevronDown className={`h-4 w-4 text-[#0F172A]/40 transition-transform ${open === "coords" ? "rotate-180" : ""}`} />
               </button>
               {open === "coords" && (
                 <div className="border-t border-[#0F172A]/10 p-5">
-                  {/* DB coordinators first (live from admin panel) */}
-                  {coordinatorsFromDb.length > 0 ? (
+                  {contactsStaff.length > 0 && (
                     <div className="mb-4">
-                      <p className="mb-2 font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/40">Assigned via admin panel (live)</p>
+                      <p className="mb-2 font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/40">Staff coordinators</p>
                       <div className="grid gap-3 sm:grid-cols-2">
-                        {coordinatorsFromDb.map((c: any, idx: number) => (
-                          <div key={idx} className="flex items-center gap-3 rounded-xl border border-[#2362EC]/20 bg-[#EFF6FF] p-3">
+                        {contactsStaff.map((c) => (
+                          <div key={c.id} className="flex items-center gap-3 rounded-xl border border-[#0F172A]/10 bg-white p-3">
                             <span className={`grid h-9 w-9 place-items-center rounded-full text-white ${style.bg}`}>
                               <Users className="h-4 w-4" />
                             </span>
-                            <span>
-                              <span className="block text-sm font-bold leading-none">{c.name}</span>
-                              <span className="mt-1 font-mono text-xs text-[#0F172A]/60">Coordinator</span>
+                            <span className="min-w-0">
+                              <span className="block text-sm font-bold leading-none">{withProfPrefix(c.name)}</span>
+                              {c.phone ? (
+                                <a href={`tel:${c.phone.replace(/\s/g, "")}`} className="mt-1 flex items-center gap-1 font-mono text-xs text-[#2362EC]"><Phone className="h-3 w-3" /> {c.phone}</a>
+                              ) : null}
                             </span>
                           </div>
                         ))}
                       </div>
                     </div>
-                  ) : null}
+                  )}
 
-                  {/* Static sheet data as fallback */}
-                  {mainDetail && mainDetail.coordinators && mainDetail.coordinators.length ? (
-                    <div className="space-y-4">
-                      {coordinatorsFromDb.length > 0 && <p className="font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/40">Sheet contacts</p>}
-                      {(() => {
-                        const staff = mainDetail.coordinators?.filter((c) => c.faculty) ?? [];
-                        const students = mainDetail.coordinators?.filter((c) => !c.faculty) ?? [];
-                        const groups: { title: string; people: typeof mainDetail.coordinators }[] = [];
-                        if (staff.length) groups.push({ title: "Staff coordinators", people: staff });
-                        if (students.length) groups.push({ title: "Student coordinators", people: students });
-                        return groups.map((g) => (
-                          <div key={g.title}>
-                            <p className="mb-2 font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/40">{g.title}</p>
-                            <div className="grid gap-3 sm:grid-cols-2">
-                              {g.people.map((c, idx) => {
-                                const isStaff = g.title === "Staff coordinators";
-                                const displayName = isStaff && !/^prof\.\s/i.test(c.name) ? `Prof. ${c.name}` : c.name;
-                                return (
-                                  <div key={idx} className={`flex items-center gap-3 rounded-xl border p-3 ${c.phone ? "border-[#0F172A]/10 bg-[#FFFBEB]" : "border-dashed border-[#0F172A]/15 bg-white"}`}>
-                                    <span className={`grid h-9 w-9 place-items-center rounded-full text-white ${c.phone ? style.bg : "bg-[#0F172A]/20"}`}>
-                                      <Users className="h-4 w-4" />
-                                    </span>
-                                    <span>
-                                      <span className="block text-sm font-bold leading-none">{displayName}</span>
-                                      {c.phone ? (
-                                        <a href={`tel:${c.phone.replace(/\s/g, "")}`} className="mt-1 flex items-center gap-1 font-mono text-xs text-[#2362EC]"><Phone className="h-3 w-3" /> {c.phone}</a>
-                                      ) : !isStaff ? (
-                                        <span className="mt-1 font-mono text-xs text-[#0F172A]/40">Contact via faculty</span>
-                                      ) : null}
-                                    </span>
-                                  </div>
-                                );
-                              })}
-                            </div>
+                  {contactsStudents.length > 0 && (
+                    <div className="mb-4">
+                      <p className="mb-2 font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/40">Student coordinators</p>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        {contactsStudents.map((c) => (
+                          <div key={c.id} className={`flex items-center gap-3 rounded-xl border p-3 ${c.phone ? "border-[#0F172A]/10 bg-[#FFFBEB]" : "border-dashed border-[#0F172A]/15 bg-white"}`}>
+                            <span className={`grid h-9 w-9 place-items-center rounded-full text-white ${c.phone ? style.bg : "bg-[#0F172A]/20"}`}>
+                              <Users className="h-4 w-4" />
+                            </span>
+                            <span className="min-w-0">
+                              <span className="block text-sm font-bold leading-none">{c.name}</span>
+                              {c.phone ? (
+                                <a href={`tel:${c.phone.replace(/\s/g, "")}`} className="mt-1 flex items-center gap-1 font-mono text-xs text-[#2362EC]"><Phone className="h-3 w-3" /> {c.phone}</a>
+                              ) : (
+                                <span className="mt-1 font-mono text-xs text-[#0F172A]/40">Contact via faculty</span>
+                              )}
+                            </span>
                           </div>
-                        ));
-                      })()}
+                        ))}
+                      </div>
                     </div>
-                  ) : coordinatorsFromDb.length === 0 ? (
+                  )}
+
+                  {contactsStaff.length + contactsStudents.length === 0 && (
                     <p className="font-mono text-sm text-[#0F172A]/50">Coordinator info pending — check event poster or contact VVIT SPOC.</p>
-                  ) : null}
+                  )}
                 </div>
               )}
             </div>
@@ -366,7 +409,7 @@ export default function EventDetailClient({ category, details }: Props) {
           setShowWhatsApp(val);
           if (!val) router.push("/events");
         }}
-        title={`Registered for ${category.eventName}! 🎉`}
+        title={`Registered for ${eventName}! 🎉`}
         description="You're all set. Join the WhatsApp group for real-time event updates, schedule changes, and coordinator announcements so you don't miss anything."
       />
 
@@ -392,7 +435,7 @@ export default function EventDetailClient({ category, details }: Props) {
         <DialogContent className={`${isLatent ? "sm:max-w-lg max-h-[90vh] overflow-y-auto" : "sm:max-w-md"} rounded-2xl`}>
           <DialogHeader>
             <DialogTitle className="text-xl tracking-tight">
-              {category.eventName}
+              {eventName}
             </DialogTitle>
             <DialogDescription className="text-sm leading-6">
               {isLatent
@@ -417,7 +460,7 @@ export default function EventDetailClient({ category, details }: Props) {
                     }`}
                   >
                     <span className="text-sm font-bold leading-none">{g}</span>
-                    <span className={`mt-1 block font-mono text-[11px] ${selectedGame === g ? "text-white/70" : "text-[#0F172A]/50"}`}>Squad of 4 · ₹200/team</span>
+                    <span className={`mt-1 block font-mono text-[11px] ${selectedGame === g ? "text-white/70" : "text-[#0F172A]/50"}`}>Squad of {maxTeamSize} · {formatPriceLabel({ price, priceMode, groupPrice })}</span>
                   </button>
                 ))}
               </div>
@@ -426,7 +469,7 @@ export default function EventDetailClient({ category, details }: Props) {
 
           <div className="space-y-1.5">
             <p className="font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/40">
-              Team size {memberCountLabel(category.minTeamSize, category.maxTeamSize)}
+              Team size {memberCountLabel(minTeamSize, maxTeamSize)}
             </p>
             <div className="grid gap-2 sm:grid-cols-2">
               {sizeOptions.map((opt) => (

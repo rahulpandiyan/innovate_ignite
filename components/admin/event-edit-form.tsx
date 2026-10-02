@@ -23,8 +23,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Pencil, Save, X, Loader2 } from "lucide-react";
 
-const STATUS_OPTIONS = ["DRAFT", "OPEN", "REGISTRATION_CLOSED", "ONGOING", "COMPLETED"] as const;
+const STATUS_OPTIONS = ["DRAFT", "OPEN", "REGISTRATION_CLOSED", "ONGOING", "COMPLETED", "CANCELLED"] as const;
 const CATEGORIES = ["TECHNICAL", "GENERAL", "DANCE", "GAMING", "THEATRE", "FINE_ARTS"];
+const PRICING_MODES = ["PER_TEAM", "PER_PARTICIPANT", "SOLO_OR_GROUP"] as const;
 
 interface EventData {
   id: string;
@@ -34,10 +35,14 @@ interface EventData {
   category: string;
   venue: string;
   price: number;
+  priceMode: string;
+  groupPrice?: number;
   minTeamSize: number;
   maxTeamSize: number;
   status: string;
   time: string;
+  date: string;
+  rules: string;
 }
 
 interface Props {
@@ -72,20 +77,43 @@ export function EventEditForm({
     category: event.category,
     venue: event.venue,
     price: event.price,
+    priceMode: event.priceMode,
+    groupPrice: event.groupPrice ?? event.price,
     minTeamSize: event.minTeamSize,
     maxTeamSize: event.maxTeamSize,
     status: event.status,
     time: event.time,
+    date: event.date,
+    rules: event.rules,
   });
   const router = useRouter();
 
   async function handleSave() {
     setSaving(true);
     try {
+      const payload: Record<string, unknown> = {
+        name: form.name,
+        description: form.description,
+        type: form.type,
+        category: form.category,
+        venue: form.venue,
+        price: form.price,
+        priceMode: form.priceMode,
+        groupPrice:
+          form.priceMode === "SOLO_OR_GROUP"
+            ? form.groupPrice || form.price
+            : form.groupPrice || null,
+        minTeamSize: form.minTeamSize,
+        maxTeamSize: form.maxTeamSize,
+        status: form.status,
+        time: form.time,
+      };
+      if (form.date) payload.date = new Date(form.date + "T00:00:00.000Z").toISOString();
+      if (form.rules.trim()) payload.rules = form.rules;
       const res = await fetch("/api/events/" + event.id, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error?.message ?? "Update failed");
@@ -175,6 +203,29 @@ export function EventEditForm({
               <Input type="number" min={0} value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} />
             </div>
             <div className="space-y-1">
+              <Label>Pricing mode</Label>
+              <Select value={form.priceMode} onValueChange={(v) => setForm({ ...form, priceMode: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {PRICING_MODES.map((m) => (
+                    <SelectItem key={m} value={m}>{m.replace(/_/g, " ")}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label>Group price (for Solo/Group)</Label>
+              <Input type="number" min={0} value={form.groupPrice} onChange={(e) => setForm({ ...form, groupPrice: Number(e.target.value) })} />
+            </div>
+            <div className="space-y-1">
+              <Label>Date</Label>
+              <Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
+            </div>
+            <div className="space-y-1">
+              <Label>Time</Label>
+              <Input value={form.time} placeholder="e.g. 02:00 PM – 04:30 PM" onChange={(e) => setForm({ ...form, time: e.target.value })} />
+            </div>
+            <div className="space-y-1">
               <Label>Min team size</Label>
               <Input type="number" min={1} value={form.minTeamSize} onChange={(e) => setForm({ ...form, minTeamSize: Number(e.target.value) })} />
             </div>
@@ -185,6 +236,15 @@ export function EventEditForm({
             <div className="space-y-1 md:col-span-4">
               <Label>Description</Label>
               <Input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            </div>
+            <div className="space-y-1 md:col-span-4">
+              <Label>Rules (one per line)</Label>
+              <textarea
+                value={form.rules}
+                onChange={(e) => setForm({ ...form, rules: e.target.value })}
+                rows={5}
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm outline-none transition-colors placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring"
+              />
             </div>
           </div>
         ) : (

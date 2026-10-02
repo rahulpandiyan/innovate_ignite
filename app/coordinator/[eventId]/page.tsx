@@ -32,6 +32,7 @@ import { Megaphone,
 } from "lucide-react";
 import { format } from "date-fns";
 import { CoordinatorEventEditForm } from "@/components/coordinator/coordinator-event-edit-form";
+import { CoordinatorContactsEditor } from "@/components/coordinator/coordinator-contacts-editor";
 import { ExportExcelButton } from "@/components/ui/export-excel";
 import { GAMING_EVENT_NAME, getGameChoice } from "@/lib/eventDisplay";
 
@@ -60,6 +61,7 @@ export default async function CoordinatorEventPage({ params }: PageProps) {
         orderBy: { createdAt: "desc" },
       },
       coordinators: { include: { user: { select: { name: true, email: true } } } },
+      coordinatorContacts: { orderBy: [{ isStaff: "desc" }, { sortOrder: "asc" }] },
       judges: { include: { user: { select: { name: true, email: true } } } },
       _count: { select: { teams: true } },
     },
@@ -158,9 +160,13 @@ export default async function CoordinatorEventPage({ params }: PageProps) {
           category: event.category,
           venue: event.venue ?? "",
           price: Number(event.price),
+          priceMode: event.priceMode,
+          groupPrice: event.groupPrice != null ? Number(event.groupPrice) : undefined,
           minTeamSize: event.minTeamSize ?? 1,
           maxTeamSize: event.maxTeamSize ?? 1,
           time: event.time ?? "",
+          date: event.date ? event.date.toISOString().slice(0, 10) : "",
+          rules: event.rules ?? "",
         }}
       />
 
@@ -175,6 +181,16 @@ export default async function CoordinatorEventPage({ params }: PageProps) {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
+          <CoordinatorContactsEditor
+            eventId={event.id}
+            contacts={event.coordinatorContacts.map((c) => ({
+              id: c.id,
+              name: c.name,
+              phone: c.phone,
+              isStaff: c.isStaff,
+            }))}
+          />
+
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard label="Registrations" value={event.registrations.length} icon={TicketCheck} />
             <StatCard label="Confirmed" value={confirmed} icon={Check} />

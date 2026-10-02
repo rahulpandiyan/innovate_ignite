@@ -25,6 +25,7 @@ model PendingRegistration {
 model Event {
   id                  String              @id @default(uuid())
   name                String
+  slug                String?             @unique
   description         String?
   type                EventType
   category            String
@@ -52,6 +53,7 @@ model Event {
   registrations       Registration[]
   teams               Team[]
   coordinators        EventCoordinator[]
+  coordinatorContacts EventCoordinatorContact[]
   judges              Judge[]
   form                RegistrationForm?
   results             Result[]
@@ -480,6 +482,24 @@ model EventCoordinator {
 
   @@unique([eventId, userId])
   @@map("EventCoordinator")
+}
+
+// Public-facing coordinator / contact details shown on the event page.
+// Separate from EventCoordinator (which links portal user accounts) because
+// staff and student coordinators are edited here as plain name + phone pairs.
+model EventCoordinatorContact {
+  id        String   @id @default(uuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name      String
+  phone     String?
+  isStaff   Boolean  @default(false)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventId])
+  @@map("EventCoordinatorContact")
 }
 
 model Judge {
