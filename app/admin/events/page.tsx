@@ -1,4 +1,5 @@
 import prisma from "@/lib/db";
+import type { Prisma } from "@prisma/client";
 import { assignEventUsers, createEvent, updateEvent, updateEventStatus } from "@/app/admin/actions";
 import {
   Card,
@@ -18,15 +19,37 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Search } from "lucide-react";
 import { EventEditForm } from "@/components/admin/event-edit-form";
 import { CoordinatorContactsEditor } from "@/components/coordinator/coordinator-contacts-editor";
 
 const STATUS_OPTIONS = ["DRAFT", "OPEN", "REGISTRATION_CLOSED", "ONGOING", "COMPLETED"] as const;
 const CATEGORIES = ["TECHNICAL", "GENERAL", "DANCE", "GAMING", "THEATRE", "FINE_ARTS"];
 
-export default async function EventsPage() {
-  const [events, coordinators, judges] = await Promise.all([
+export default async function EventsPage({ searchParams }: { searchParams?: Promise<{ q?: string; status?: string; category?: string }> }) {
+  const sp = searchParams ? await searchParams : {};
+  const q = (sp.q ?? "").trim();
+  const statusFilter = sp.status && sp.status !== "ALL" ? sp.status : "";
+  const categoryFilter = sp.category && sp.category !== "ALL" ? sp.category : "";
+
+  const where: Prisma.EventWhereInput = {
+    ...(q
+      ? {
+          OR: [
+            { name: { contains: q, mode: "insensitive" } },
+            { venue: { contains: q, mode: "insensitive" } },
+            { description: { contains: q, mode: "insensitive" } },
+            { coordinators: { some: { user: { name: { contains: q, mode: "insensitive" } } } } },
+          ],
+        }
+      : {}),
+    ...(statusFilter ? { status: statusFilter as never } : {}),
+    ...(categoryFilter ? { category: categoryFilter } : {}),
+  };
+
+  const [events, coordinators, judges, allEvents] = await Promise.all([
     prisma.event.findMany({
+      where,
       orderBy: { date: "asc" },
       include: {
         coordinators: { include: { user: { select: { id: true, name: true, userRole: { select: { name: true } } } } } },
@@ -46,7 +69,12 @@ export default async function EventsPage() {
       select: { id: true, name: true, email: true },
       orderBy: { name: "asc" },
     }),
+    // Unfiltered list so "create event" can still assign any event as a
+    // coordinator target even while a filter is active.
+    prisma.event.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
   ]);
+
+  const hasFilter = Boolean(q || statusFilter || categoryFilter);
 
   return (
     <div className="space-y-6">
@@ -56,6 +84,56 @@ export default async function EventsPage() {
           Manage events, coordinators and judges.
         </p>
       </div>
+
+      <form method="GET" className="flex flex-col gap-3 rounded-xl border bg-white p-4 sm:flex-row sm:items-center">
+        <div className="relative flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            name="q"
+            defaultValue={q}
+            placeholder="Search event name, venue, description or coordinator…"
+            className="pl-9"
+            aria-label="Search events"
+          />
+        </div>
+        <Select name="status" defaultValue={statusFilter || "ALL"}>
+          <SelectTrigger className="w-full sm:w-[210px]" aria-label="Filter by status">
+            <SelectValue placeholder="Any status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">Any status</SelectItem>
+            {STATUS_OPTIONS.map((s) => (
+              <SelectItem key={s} value={s}>
+                {s.replace(/_/g, " ")}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select name="category" defaultValue={categoryFilter || "ALL"}>
+          <SelectTrigger className="w-full sm:w-[190px]" aria-label="Filter by category">
+            <SelectValue placeholder="Any category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">Any category</SelectItem>
+            {CATEGORIES.map((c) => (
+              <SelectItem key={c} value={c}>
+                {c.replace(/_/g, " ")}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <div className="flex gap-2">
+          <Button type="submit" size="sm" className="h-9">Search</Button>
+          {hasFilter && (
+            <Button asChild size="sm" variant="outline" className="h-9">
+              <a href="/admin/events">Reset</a>
+            </Button>
+          )}
+        </div>
+        <p className="w-full text-xs text-muted-foreground sm:w-auto">
+          {hasFilter ? `${events.length} of ${allEvents.length} events match` : `${events.length} events`}
+        </p>
+      </form>
 
       <Card>
         <CardHeader>
@@ -244,6 +322,11 @@ export default async function EventsPage() {
       </Card>
 
       <div className="space-y-4">
+        {events.length === 0 && (
+          <div className="rounded-xl border border-dashed bg-white py-12 text-center text-sm text-muted-foreground">
+            No event matches your search.
+          </div>
+        )}
         {events.map((ev) => (
           <div key={ev.id} className="space-y-3">
             <CoordinatorContactsEditor

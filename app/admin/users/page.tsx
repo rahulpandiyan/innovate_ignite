@@ -1,4 +1,5 @@
 import prisma from "@/lib/db";
+import type { Prisma } from "@prisma/client";
 import { createAdminUser, setUserRole, assignUserToEvents } from "@/app/admin/actions";
 import {
   Card,
@@ -22,6 +23,7 @@ import Link from "next/link";
 import { AssignCoordinatorForm } from "@/components/admin/assign-coordinator-form";
 import { ExportExcelButton } from "@/components/ui/export-excel";
 import { format } from "date-fns";
+import { Search } from "lucide-react";
 
 const ROLE_OPTIONS = [
   "SUPER_ADMIN",
@@ -36,15 +38,40 @@ const ROLE_OPTIONS = [
   "CERTIFICATE_ADMIN",
 ];
 
-export default async function UsersPage({ searchParams }: { searchParams?: Promise<{ page?: string }> }) {
+export default async function UsersPage({ searchParams }: { searchParams?: Promise<{ page?: string; q?: string; role?: string; assigned?: string }> }) {
   const sp = searchParams ? await searchParams : {};
+  const q = (sp.q ?? "").trim();
+  // "ALL"/"all" are the visible "no filter" options; normalise them away.
+  const roleFilter = sp.role && sp.role !== "ALL" ? sp.role : "";
+  const assignedFilter = sp.assigned && sp.assigned !== "all" ? sp.assigned : "";
   const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
   const perPage = 12;
   const skip = (page - 1) * perPage;
 
+  // Same filter set drives both the visible page and the total count so the
+  // pagination footer never disagrees with the rows on screen.
+  const where: Prisma.UserWhereInput = {
+    ...(q
+      ? {
+          OR: [
+            { name: { contains: q, mode: "insensitive" } },
+            { email: { contains: q, mode: "insensitive" } },
+            { phone: { contains: q, mode: "insensitive" } },
+            { collegeName: { contains: q, mode: "insensitive" } },
+            { college: { code: { contains: q, mode: "insensitive" } } },
+            { participant: { participantId: { contains: q, mode: "insensitive" } } },
+          ],
+        }
+      : {}),
+    ...(roleFilter ? { userRole: { name: roleFilter } } : {}),
+    ...(assignedFilter === "yes" ? { coordinators: { some: {} } } : {}),
+    ...(assignedFilter === "no" ? { coordinators: { none: {} } } : {}),
+  };
+
   const [totalUsers, users, colleges, events, allCoordinators, allUsersForExport] = await Promise.all([
-    prisma.user.count(),
+    prisma.user.count({ where }),
     prisma.user.findMany({
+      where,
       orderBy: { createdAt: "desc" },
       skip,
       take: perPage,
@@ -69,6 +96,7 @@ export default async function UsersPage({ searchParams }: { searchParams?: Promi
       orderBy: { name: "asc" },
     }),
     prisma.user.findMany({
+      where,
       orderBy: { createdAt: "desc" },
       select: {
         name: true,
@@ -85,6 +113,17 @@ export default async function UsersPage({ searchParams }: { searchParams?: Promi
   ]);
 
   const totalPages = Math.max(1, Math.ceil(totalUsers / perPage));
+  const hasFilter = Boolean(q || roleFilter || assignedFilter);
+  // Keep every filter in the URL so search + pagination + export stay in sync.
+  const qs = (over: Record<string, string | undefined>) => {
+    const p = new URLSearchParams();
+    const merged = { q, role: roleFilter, assigned: assignedFilter, page: String(page), ...over };
+    for (const [k, v] of Object.entries(merged)) {
+      if (v) p.set(k, k === "page" && v === "1" ? "" : v);
+    }
+    const s = p.toString();
+    return s ? `/admin/users?${s}` : "/admin/users";
+  };
 
   const usersExport = allUsersForExport.map((u) => ({
     Name: u.name,
@@ -207,13 +246,71 @@ export default async function UsersPage({ searchParams }: { searchParams?: Promi
             <div>
               <CardTitle className="text-base">Accounts</CardTitle>
               <CardDescription>
-                {totalUsers} total · page {page} of {totalPages} · 12 per page
+                {hasFilter ? `${totalUsers} matching` : `${totalUsers} total`} · page {page} of{" "}
+                {totalPages} · 12 per page
               </CardDescription>
             </div>
-            <ExportExcelButton data={usersExport} filename={`users-${format(new Date(), "yyyy-MM-dd")}`} sheetName="Users" label={`Export ${totalUsers}`} />
+            <ExportExcelButton data={usersExport} filename={`users-${format(new Date(), "yyyy-MM-dd")}`} sheetName="Users" label={`Export ${usersExport.length}`} />
           </div>
         </CardHeader>
         <CardContent>
+          {/* GET form: filters live in the URL so a search can be shared or
+              bookmarked and pagination keeps the same result set. */}
+          <form method="GET" className="mb-4 flex flex-col gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="relative flex-1">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  name="q"
+                  defaultValue={q}
+                  placeholder="Search name, email, phone, participant ID or college…"
+                  className="pl-9"
+                  aria-label="Search accounts"
+                />
+              </div>
+              <Select name="role" defaultValue={roleFilter || "ALL"}>
+                <SelectTrigger className="w-full sm:w-[200px]" aria-label="Filter by role">
+                  <SelectValue placeholder="All roles" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">All roles</SelectItem>
+                  {ROLE_OPTIONS.map((r) => (
+                    <SelectItem key={r} value={r}>
+                      {r.replace(/_/g, " ")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select name="assigned" defaultValue={assignedFilter || "all"}>
+                <SelectTrigger className="w-full sm:w-[190px]" aria-label="Filter by assignment">
+                  <SelectValue placeholder="Any assignment" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any assignment</SelectItem>
+                  <SelectItem value="yes">Assigned to an event</SelectItem>
+                  <SelectItem value="no">Not assigned yet</SelectItem>
+                </SelectContent>
+              </Select>
+              <div className="flex gap-2">
+                <Button type="submit" size="sm" className="h-9">
+                  Search
+                </Button>
+                {hasFilter && (
+<Button asChild size="sm" variant="outline" className="h-9">
+                      <a href="/admin/users">Reset</a>
+                    </Button>
+                )}
+              </div>
+            </div>
+            {hasFilter && (
+              <p className="text-xs text-muted-foreground">
+                {totalUsers === 0
+                  ? "No account matches this search."
+                  : `Showing ${(page - 1) * perPage + 1}–${Math.min(page * perPage, totalUsers)} of ${totalUsers} matching account${totalUsers === 1 ? "" : "s"}.`}
+              </p>
+            )}
+          </form>
+
           <div className="flex items-center justify-between border-b py-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             <span className="w-1/4">User</span>
             <span className="w-1/6">College</span>
@@ -222,6 +319,11 @@ export default async function UsersPage({ searchParams }: { searchParams?: Promi
             <span className="w-1/6 text-right">Change role</span>
           </div>
           <div className="divide-y">
+            {users.length === 0 && (
+              <div className="py-10 text-center text-sm text-muted-foreground">
+                No accounts match your search.
+              </div>
+            )}
             {users.map((u) => (
               <div key={u.id} className="flex items-center justify-between py-3 gap-2">
                 <div className="w-1/4 min-w-0">
@@ -276,19 +378,21 @@ export default async function UsersPage({ searchParams }: { searchParams?: Promi
           </div>
           <div className="mt-4 flex items-center justify-between">
             <p className="text-xs text-muted-foreground">
-              Showing {(page - 1) * perPage + 1}–{Math.min(page * perPage, totalUsers)} of {totalUsers}
+              {totalUsers === 0
+                ? "No accounts to show"
+                : `Showing ${(page - 1) * perPage + 1}–${Math.min(page * perPage, totalUsers)} of ${totalUsers}`}
             </p>
             <div className="flex gap-2">
               {page > 1 ? (
                 <Button asChild variant="outline" size="sm">
-                  <Link href={`/admin/users?page=${page - 1}`}>Previous</Link>
+                  <Link href={qs({ page: String(page - 1) })}>Previous</Link>
                 </Button>
               ) : (
                 <Button variant="outline" size="sm" disabled>Previous</Button>
               )}
               {page < totalPages ? (
                 <Button asChild variant="outline" size="sm">
-                  <Link href={`/admin/users?page=${page + 1}`}>Next</Link>
+                  <Link href={qs({ page: String(page + 1) })}>Next</Link>
                 </Button>
               ) : (
                 <Button variant="outline" size="sm" disabled>Next</Button>

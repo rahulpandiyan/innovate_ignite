@@ -21,6 +21,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import {
+  SearchableSelect,
+  type SearchableOption,
+} from "@/components/ui/searchable-select";
 import { Pencil, Save, X, Loader2 } from "lucide-react";
 
 const STATUS_OPTIONS = ["DRAFT", "OPEN", "REGISTRATION_CLOSED", "ONGOING", "COMPLETED", "CANCELLED"] as const;
@@ -301,6 +305,18 @@ export function EventEditForm({
   );
 }
 
+function toOptions(
+  people: { id: string; name: string; email?: string }[],
+  kind: string
+): SearchableOption[] {
+  return people.map((p) => ({
+    value: p.id,
+    label: p.name,
+    description: p.email ? `${kind} · ${p.email}` : kind,
+    keywords: p.email ?? "",
+  }));
+}
+
 function AssignForm({
   eventId,
   coordinators,
@@ -353,42 +369,39 @@ function AssignForm({
       <div className="grid gap-3 md:grid-cols-3">
         <div className="space-y-1">
           <Label className="text-xs font-medium">Faculty coordinator</Label>
-          <Select value={facultyId} onValueChange={setFacultyId}>
-            <SelectTrigger className="h-8 text-xs">
-              <SelectValue placeholder={faculty.length ? "Select faculty" : "No faculty coordinators"} />
-            </SelectTrigger>
-            <SelectContent>
-              {faculty.map((c) => (
-                <SelectItem key={c.id} value={c.id}>{c.name} — {c.email}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            options={toOptions(faculty, "Faculty")}
+            value={facultyId ? [facultyId] : []}
+            onChange={(v) => setFacultyId(v[0] ?? "")}
+            placeholder={faculty.length ? "Select faculty" : "No faculty coordinators"}
+            searchPlaceholder="Search faculty…"
+            emptyText="No faculty coordinator matches."
+            triggerClassName="h-8 text-xs"
+          />
         </div>
         <div className="space-y-1">
           <Label className="text-xs font-medium">Student coordinator</Label>
-          <Select value={studentId} onValueChange={setStudentId}>
-            <SelectTrigger className="h-8 text-xs">
-              <SelectValue placeholder={students.length ? "Select student" : "No student coordinators"} />
-            </SelectTrigger>
-            <SelectContent>
-              {students.map((c) => (
-                <SelectItem key={c.id} value={c.id}>{c.name} — {c.email}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            options={toOptions(students, "Student")}
+            value={studentId ? [studentId] : []}
+            onChange={(v) => setStudentId(v[0] ?? "")}
+            placeholder={students.length ? "Select student" : "No student coordinators"}
+            searchPlaceholder="Search students…"
+            emptyText="No student coordinator matches."
+            triggerClassName="h-8 text-xs"
+          />
         </div>
         <div className="space-y-1">
           <Label className="text-xs font-medium">Judge</Label>
-          <Select value={judgeId} onValueChange={setJudgeId}>
-            <SelectTrigger className="h-8 text-xs">
-              <SelectValue placeholder="Select judge" />
-            </SelectTrigger>
-            <SelectContent>
-              {judges.map((j) => (
-                <SelectItem key={j.id} value={j.id}>{j.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            options={judges.map((j) => ({ value: j.id, label: j.name }))}
+            value={judgeId ? [judgeId] : []}
+            onChange={(v) => setJudgeId(v[0] ?? "")}
+            placeholder="Select judge"
+            searchPlaceholder="Search judges…"
+            emptyText="No judge matches."
+            triggerClassName="h-8 text-xs"
+          />
         </div>
       </div>
       <div className="flex justify-end">
