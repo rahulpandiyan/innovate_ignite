@@ -1,45 +1,88 @@
 import { redirect } from "next/navigation";
+import type { Prisma } from "@prisma/client";
 import { getAuthSession } from "@/lib/authCookie";
 import prisma from "@/lib/db";
 import { getHomeRoute } from "@/lib/rbac-data";
 import { UserContactDialog } from "@/components/finance/user-contact-dialog";
 import { RemindPaymentButton } from "@/components/finance/remind-payment-button";
 import { ExportExcelButton } from "@/components/ui/export-excel";
+import { PaginationNav } from "@/components/ui/pagination-nav";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { MailWarning } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { MailWarning, Search } from "lucide-react";
 import { format } from "date-fns";
 import { displayEventName, getGameChoice } from "@/lib/eventDisplay";
 
 export const dynamic = "force-dynamic";
 
-export default async function PendingPaymentsPage() {
+const PER_PAGE = 20;
+
+export default async function PendingPaymentsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ q?: string; page?: string }>;
+}) {
   const session = await getAuthSession();
   if (!session) redirect("/auth/signin");
   if (!["FINANCE_ADMIN", "SUPER_ADMIN"].includes(session.role)) {
     redirect(getHomeRoute(session.role));
   }
 
+  const sp = searchParams ? await searchParams : {};
+  const q = (sp.q ?? "").trim();
+  const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
+
   // Registrations with no submitted payment yet: no payment row, or a
   // PENDING row with no transaction id (user hasn't uploaded anything).
-  const pendingRegs = await prisma.registration.findMany({
-    where: {
-      status: "PENDING",
-      event: { price: { gt: 0 } },
-      OR: [
-        { payment: null },
-        { payment: { status: "PENDING", transactionId: null } },
-      ],
-    },
-    include: {
-      user: { select: { name: true, email: true, phone: true, collegeName: true, participant: { select: { participantId: true } } } },
-      event: { select: { name: true, price: true } },
-      payment: { select: { status: true, amount: true, transactionId: true } },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 200,
-  });
+  const pendingWhere: Prisma.RegistrationWhereInput = {
+    status: "PENDING",
+    event: { price: { gt: 0 } },
+    OR: [
+      { payment: null },
+      { payment: { status: "PENDING", transactionId: null } },
+    ],
+    ...(q
+      ? {
+          AND: [
+            {
+              OR: [
+                { user: { name: { contains: q, mode: "insensitive" } } },
+                { user: { email: { contains: q, mode: "insensitive" } } },
+                { user: { phone: { contains: q, mode: "insensitive" } } },
+                { user: { collegeName: { contains: q, mode: "insensitive" } } },
+                { user: { participant: { participantId: { contains: q, mode: "insensitive" } } } },
+                { registrationId: { contains: q, mode: "insensitive" } },
+              ],
+            },
+          ],
+        }
+      : {}),
+  };
 
-  const pendingExport = pendingRegs.map((r) => ({
+  const include = {
+    user: { select: { name: true, email: true, phone: true, collegeName: true, participant: { select: { participantId: true } } } },
+    event: { select: { name: true, price: true } },
+    payment: { select: { status: true, amount: true, transactionId: true } },
+  } as const;
+
+  const [pendingTotal, pendingRegs, allPending] = await Promise.all([
+    prisma.registration.count({ where: pendingWhere }),
+    prisma.registration.findMany({
+      where: pendingWhere,
+      include,
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * PER_PAGE,
+      take: PER_PAGE,
+    }),
+    prisma.registration.findMany({
+      where: pendingWhere,
+      include,
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
+
+  const pendingExport = allPending.map((r) => ({
     RegisteredAt: format(r.createdAt, "yyyy-MM-dd HH:mm"),
     Participant: r.user.name,
     Email: r.user.email,
@@ -67,16 +110,40 @@ export default async function PendingPaymentsPage() {
             <div>
               <CardTitle className="text-base flex items-center gap-2">
                 <MailWarning className="h-4 w-4 text-amber-600" />
-                Not submitted yet ({pendingRegs.length})
+                Not submitted yet ({pendingTotal})
               </CardTitle>
               <CardDescription>
                 These participants have not uploaded any payment proof. Send a reminder mail with their payment link.
               </CardDescription>
             </div>
-            <ExportExcelButton data={pendingExport} filename={`pending-payments-${format(new Date(), "yyyy-MM-dd")}`} sheetName="Pending" label={`Export ${pendingRegs.length}`} />
+            <ExportExcelButton data={pendingExport} filename={`pending-payments-${format(new Date(), "yyyy-MM-dd")}`} sheetName="Pending" label={`Export ${pendingExport.length}`} />
           </div>
         </CardHeader>
-        <CardContent className="overflow-x-auto p-0">
+        <CardContent className="p-0">
+          <form method="GET" className="flex flex-col gap-3 border-b px-4 py-3 sm:flex-row sm:items-center">
+            <div className="relative flex-1">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                name="q"
+                defaultValue={q}
+                placeholder="Search participant, email, phone or participant ID…"
+                className="h-9 pl-9"
+                aria-label="Search pending participants"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button type="submit" size="sm" className="h-9">
+                Search
+              </Button>
+              {q && (
+                <Button asChild size="sm" variant="outline" className="h-9">
+                  <a href="/payments/pending">Reset</a>
+                </Button>
+              )}
+            </div>
+          </form>
+
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b text-left text-xs uppercase text-muted-foreground">
@@ -124,6 +191,17 @@ export default async function PendingPaymentsPage() {
               ))}
             </tbody>
           </table>
+          </div>
+          <div className="px-4 pb-4">
+            <PaginationNav
+              baseUrl="/payments/pending"
+              page={page}
+              perPage={PER_PAGE}
+              total={pendingTotal}
+              params={{ q }}
+              noun="pending registrations"
+            />
+          </div>
         </CardContent>
       </Card>
     </div>

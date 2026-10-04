@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import dashboardLogo from "@/public/gat-logos/dashboard-logo.webp";
-import { ReceiptText, MailWarning } from "lucide-react";
+import { ReceiptText, MailWarning, UsersRound } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
@@ -34,7 +34,8 @@ export function FinanceShell({
 }) {
   const pathname = usePathname();
   const isLedgerActive = pathname === "/payments";
-  const isPendingActive = pathname === "/payments/pending";
+  const isParticipantsActive = pathname.startsWith("/payments/participants");
+  const isPendingActive = pathname.startsWith("/payments/pending");
 
   return (
     <SidebarProvider>
@@ -75,6 +76,14 @@ export function FinanceShell({
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={isParticipantsActive} tooltip="Participants">
+                    <Link href="/payments/participants">
+                      <UsersRound />
+                      <span>Participants</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
                   <SidebarMenuButton asChild isActive={isPendingActive} tooltip="Pending payments">
                     <Link href="/payments/pending">
                       <MailWarning />
@@ -91,7 +100,7 @@ export function FinanceShell({
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>
-      <SidebarInset>
+      <SidebarInset className="min-w-0">
         <div className="px-4 py-6 md:px-6 md:py-8">
           <SidebarTrigger className="-ml-2 mb-4 md:hidden" />
           {children}

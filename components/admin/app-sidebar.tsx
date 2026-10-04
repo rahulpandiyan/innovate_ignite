@@ -10,6 +10,7 @@ import {
   Building2,
   CalendarDays,
   UsersRound,
+  UserCheck,
   ScrollText,
 } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
@@ -44,6 +45,7 @@ const NAV_GROUPS = [
       { href: "/admin/colleges", label: "Colleges", icon: Building2 },
       { href: "/admin/events", label: "Events", icon: CalendarDays },
       { href: "/admin/users", label: "Users & Roles", icon: UsersRound },
+      { href: "/admin/participants", label: "Participants", icon: UserCheck },
       { href: "/admin/audit", label: "Audit Log", icon: ScrollText },
     ],
   },

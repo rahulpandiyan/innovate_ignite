@@ -1,95 +1,141 @@
 import { redirect } from "next/navigation";
+import type { Prisma } from "@prisma/client";
 import { getAuthSession } from "@/lib/authCookie";
 import prisma from "@/lib/db";
 import { getHomeRoute } from "@/lib/rbac-data";
-import { OrderActions } from "@/components/finance/order-actions";
 import { RegistrationActions } from "@/components/finance/registration-actions";
 import { UserContactDialog } from "@/components/finance/user-contact-dialog";
 import { PaymentPreviewSheet } from "@/components/finance/payment-preview-sheet";
 import { ExportExcelButton } from "@/components/ui/export-excel";
+import { PaginationNav } from "@/components/ui/pagination-nav";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { IndianRupee, Wallet, RefreshCcw, FileClock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { IndianRupee, Wallet, RefreshCcw, FileClock, Search } from "lucide-react";
 import { format } from "date-fns";
-import { GAMING_EVENT_NAME, displayEventName, getGameChoice } from "@/lib/eventDisplay";
+import { displayEventName, getGameChoice } from "@/lib/eventDisplay";
+import {
+  PAYMENT_STATE_LABEL,
+  PAYMENT_STATE_STYLE,
+  paymentStateOf,
+} from "@/lib/paymentState";
 
 export const dynamic = "force-dynamic";
 
-export default async function PaymentsPage() {
+const PER_PAGE = 20;
+
+const PAYMENT_STATUSES = [
+  "PENDING",
+  "PROCESSING",
+  "COORDINATOR_COLLECTED",
+  "SUCCESS",
+  "FAILED",
+  "REFUNDED",
+  "CANCELLED",
+] as const;
+
+export default async function PaymentsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ q?: string; status?: string; page?: string }>;
+}) {
   const session = await getAuthSession();
   if (!session) redirect("/auth/signin");
   if (!["FINANCE_ADMIN", "SUPER_ADMIN"].includes(session.role)) {
     redirect(getHomeRoute(session.role));
   }
 
-  const [orders, payments] = await Promise.all([
-    prisma.order.findMany({
+  const sp = searchParams ? await searchParams : {};
+  const q = (sp.q ?? "").trim();
+  const statusFilter = sp.status && sp.status !== "ALL" ? sp.status : "";
+  const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
+
+  // One filter set drives the rows, the total and the export so the footer,
+  // the row count and the spreadsheet can never disagree.
+  const where: Prisma.PaymentWhereInput = {
+    ...(q
+      ? {
+          OR: [
+            { registration: { user: { name: { contains: q, mode: "insensitive" } } } },
+            { registration: { user: { email: { contains: q, mode: "insensitive" } } } },
+            { registration: { user: { phone: { contains: q, mode: "insensitive" } } } },
+            { registration: { user: { collegeName: { contains: q, mode: "insensitive" } } } },
+            {
+              registration: {
+                user: { participant: { participantId: { contains: q, mode: "insensitive" } } },
+              },
+            },
+            { registration: { registrationId: { contains: q, mode: "insensitive" } } },
+            { transactionId: { contains: q, mode: "insensitive" } },
+          ],
+        }
+      : {}),
+    ...(statusFilter ? { status: statusFilter as never } : {}),
+  };
+
+  const include = {
+    registration: {
       include: {
-        user: { select: { name: true, email: true, phone: true, collegeName: true, participant: { select: { participantId: true } } } },
-        orderItems: { select: { event: { select: { name: true } } } },
-      },
-      orderBy: { createdAt: "desc" },
-      take: 100,
-    }),
-    prisma.payment.findMany({
-      include: {
-        registration: {
-          include: {
-            user: { select: { name: true, email: true, phone: true, collegeName: true, participant: { select: { participantId: true } } } },
-            event: { select: { name: true } },
+        user: {
+          select: {
+            name: true,
+            email: true,
+            phone: true,
+            collegeName: true,
+            participant: { select: { participantId: true } },
           },
         },
-        verifier: { select: { name: true } },
-        collector: { select: { name: true } },
+        event: { select: { name: true } },
       },
+    },
+    verifier: { select: { name: true } },
+    collector: { select: { name: true } },
+  } as const;
+
+  const [
+    total,
+    payments,
+    allForExport,
+    // Headline numbers come from the whole table, never from the visible page.
+    successAgg,
+    refundedAgg,
+    successCount,
+    pendingCount,
+    coordinatorCollectedCount,
+  ] = await Promise.all([
+    prisma.payment.count({ where }),
+    prisma.payment.findMany({
+      where,
+      include,
       orderBy: { initiatedAt: "desc" },
-      take: 100,
+      skip: (page - 1) * PER_PAGE,
+      take: PER_PAGE,
     }),
+    prisma.payment.findMany({
+      where,
+      include,
+      orderBy: { initiatedAt: "desc" },
+    }),
+    prisma.payment.aggregate({ where: { status: "SUCCESS" }, _sum: { amount: true } }),
+    prisma.payment.aggregate({ where: { status: "REFUNDED" }, _sum: { amount: true } }),
+    prisma.payment.count({ where: { status: "SUCCESS" } }),
+    prisma.payment.count({ where: { status: "PENDING" } }),
+    prisma.payment.count({ where: { status: "COORDINATOR_COLLECTED" } }),
   ]);
 
-  // Map userId -> chosen game for the gaming event (used for order rows,
-  // which don't carry formResponses themselves).
-  const gamingRegs = await prisma.registration.findMany({
-    where: { event: { name: GAMING_EVENT_NAME } },
-    select: { userId: true, formResponses: true },
-  });
-  const gameByUser = new Map<string, string>();
-  for (const r of gamingRegs) {
-    const g = getGameChoice(GAMING_EVENT_NAME, r.formResponses);
-    if (g) gameByUser.set(r.userId, g);
-  }
-  const orderEventNames = (o: (typeof orders)[number]) =>
-    o.orderItems.map((i) =>
-      i.event.name === GAMING_EVENT_NAME ? (gameByUser.get(o.userId) ?? i.event.name) : i.event.name
-    );
+  const collected = Number(successAgg._sum.amount ?? 0);
+  const refunded = Number(refundedAgg._sum.amount ?? 0);
 
-  const collected = payments
-    .filter((p) => p.status === "SUCCESS")
-    .reduce((s, p) => s + Number(p.amount), 0);
-  const refunded = payments
-    .filter((p) => p.status === "REFUNDED")
-    .reduce((s, p) => s + Number(p.amount), 0);
-  const pendingVerification = orders.filter((o) => o.status === "PAYMENT_SUBMITTED").length;
-  const collectedCount = payments.filter((p) => p.status === "SUCCESS").length;
-  const pendingRegPayments = payments.filter((p) => p.status === "PENDING").length;
-  const coordinatorCollected = payments.filter((p) => p.status === "COORDINATOR_COLLECTED");
-  const coordinatorCollectedCount = coordinatorCollected.length;
-
-  const ordersExport = orders.map((o) => ({
-    Submitted: format(o.createdAt, "yyyy-MM-dd HH:mm"),
-    Participant: o.user.name,
-    Email: o.user.email,
-    Phone: o.user.phone,
-    College: o.user.collegeName,
-    ParticipantID: o.user.participant?.participantId ?? "",
-    Events: orderEventNames(o).join(", "),
-    Amount: Number(o.totalAmount),
-    UPI_TXN: o.upiTransactionId ?? "",
-    Screenshot: o.paymentScreenshotUrl ?? "",
-    Status: o.status,
-  }));
-
-  const paymentsExport = payments.map((p) => ({
+  const paymentsExport = allForExport.map((p) => ({
+    Initiated: format(p.initiatedAt, "yyyy-MM-dd HH:mm"),
     Participant: p.registration.user.name,
     Email: p.registration.user.email,
     Phone: p.registration.user.phone,
@@ -102,6 +148,7 @@ export default async function PaymentsPage() {
     TransactionID: p.transactionId ?? "",
     Screenshot: p.receiptUrl ?? "",
     Status: p.status,
+    Approved: paymentStateOf(p.status) === "APPROVED" ? "Yes" : "No",
     ConfirmedAt: p.confirmedAt ? format(p.confirmedAt, "yyyy-MM-dd HH:mm") : "",
     CollectedBy: p.collector?.name ?? "",
     VerifiedBy: p.verifier?.name ?? "",
@@ -112,12 +159,13 @@ export default async function PaymentsPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Payment ledger</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Reconcile submitted UPI payments. Verifying an order creates the registrations, QR
-          passes and SUCCESS payment records automatically.
+          One row per registration payment. Verify a payment to confirm the registration. Use{" "}
+          <span className="font-medium text-foreground">Participants</span> in the sidebar for the
+          full list, including registrations with no payment record.
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <Card>
           <CardHeader className="pb-2">
             <CardDescription className="text-xs flex items-center gap-1">
@@ -129,17 +177,17 @@ export default async function PaymentsPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardDescription className="text-xs flex items-center gap-1">
-              <FileClock className="h-3 w-3" /> Orders pending
+              <Wallet className="h-3 w-3" /> Successful payments
             </CardDescription>
-            <CardTitle className="text-2xl">{pendingVerification}</CardTitle>
+            <CardTitle className="text-2xl">{successCount}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardDescription className="text-xs flex items-center gap-1">
-              <FileClock className="h-3 w-3" /> Reg. payments pending
+              <FileClock className="h-3 w-3" /> Pending
             </CardDescription>
-            <CardTitle className="text-2xl">{pendingRegPayments}</CardTitle>
+            <CardTitle className="text-2xl">{pendingCount}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
@@ -148,14 +196,6 @@ export default async function PaymentsPage() {
               <IndianRupee className="h-3 w-3" /> Coordinator collected
             </CardDescription>
             <CardTitle className="text-2xl">{coordinatorCollectedCount}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription className="text-xs flex items-center gap-1">
-              <Wallet className="h-3 w-3" /> Successful payments
-            </CardDescription>
-            <CardTitle className="text-2xl">{collectedCount}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
@@ -170,239 +210,210 @@ export default async function PaymentsPage() {
 
       <Card>
         <CardHeader>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <CardTitle className="text-base">Orders</CardTitle>
-              <CardDescription>Payment submissions from participants.</CardDescription>
-            </div>
-            <ExportExcelButton data={ordersExport} filename={`orders-${format(new Date(), "yyyy-MM-dd")}`} sheetName="Orders" label={`Export ${orders.length}`} />
-          </div>
-        </CardHeader>
-        <CardContent className="overflow-x-auto p-0">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b text-left text-xs uppercase text-muted-foreground">
-                <th className="px-4 py-2 font-medium">Submitted</th>
-                <th className="px-4 py-2 font-medium">Participant</th>
-                <th className="px-4 py-2 font-medium">Events</th>
-                <th className="px-4 py-2 font-medium">Amount</th>
-                <th className="px-4 py-2 font-medium">UPI txn</th>
-                <th className="px-4 py-2 font-medium">Screenshot</th>
-                <th className="px-4 py-2 font-medium">Status</th>
-                <th className="px-4 py-2 font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.length === 0 && (
-                <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
-                    No orders yet.
-                  </td>
-                </tr>
-              )}
-              {orders.map((o) => {
-                const isOffline = o.upiTransactionId === "OFFLINE";
-                return (
-                  <tr key={o.id} className="border-b last:border-0 align-top">
-                    <td className="px-4 py-2 text-muted-foreground">
-                      {format(o.createdAt, "MMM d, h:mm a")}
-                    </td>
-                    <td className="px-4 py-2 font-medium">
-                      <div className="flex items-center gap-1.5">
-                        <span>{o.user.name}</span>
-                        <UserContactDialog
-                          user={{ name: o.user.name, email: o.user.email, phone: o.user.phone, collegeName: o.user.collegeName }}
-                          participantId={o.user.participant?.participantId ?? null}
-                          eventName={orderEventNames(o).join(", ")}
-                        />
-                      </div>
-                      <div className="text-xs text-muted-foreground">{o.user.email}</div>
-                      <a href={`tel:${o.user.phone}`} className="text-xs font-mono text-[#2362EC] hover:underline">
-                        {o.user.phone}
-                      </a>
-                    </td>
-                    <td className="px-4 py-2 text-xs">
-                      {orderEventNames(o).join(", ") || "—"}
-                    </td>
-                    <td className="px-4 py-2 font-mono">₹{Number(o.totalAmount).toFixed(0)}</td>
-                    <td className="px-4 py-2 text-xs font-mono">
-                      {isOffline ? (
-                        <Badge variant="outline" className="text-[10px] bg-amber-50 text-amber-700 border-amber-200">OFFLINE</Badge>
-                      ) : o.upiTransactionId ? (
-                        o.upiTransactionId
-                      ) : (
-                        <Badge variant="outline" className="text-[10px] bg-red-50 text-red-700 border-red-200">
-                          UTR missing
-                        </Badge>
-                      )}
-                    </td>
-                    <td className="px-4 py-2 text-xs">
-                      <PaymentPreviewSheet
-                        row={{
-                          participant: o.user.name,
-                          email: o.user.email,
-                          phone: o.user.phone,
-                          college: o.user.collegeName,
-                          participantId: o.user.participant?.participantId ?? "",
-                          events: orderEventNames(o).join(", "),
-                          amount: Number(o.totalAmount),
-                          method: isOffline ? "OFFLINE" : "UPI",
-                          upiId: o.upiTransactionId,
-                          screenshotUrl: o.paymentScreenshotUrl,
-                          status: o.status,
-                          rejectionReason: o.rejectionReason,
-                          extra: [{ label: "Submitted", value: format(o.createdAt, "MMM d, yyyy h:mm a") }],
-                        }}
-                        actions={
-                          o.status === "PAYMENT_SUBMITTED" ? <OrderActions orderId={o.id} /> : undefined
-                        }
-                      />
-                    </td>
-                    <td className="px-4 py-2">
-                      <Badge variant={o.status === "VERIFIED" ? "default" : "outline"}>{o.status}</Badge>
-                      {o.rejectionReason && (
-                        <div className="mt-1 max-w-[160px] text-xs text-red-600">{o.rejectionReason}</div>
-                      )}
-                    </td>
-                    <td className="px-4 py-2">
-                      {o.status === "PAYMENT_SUBMITTED" ? (
-                        <OrderActions orderId={o.id} />
-                      ) : (
-                        <span className="text-xs text-muted-foreground">—</span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <CardTitle className="text-base">Registration payments</CardTitle>
-              <CardDescription>Per-registration ledger. Verify to confirm registrations.</CardDescription>
+              <CardDescription>
+                {total} matching · {PER_PAGE} per page
+              </CardDescription>
             </div>
-            <ExportExcelButton data={paymentsExport} filename={`registration-payments-${format(new Date(), "yyyy-MM-dd")}`} sheetName="Payments" label={`Export ${payments.length}`} />
+            <ExportExcelButton
+              data={paymentsExport}
+              filename={`registration-payments-${format(new Date(), "yyyy-MM-dd")}`}
+              sheetName="Payments"
+              label={`Export ${paymentsExport.length}`}
+            />
           </div>
         </CardHeader>
-        <CardContent className="overflow-x-auto p-0">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b text-left text-xs uppercase text-muted-foreground">
-                <th className="px-4 py-2 font-medium">Participant</th>
-                <th className="px-4 py-2 font-medium">Event</th>
-                <th className="px-4 py-2 font-medium">Amount</th>
-                <th className="px-4 py-2 font-medium">Method</th>
-                <th className="px-4 py-2 font-medium">UPI txn (UTR)</th>
-                <th className="px-4 py-2 font-medium">Evidence</th>
-                <th className="px-4 py-2 font-medium">Status</th>
-                <th className="px-4 py-2 font-medium">Confirmed</th>
-                <th className="px-4 py-2 font-medium">Collected by</th>
-                <th className="px-4 py-2 font-medium">Verified by</th>
-                <th className="px-4 py-2 font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {payments.length === 0 && (
-                <tr>
-                  <td colSpan={11} className="px-4 py-8 text-center text-muted-foreground">
-                    No payments recorded yet.
-                  </td>
-                </tr>
+        <CardContent className="p-0">
+          <form
+            method="GET"
+            className="flex flex-col gap-3 border-b px-4 py-3 sm:flex-row sm:items-center"
+          >
+            <div className="relative flex-1">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                name="q"
+                defaultValue={q}
+                placeholder="Search participant, email, phone, registration ID or UTR…"
+                className="h-9 pl-9"
+                aria-label="Search payments"
+              />
+            </div>
+            <Select name="status" defaultValue={statusFilter || "ALL"}>
+              <SelectTrigger className="h-9 w-full sm:w-[230px]" aria-label="Filter by payment status">
+                <SelectValue placeholder="Any status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">Any status</SelectItem>
+                {PAYMENT_STATUSES.map((s) => (
+                  <SelectItem key={s} value={s}>
+                    {s.replace(/_/g, " ")}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="flex gap-2">
+              <Button type="submit" size="sm" className="h-9">
+                Search
+              </Button>
+              {(q || statusFilter) && (
+                <Button asChild size="sm" variant="outline" className="h-9">
+                  <a href="/payments">Reset</a>
+                </Button>
               )}
-              {payments.map((p) => {
-                const isOffline = p.transactionId === "OFFLINE";
-                return (
-                  <tr key={p.id} className="border-b last:border-0">
-                    <td className="px-4 py-2 font-medium">
-                      <div className="flex items-center gap-1.5">
-                        <span>{p.registration.user.name}</span>
-                        <UserContactDialog
-                          user={{
-                            name: p.registration.user.name,
-                            email: p.registration.user.email,
-                            phone: p.registration.user.phone,
-                            collegeName: p.registration.user.collegeName,
-                          }}
-                          participantId={p.registration.user.participant?.participantId ?? null}
-                          registrationId={p.registrationId}
-                          eventName={displayEventName(p.registration.event.name, p.registration.formResponses)}
-                        />
-                      </div>
-                      <div className="text-xs text-muted-foreground">{p.registration.user.email}</div>
-                      <a href={`tel:${p.registration.user.phone}`} className="text-xs font-mono text-[#2362EC] hover:underline">
-                        {p.registration.user.phone}
-                      </a>
-                    </td>
-                    <td className="px-4 py-2">{displayEventName(p.registration.event.name, p.registration.formResponses)}</td>
-                    <td className="px-4 py-2 font-mono">₹{Number(p.amount).toFixed(0)}</td>
-                    <td className="px-4 py-2">
-                      {isOffline ? (
-                        <Badge variant="outline" className="text-[10px] bg-amber-50 text-amber-700 border-amber-200">OFFLINE</Badge>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">UPI</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-2 text-xs font-mono">
-                      {p.transactionId && !isOffline ? (
-                        p.transactionId
-                      ) : (
-                        <span className="font-sans text-[10px] text-muted-foreground">
-                          {isOffline ? "Cash / offline" : "Not submitted"}
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-2">
-                      <PaymentPreviewSheet
-                        row={{
-                          participant: p.registration.user.name,
-                          email: p.registration.user.email,
-                          phone: p.registration.user.phone,
-                          college: p.registration.user.collegeName,
-                          participantId: p.registration.user.participant?.participantId ?? "",
-                          events: displayEventName(p.registration.event.name, p.registration.formResponses),
-                          amount: Number(p.amount),
-                          method: isOffline ? "OFFLINE" : "UPI",
-                          upiId: isOffline ? null : p.transactionId,
-                          screenshotUrl: p.receiptUrl,
-                          status: p.status,
-                          extra: [
-                            { label: "Initiated", value: format(p.initiatedAt, "MMM d, yyyy h:mm a") },
-                            { label: "Collected by", value: p.collector?.name ?? "" },
-                            { label: "Verified by", value: p.verifier?.name ?? "" },
-                          ],
-                        }}
-                        actions={
-                          p.status === "PENDING" || p.status === "COORDINATOR_COLLECTED" ? (
-                            <RegistrationActions registrationId={p.registrationId} paymentId={p.id} paymentStatus={p.status} />
-                          ) : undefined
-                        }
-                      />
-                    </td>
-                    <td className="px-4 py-2">
-                      <Badge variant={p.status === "SUCCESS" ? "default" : p.status === "COORDINATOR_COLLECTED" ? "secondary" : "outline"}>{p.status}</Badge>
-                    </td>
-                    <td className="px-4 py-2 text-muted-foreground">
-                      {p.confirmedAt ? format(p.confirmedAt, "MMM d, h:mm a") : "—"}
-                    </td>
-                    <td className="px-4 py-2">{p.collector?.name ?? "—"}</td>
-                    <td className="px-4 py-2">{p.verifier?.name ?? "—"}</td>
-                    <td className="px-4 py-2">
-                      {(p.status === "PENDING" || p.status === "COORDINATOR_COLLECTED") ? (
-                        <RegistrationActions registrationId={p.registrationId} paymentId={p.id} paymentStatus={p.status} />
-                      ) : (
-                        <span className="text-xs text-muted-foreground">—</span>
-                      )}
+            </div>
+          </form>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b text-left text-xs uppercase text-muted-foreground">
+                  <th className="px-2.5 py-2 font-medium">Initiated</th>
+                  <th className="px-2.5 py-2 font-medium">Participant</th>
+                  <th className="px-2.5 py-2 font-medium">Event</th>
+                  <th className="px-2.5 py-2 font-medium">Amount</th>
+                  <th className="px-2.5 py-2 font-medium">Payment</th>
+                  <th className="px-2.5 py-2 font-medium">Evidence</th>
+                  <th className="px-2.5 py-2 font-medium">Status</th>
+                  <th className="px-2.5 py-2 font-medium">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {payments.length === 0 && (
+                  <tr>
+                    <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
+                      No payment matches your search.
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                )}
+                {payments.map((p) => {
+                  const isOffline = p.transactionId === "OFFLINE";
+                  const state = paymentStateOf(p.status);
+                  return (
+                    <tr key={p.id} className="border-b last:border-0 align-top">
+                      <td className="px-2.5 py-2 text-xs text-muted-foreground whitespace-nowrap">
+                        {format(p.initiatedAt, "MMM d")}
+                        <div className="text-[11px]">{format(p.initiatedAt, "h:mm a")}</div>
+                      </td>
+                      <td className="px-2.5 py-2 font-medium">
+                        <div className="flex items-center gap-1.5">
+                          <span className="max-w-[150px] truncate">{p.registration.user.name}</span>
+                          <span className="shrink-0">
+                            <UserContactDialog
+                              user={{
+                                name: p.registration.user.name,
+                                email: p.registration.user.email,
+                                phone: p.registration.user.phone,
+                                collegeName: p.registration.user.collegeName,
+                              }}
+                              participantId={p.registration.user.participant?.participantId ?? null}
+                              registrationId={p.registrationId}
+                              eventName={displayEventName(p.registration.event.name, p.registration.formResponses)}
+                            />
+                          </span>
+                        </div>
+                        <div className="max-w-[180px] truncate text-xs font-normal text-muted-foreground">
+                          {p.registration.user.email}
+                        </div>
+                        <a
+                          href={`tel:${p.registration.user.phone}`}
+                          className="block max-w-[180px] truncate text-xs font-mono font-normal text-[#2362EC] hover:underline"
+                        >
+                          {p.registration.user.phone}
+                        </a>
+                      </td>
+                      <td className="px-2.5 py-2 text-xs">
+                        <span className="line-clamp-2 max-w-[140px]">
+                          {displayEventName(p.registration.event.name, p.registration.formResponses)}
+                        </span>
+                      </td>
+                      <td className="px-2.5 py-2 font-mono whitespace-nowrap">
+                        ₹{Number(p.amount).toFixed(0)}
+                      </td>
+                      <td className="px-2.5 py-2">
+                        {isOffline ? (
+                          <Badge
+                            variant="outline"
+                            className="w-fit border-amber-200 bg-amber-50 text-[10px] text-amber-700"
+                          >
+                            OFFLINE
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="w-fit text-[10px]">
+                            UPI
+                          </Badge>
+                        )}
+                        <div className="mt-1 max-w-[130px] truncate font-mono text-[11px] text-muted-foreground">
+                          {p.transactionId && !isOffline ? p.transactionId : "No UTR"}
+                        </div>
+                      </td>
+                      <td className="px-2.5 py-2">
+                        <PaymentPreviewSheet
+                          row={{
+                            participant: p.registration.user.name,
+                            email: p.registration.user.email,
+                            phone: p.registration.user.phone,
+                            college: p.registration.user.collegeName,
+                            participantId: p.registration.user.participant?.participantId ?? "",
+                            events: displayEventName(p.registration.event.name, p.registration.formResponses),
+                            amount: Number(p.amount),
+                            method: isOffline ? "OFFLINE" : "UPI",
+                            upiId: isOffline ? null : p.transactionId,
+                            screenshotUrl: p.receiptUrl,
+                            status: p.status,
+                            extra: [
+                              { label: "Initiated", value: format(p.initiatedAt, "MMM d, yyyy h:mm a") },
+                              { label: "Collected by", value: p.collector?.name ?? "" },
+                              { label: "Verified by", value: p.verifier?.name ?? "" },
+                            ],
+                          }}
+                          actions={
+                            p.status === "PENDING" || p.status === "COORDINATOR_COLLECTED" ? (
+                              <RegistrationActions
+                                registrationId={p.registrationId}
+                                paymentId={p.id}
+                                paymentStatus={p.status}
+                              />
+                            ) : undefined
+                          }
+                        />
+                      </td>
+                      <td className="px-2.5 py-2">
+                        <Badge variant="outline" className={`w-fit ${PAYMENT_STATE_STYLE[state]}`}>
+                          {PAYMENT_STATE_LABEL[state]}
+                        </Badge>
+                        <div className="mt-1 max-w-[130px] truncate text-[11px] text-muted-foreground">
+                          {p.status.replace(/_/g, " ")}
+                        </div>
+                      </td>
+                      <td className="px-2.5 py-2">
+                        {p.status === "PENDING" || p.status === "COORDINATOR_COLLECTED" ? (
+                          <RegistrationActions
+                            registrationId={p.registrationId}
+                            paymentId={p.id}
+                            paymentStatus={p.status}
+                          />
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div className="px-4 pb-4">
+            <PaginationNav
+              baseUrl="/payments"
+              page={page}
+              perPage={PER_PAGE}
+              total={total}
+              params={{ q, status: statusFilter }}
+              noun="payments"
+            />
+          </div>
         </CardContent>
       </Card>
     </div>
