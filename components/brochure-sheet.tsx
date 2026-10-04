@@ -67,12 +67,13 @@ export function BrochureSheet({
           </div>
         </SheetHeader>
 
-        {/* Some mobile browsers refuse to render inline PDFs, so the fallback
-            stays reachable instead of showing an empty frame. */}
+        {/* tabIndex -1 keeps the frame out of the tab order: otherwise focus
+            lands inside the PDF and Escape can no longer reach the dialog. */}
         <div className="min-h-0 flex-1 bg-[#0F172A]/5">
           <iframe
             src={BROCHURE_URL}
             title="Innovate Ignite 26 Brochure"
+            tabIndex={-1}
             className="h-full w-full"
           />
         </div>

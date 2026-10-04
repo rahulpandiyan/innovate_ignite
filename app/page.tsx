@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Calendar, MapPin, Sparkles, Music, Code2, Trophy, Palette, Clapperboard, Star, Gamepad2, ChefHat, GraduationCap } from "lucide-react";
+import { ArrowRight, Calendar, MapPin, Sparkles, Music, Code2, Trophy, Palette, Clapperboard, Star, Gamepad2, ChefHat, GraduationCap, FileText } from "lucide-react";
 import { motion } from "framer-motion";
 import { categories } from "@/data/homeData";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PendingPaymentAlert } from "@/components/home/pending-payment-alert";
+import { BrochureSheet } from "@/components/brochure-sheet";
 import innovateLogo from "@/public/gat-logos/innovate-ignite.png";
 
 const totalEvents = categories.reduce((a, c) => a + c.count, 0);
@@ -101,9 +102,18 @@ export default function Home() {
                     Grab your pass <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-11 rounded-full border-[#0F172A]/15 bg-white px-6">
-                  <Link href="#lineup">See lineup</Link>
-                </Button>
+                <BrochureSheet
+                  trigger={
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="h-11 rounded-full border-[#0F172A]/15 bg-white px-6"
+                    >
+                      <FileText className="mr-1 h-4 w-4" />
+                      See the brochure
+                    </Button>
+                  }
+                />
               </motion.div>
 
               <div className="mt-6 flex flex-wrap items-center gap-4 font-mono text-xs text-[#0F172A]/60">
