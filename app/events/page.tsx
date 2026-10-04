@@ -7,6 +7,7 @@ import { eventCategories } from "@/data/eventCategories";
 import { formatPriceLabel, memberCountLabel, PricingMode } from "@/lib/pricing";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { BrochureSheet } from "@/components/brochure-sheet";
 
 const getCategoryStyle = (category: string) => {
   const map: Record<string, { bg: string; text: string; border: string; dot: string }> = {
@@ -84,8 +85,11 @@ export default function EventPage() {
               {eventCategories.length} STAGES
             </span>
           </span>
-          <span className="inline-flex items-center gap-1.5 text-[#0F172A]/60">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-[#19E3A8]" /> Live lineup
+          <span className="inline-flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 text-[#0F172A]/60">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-[#19E3A8]" /> Live lineup
+            </span>
+            <BrochureSheet />
           </span>
         </div>
 
