@@ -21,7 +21,24 @@ const nextConfig: NextConfig = {
     async headers() {
         return [
             {
-                source: "/(.*)",
+                // The brochure is embedded in our own bottom sheet, so it has to be
+                // framable by us. 'self' + SAMEORIGIN still blocks third-party
+                // framing, which is the actual clickjacking vector.
+                source: "/brochure/:path*",
+                headers: [
+                    {
+                        key: "Content-Security-Policy",
+                        value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://maps.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https: data:; connect-src 'self' https:; frame-src 'self' https://www.google.com https://maps.google.com https://www.google.co.in https://maps.gstatic.com; frame-ancestors 'self';",
+                    },
+                    {
+                        key: "X-Frame-Options",
+                        value: "SAMEORIGIN",
+                    },
+                ],
+            },
+            {
+                // Everything else keeps the strict no-framing policy.
+                source: "/((?!brochure/).*)",
                 headers: [
                     {
                         key: "Content-Security-Policy",
