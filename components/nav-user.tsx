@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { EllipsisVertical, ShieldCheck, LogOut, CircleUserRound } from "lucide-react";
+import { EllipsisVertical, ShieldCheck, LogOut, CircleUserRound, CalendarDays } from "lucide-react";
 import { useSidebar, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
@@ -19,10 +19,12 @@ export function NavUser({
   name,
   email,
   profileHref,
+  eventsHref,
 }: {
   name: string;
   email: string;
   profileHref?: string;
+  eventsHref?: string;
 }) {
   const { isMobile } = useSidebar();
   const avatarUrl = avatarUrlFor(email);
@@ -83,6 +85,14 @@ export function NavUser({
                 <Link href={profileHref}>
                   <CircleUserRound />
                   Profile
+                </Link>
+              </DropdownMenuItem>
+            )}
+            {eventsHref && (
+              <DropdownMenuItem asChild className="cursor-pointer">
+                <Link href={eventsHref}>
+                  <CalendarDays />
+                  Back to events
                 </Link>
               </DropdownMenuItem>
             )}

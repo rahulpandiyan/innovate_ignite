@@ -8,6 +8,9 @@ export interface EventList {
     name: string;
     rules: string[];
     coordinators?: { name: string; email?: string; phone?: string; faculty?: boolean }[];
+    // Hidden events keep their rules/coordinators for admin use but are dropped
+    // from public listings.
+    hidden?: boolean;
 }
 
 function slugify(name: string): string {
@@ -73,7 +76,7 @@ export const eventsList: EventList[] = [
         name: "BGMI & FreeFire",
         rules: [
             "Offline, campus-only squad competition for BGMI and Free Fire.",
-            "Date: Friday, October 9, 2026.",
+            "Date: Wednesday, October 14, 2026.",
             "Prize pool: up to ₹5,000.",
             "Teams must consist of 4 student players.",
             "Players can only represent one team.",
@@ -184,7 +187,7 @@ export const eventsList: EventList[] = [
         name: "PIXELS - Photography",
         rules: [
             "PIXELS is an on-campus photography competition organized under Innovate and Ignite 2026 at Vijaya Vittala Institute of Technology. The event encourages participants to capture visual stories and see the world through a different lens.",
-            "Date: October 9, 2026 | Time: 9:30 AM onwards | Venue: Quadrangle | Registration fee: ₹50 per participant.",
+            "Date: October 14, 2026 | Time: 9:30 AM onwards | Venue: Quadrangle | Registration fee: ₹50 per participant.",
             "Open to all registered students using smartphones or standard cameras (DSLR/Mirrorless).",
             "All photographs must be shot on campus during the event hours.",
             "Only basic editing (brightness, contrast, cropping, color correction) is permitted. Image manipulation, AI generation, or heavy compositing is strictly prohibited.",
@@ -236,7 +239,7 @@ export const eventsList: EventList[] = [
             "Judges' decision: the judges' decision will be final.",
             "Disqualification: misconduct, plagiarism, false information, or violation of event rules may result in disqualification.",
             "Registration fee: ₹200 per team.",
-            "Date: 8 October 2026 | Time: 1:30 PM – 4:30 PM | Venue: Room No. 201 & 202.",
+            "Date: 13 October 2026 | Time: 1:30 PM – 4:30 PM | Venue: Room No. 201 & 202.",
         ],
         coordinators: [
             { name: "Rashmi", email: "rashmirs.cs@vvit.ac.in", faculty: true },
@@ -276,6 +279,7 @@ export const eventsList: EventList[] = [
         category: "THEATRE",
         image: eventImage,
         name: "Crucial Beats",
+        hidden: true,
         rules: [
             "The competition will have both Solo and Group singing categories.",
             "Each participant/team can perform only one song, with a maximum duration of 4 minutes.",

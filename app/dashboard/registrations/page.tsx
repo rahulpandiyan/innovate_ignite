@@ -25,9 +25,9 @@ function scheduleFallback(name: string) {
   for (const day of festSchedule) {
     for (const slot of day.slots) {
       const hit = slot.items.find((i) => i.name === name)
-      if (hit) return { date: new Date(day.date === "8 October 2026" ? "2026-10-08T09:30:00+05:30" : "2026-10-09T09:30:00+05:30"), venue: hit.venue as string, time: slot.time as string }
+      if (hit) return { date: new Date(day.date === "13 October 2026" ? "2026-10-13T09:30:00+05:30" : "2026-10-14T09:30:00+05:30"), venue: hit.venue as string, time: slot.time as string }
     }
-    if (day.runsAlongside?.name === name) return { date: new Date("2026-10-09T09:30:00+05:30"), venue: day.runsAlongside.venue as string, time: day.runsAlongside.time as string }
+    if (day.runsAlongside?.name === name) return { date: new Date("2026-10-14T09:30:00+05:30"), venue: day.runsAlongside.venue as string, time: day.runsAlongside.time as string }
   }
   return null
 }

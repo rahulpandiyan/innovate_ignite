@@ -13,7 +13,7 @@ export default function ContactPage() {
           <Link href="/" className="inline-flex items-center gap-2 text-[#0F172A]/60 hover:text-[#0F172A]">
             <ArrowLeft className="h-3.5 w-3.5" /> Home
           </Link>
-          <span className="hidden sm:inline-flex items-center gap-2 text-[#0F172A]/40">VVIT · Oct 8–9 · Bengaluru</span>
+          <span className="hidden sm:inline-flex items-center gap-2 text-[#0F172A]/40">VVIT · Oct 13–14 · Bengaluru</span>
         </div>
 
         <div className="text-center">

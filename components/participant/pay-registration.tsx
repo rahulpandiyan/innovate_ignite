@@ -28,8 +28,8 @@ export function PaySheet({ open, onOpenChange, registrationId, amount, onSubmitt
   const [loading, setLoading] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
 
-  const upiHandle = "subhrajitsengupta1-2@okicici";
-  const upiLink = `upi://pay?pa=${upiHandle}&pn=Subhrajit%20Sengupta&am=${amount}&cu=INR&tn=InnovateIgnite-${registrationId.slice(0, 8)}`;
+  const upiHandle = "fetch741264.rzp@rxairtel";
+  const upiLink = `upi://pay?pa=${upiHandle}&pn=Fetch&am=${amount}&cu=INR&tn=InnovateIgnite-${registrationId.slice(0, 8)}`;
 
   const handleCopy = async () => {
     try {
@@ -207,6 +207,13 @@ export function PaySheet({ open, onOpenChange, registrationId, amount, onSubmitt
               </Button>
             </form>
           )}
+
+          <p className="mt-6 rounded-xl bg-[#F8FAFC] px-4 py-3 text-center text-xs leading-relaxed text-[#0F172A]/60">
+            If there is any problem with the payment, contact the Event Coordinator{" "}
+            <a href="tel:+919739431299" className="font-bold text-[#0F172A] underline decoration-[#0F172A]/20 underline-offset-2 hover:text-black">
+              Sam Goldwin · +91 97394 31299
+            </a>
+          </p>
         </div>
       </SheetContent>
     </Sheet>

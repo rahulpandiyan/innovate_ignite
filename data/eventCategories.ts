@@ -9,6 +9,9 @@ export interface EventCategory {
     groupPrice?: number;
     minTeamSize: number;
     maxTeamSize: number;
+    // Hidden events stay in the master list (so admin tooling, DB rows and
+    // coordinator data still resolve) but are dropped from every public view.
+    hidden?: boolean;
 }
 
 export function slugify(name: string): string {
@@ -139,7 +142,15 @@ export const interDepartmentEvents: EventCategory[] = [
         groupPrice: 150,
         minTeamSize: 1,
         maxTeamSize: 2,
+        hidden: true,
     },
 ];
 
-export const eventCategories = interDepartmentEvents;
+// Public list of stages. Hidden events are excluded here so /events, the event
+// detail routes and every static path stay in sync from this single flag.
+export const eventCategories = interDepartmentEvents.filter((e) => !e.hidden);
+
+// Names of hidden events, so DB-backed public listings can drop them too.
+export const hiddenEventNames: string[] = interDepartmentEvents
+    .filter((e) => e.hidden)
+    .map((e) => e.eventName);

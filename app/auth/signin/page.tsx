@@ -51,7 +51,12 @@ function SignInContent() {
           try {
             const regRes = await axios.post(`/api/events/${eventId}/register`);
             const isPaid = regRes.data?.data?.isPaidEvent;
-            if (isPaid) {
+            const registrationId = regRes.data?.data?.registration?.id as string | undefined;
+            if (isPaid && registrationId) {
+              toast.success("Logged in & registered — payment pending", { description: "Complete payment in dashboard to confirm." });
+              router.push(`/dashboard/registrations?pay=${registrationId}`);
+              return;
+            } else if (isPaid) {
               toast.success("Logged in & registered — payment pending", { description: "Complete payment in dashboard to confirm." });
             } else {
               toast.success("Logged in & registered!", { description: "You are registered for the event." });
@@ -60,10 +65,32 @@ function SignInContent() {
             return;
           } catch (e: unknown) {
             if (axios.isAxiosError(e) && e.response?.status === 409) {
-              toast.success("Login successful!", { description: "You were already registered for that event." });
+              try {
+                const check = await axios.get(`/api/events/${eventId}/registration`);
+                const reg = check.data?.data?.registration as
+                  | { id: string; needsPayment: boolean; paymentStatus: string | null; status: string }
+                  | undefined;
+                if (reg?.needsPayment && reg?.id) {
+                  toast.info("Already registered — payment pending", {
+                    description: "Complete payment to confirm your spot.",
+                  });
+                  router.push(`/dashboard/registrations?pay=${reg.id}`);
+                  return;
+                }
+                if (reg?.status === "CONFIRMED" || reg?.paymentStatus === "SUCCESS") {
+                  toast.success("Login successful! Already registered — you're confirmed!");
+                } else {
+                  toast.success("Login successful!", { description: "You were already registered for that event." });
+                }
+              } catch {
+                toast.success("Login successful!", { description: "You were already registered for that event." });
+              }
               router.push(callbackUrl || redirect || "/dashboard/registrations");
               return;
             }
+            // non-409 error: still surface but continue to dashboard
+            const msg = axios.isAxiosError(e) ? e.response?.data?.error?.message : undefined;
+            if (msg) toast.error(msg);
           }
         }
         toast.success("Login successful!", { description: "Welcome back!" });
@@ -95,8 +122,8 @@ function SignInContent() {
       {/* ticker */}
       <div className="overflow-hidden border-y border-[#0F172A]/10 bg-[#0F172A] py-2">
         <div className="flex animate-[marquee_22s_linear_infinite] whitespace-nowrap font-mono text-[10px] sm:text-[11px] tracking-[0.16em] uppercase text-white">
-          <span className="mx-6">TECHNINJA - QUIZ ◆ VV CARE ◆ MINI PROJECT EXPO ◆ CODE CONFLUX ◆ GROUP DISCUSSION ◆ AIR CRASH ◆ PIXELS - PHOTOGRAPHY ◆ DANCE.EXE ◆ BGMI & FREEFIRE ◆ VVIT GOT LATENT ◆ REEL VIDEO MAKING ◆ THE ROYAL WALK ◆ CRUCIAL BEATS</span>
-          <span className="mx-6" aria-hidden>TECHNINJA - QUIZ ◆ VV CARE ◆ MINI PROJECT EXPO ◆ CODE CONFLUX ◆ GROUP DISCUSSION ◆ AIR CRASH ◆ PIXELS - PHOTOGRAPHY ◆ DANCE.EXE ◆ BGMI & FREEFIRE ◆ VVIT GOT LATENT ◆ REEL VIDEO MAKING ◆ THE ROYAL WALK ◆ CRUCIAL BEATS</span>
+          <span className="mx-6">TECHNINJA - QUIZ ◆ VV CARE ◆ MINI PROJECT EXPO ◆ CODE CONFLUX ◆ GROUP DISCUSSION ◆ AIR CRASH ◆ PIXELS - PHOTOGRAPHY ◆ DANCE.EXE ◆ BGMI & FREEFIRE ◆ VVIT GOT LATENT ◆ REEL VIDEO MAKING ◆ THE ROYAL WALK</span>
+          <span className="mx-6" aria-hidden>TECHNINJA - QUIZ ◆ VV CARE ◆ MINI PROJECT EXPO ◆ CODE CONFLUX ◆ GROUP DISCUSSION ◆ AIR CRASH ◆ PIXELS - PHOTOGRAPHY ◆ DANCE.EXE ◆ BGMI & FREEFIRE ◆ VVIT GOT LATENT ◆ REEL VIDEO MAKING ◆ THE ROYAL WALK</span>
         </div>
         <style>{`@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
       </div>
@@ -114,14 +141,14 @@ function SignInContent() {
             <div className="absolute -right-2 top-10 h-6 w-16 rotate-[8deg] rounded-sm bg-[#F3C317] shadow-sm" />
             <div className="relative">
               <div className="inline-flex items-center gap-2 rounded-full bg-[#0F172A] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-white">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#19E3A8]" /> VVIT · OCT 8–9
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#19E3A8]" /> VVIT · OCT 13–14
               </div>
               <h1 className="mt-4 leading-[0.86] tracking-[-0.03em]" >
                 <span className="block text-[44px] sm:text-[56px]">WELCOME</span>
                 <span className="block text-[44px] sm:text-[56px] text-[#2362EC]">BACK</span>
               </h1>
               <p className="mt-3 max-w-sm text-sm leading-6 text-[#0F172A]/60">
-                Your pass to 13 stages. Sign in to register, form teams, and track your lineup. One portal — all venues on campus.
+                Your pass to 12 stages. Sign in to register, form teams, and track your lineup. One portal — all venues on campus.
               </p>
               <div className="mt-6 flex items-center gap-3">
                 <Image src={gatLogo} alt="VVIT" width={48} height={48} className="h-9 w-auto" />
@@ -129,7 +156,7 @@ function SignInContent() {
                 <Image src={innovateIgniteLogo} alt="Ignite" width={48} height={48} className="h-9 w-auto" />
               </div>
               <div className="mt-6 inline-flex -rotate-1 rounded-xl bg-[#FFF1A6] px-3 py-1.5 shadow" >
-                <span className="text-sm">Psst — 13 events, 5 domains →</span>
+                <span className="text-sm">Psst — 12 events, 5 domains →</span>
               </div>
             </div>
           </div>
@@ -242,7 +269,7 @@ function SignInContent() {
               </p>
             </div>
           </div>
-          <p className="mt-3 text-center font-mono text-[11px] text-[#0F172A]/40">Protected by VVIT · One pass for all 13 stages</p>
+          <p className="mt-3 text-center font-mono text-[11px] text-[#0F172A]/40">Protected by VVIT · One pass for all 12 stages</p>
         </motion.div>
       </div>
     </div>

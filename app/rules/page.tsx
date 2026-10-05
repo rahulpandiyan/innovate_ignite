@@ -38,7 +38,7 @@ const sections = [
     icon: MapPin,
     title: "4. Venue & Schedule",
     items: [
-      "Fest runs Oct 8–9, 2026 at VVIT Campus, Bengaluru.",
+      "Fest runs Oct 13–14, 2026 at VVIT Campus, Bengaluru.",
       "Venue and time for each event are fixed — check the Schedule before you register to avoid clashes.",
       "Report at least 15–30 minutes before your slot. Latecomers may be disqualified.",
     ],
@@ -71,14 +71,14 @@ export default function RulesPage() {
           <Link href="/" className="inline-flex items-center gap-2 text-[#0F172A]/60 hover:text-[#0F172A]">
             <ArrowLeft className="h-3.5 w-3.5" /> Home
           </Link>
-          <span className="hidden sm:inline-flex items-center gap-2 text-[#0F172A]/40">VVIT · Oct 8–9 · Bengaluru</span>
+          <span className="hidden sm:inline-flex items-center gap-2 text-[#0F172A]/40">VVIT · Oct 13–14 · Bengaluru</span>
         </div>
 
         <div className="text-center">
           <p className="font-mono text-[11px] tracking-[0.22em] uppercase text-[#0F172A]/50">Please read before you register</p>
           <h1 className="mt-2 text-[clamp(36px,7vw,72px)] font-black leading-[0.9] tracking-tight">RULES &<br />REGULATIONS</h1>
           <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-[#0F172A]/60">
-            These overall rules apply to all 13 stages. Each event page lists its own detailed rules as well.
+            These overall rules apply to all 12 stages. Each event page lists its own detailed rules as well.
           </p>
         </div>
 

@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import prisma from "@/lib/db";
+import { hiddenEventNames } from "@/data/eventCategories";
 import {
   requireAuth,
   requireAdmin,
@@ -23,6 +24,8 @@ export async function GET(req: NextRequest) {
     const where: Record<string, unknown> = {};
     if (!isAdmin) {
       where.isActive = true;
+      // Hidden stages stay manageable in admin but never reach the public API.
+      where.name = { notIn: hiddenEventNames };
     }
     if (category) {
       where.category = category;

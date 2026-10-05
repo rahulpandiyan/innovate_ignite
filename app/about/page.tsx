@@ -130,7 +130,7 @@ export default function About() {
                   </div>
                 </div>
                 <div className="mt-6 flex flex-wrap items-center gap-2 font-mono text-xs text-[#0F172A]/50">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#19E3A8]/15 px-2.5 py-1"><Calendar className="h-3 w-3" /> Oct 8–9 · VVIT Campus</span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#19E3A8]/15 px-2.5 py-1"><Calendar className="h-3 w-3" /> Oct 13–14 · VVIT Campus</span>
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 px-2.5 py-1"><MapPin className="h-3 w-3" /> Bengaluru</span>
                 </div>
               </div>
@@ -190,12 +190,12 @@ export default function About() {
               Your campus tour <span className="text-[#19E3A8]">starts here.</span>
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-white/70">
-              13 stages, 5 domains, one 10-acre campus. Meet the coordinators, find your venue, and get your pass.
+              12 stages, 5 domains, one 10-acre campus. Meet the coordinators, find your venue, and get your pass.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Button asChild className="rounded-full bg-white px-7 text-[#0F172A] hover:bg-white/90">
                 <Link href="/events">
-                  Browse 13 stages <ArrowRight className="ml-1 h-4 w-4" />
+                  Browse 12 stages <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline" className="rounded-full border-white/20 bg-transparent px-7 text-white hover:bg-white/10 hover:text-white">

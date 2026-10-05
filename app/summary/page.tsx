@@ -14,10 +14,10 @@ import { Button } from "@/components/ui/button";
 
 const EventPage = () => {
     const [searchParam, setSearchParam] = useState<string>("");
-    const [eventList, setEventList] = useState<EventList[]>(eventsList);
+    const [eventList, setEventList] = useState<EventList[]>(eventsList.filter((event) => !event.hidden));
     
     useEffect(()=>{
-        setEventList(eventsList.filter((event) => event.name.toLowerCase().includes(searchParam.toLowerCase()) || event.category.toLowerCase().includes(searchParam.toLowerCase())));
+        setEventList(eventsList.filter((event) => !event.hidden && (event.name.toLowerCase().includes(searchParam.toLowerCase()) || event.category.toLowerCase().includes(searchParam.toLowerCase()))));
     },[searchParam])
 
     return (

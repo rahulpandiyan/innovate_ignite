@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { eventCategories } from "@/data/eventCategories";
 import { eventsList } from "@/data/eventList";
-import { getPublicEventBySlug } from "@/lib/eventDetail";
+import { getPublicEventBySlug, getViewerEventRegistration } from "@/lib/eventDetail";
 import EventDetailClient from "./EventDetailClient";
 
 interface Props {
@@ -20,7 +20,6 @@ const LEGACY_REDIRECTS: Record<string, string> = {
   "dance-elite": "/events/danceexe",
   "techninja": "/events/techninja-quiz",
   "mini-project-presentation": "/events/mini-project-expo",
-  "crucial-beats-singing": "/events/crucial-beats",
   "photography": "/events/pixels-photography",
   "symposium-group-discussion": "/events/group-discussion",
 };
@@ -37,5 +36,16 @@ export default async function EventDetailPage({ params }: Props) {
   const details = eventsList.filter((e) => e.slug === slug);
   const dbEvent = await getPublicEventBySlug(category.slug, category.eventName);
 
-  return <EventDetailClient category={category} details={details} dbEvent={dbEvent} />;
+  // Resolved here so the CTA is right on first paint (register vs pay vs
+  // already confirmed) instead of flipping after a client fetch.
+  const viewerRegistration = dbEvent ? await getViewerEventRegistration(dbEvent.id) : null;
+
+  return (
+    <EventDetailClient
+      category={category}
+      details={details}
+      dbEvent={dbEvent}
+      viewerRegistration={viewerRegistration}
+    />
+  );
 }

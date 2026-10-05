@@ -41,7 +41,7 @@ export default function Home() {
               VVIT Bengaluru · National level · Inter-collegiate
             </span>
             <span className="inline-flex items-center gap-2 text-[#0F172A]/60">
-              <Calendar className="h-3.5 w-3.5" /> Oct 8–9, 2026
+              <Calendar className="h-3.5 w-3.5" /> Oct 13–14, 2026
               <span className="hidden sm:inline">· Registrations open → close Oct 6</span>
             </span>
           </motion.div>
@@ -77,7 +77,7 @@ export default function Home() {
                     &apos;26
                   </span>
                   <span className="hidden sm:inline-flex -rotate-2 rounded-xl bg-[#F3C317] px-3 py-1 font-mono text-[11px] font-bold tracking-[0.16em] uppercase text-[#0F172A] shadow-sm">
-                    13 events · 13 stages
+                    12 events · 12 stages
                   </span>
                 </span>
               </motion.h1>
@@ -137,7 +137,7 @@ export default function Home() {
                     <Image src={innovateLogo} alt="Innovate Ignite" className="h-[240px] sm:h-[280px] w-full object-contain bg-white p-6" priority />
                   </div>
                   <div className="flex items-center justify-between px-1 pt-3">
-                    <span className="font-mono text-[11px] tracking-[0.16em] uppercase text-[#0F172A]/60">VVIT · 8—9 OCT</span>
+                    <span className="font-mono text-[11px] tracking-[0.16em] uppercase text-[#0F172A]/60">VVIT · 13—14 OCT</span>
                     <span className="rounded-full bg-[#2362EC] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-white">13 EVENTS</span>
                   </div>
                   {/* tape */}
@@ -173,8 +173,8 @@ export default function Home() {
           {/* fest ticker */}
           <div className="overflow-hidden rounded-xl border border-[#0F172A]/10 bg-[#0F172A] text-white">
             <div className="flex animate-[marquee_22s_linear_infinite] whitespace-nowrap py-2.5 font-mono text-xs tracking-[0.18em] uppercase">
-              <span className="mx-6 inline-flex items-center gap-3">TECHNINJA <span className="text-[#F3C317]">◆</span> VV CARE <span className="text-[#19E3A8]">◆</span> MINI PROJECT <span className="text-[#E11D48]">◆</span> CODE CONFLUX <span className="text-[#F3C317]">◆</span> SYMPOSIUM <span className="text-[#19E3A8]">◆</span> AIR CRASH <span className="text-[#E11D48]">◆</span> PHOTOGRAPHY <span className="text-[#F3C317]">◆</span> DANCE ELITE <span className="text-[#19E3A8]">◆</span> BGMI / FREEFIRE <span className="text-[#E11D48]">◆</span> VVIT GOT LATENT <span className="text-[#F3C317]">◆</span> REEL VIDEO MAKING <span className="text-[#19E3A8]">◆</span> THE ROYAL WALK <span className="text-[#E11D48]">◆</span> CRUCIAL BEATS <span className="text-[#F3C317]">◆</span></span>
-              <span className="mx-6 inline-flex items-center gap-3" aria-hidden>TECHNINJA <span className="text-[#F3C317]">◆</span> VV CARE <span className="text-[#19E3A8]">◆</span> MINI PROJECT <span className="text-[#E11D48]">◆</span> CODE CONFLUX <span className="text-[#F3C317]">◆</span> SYMPOSIUM <span className="text-[#19E3A8]">◆</span> AIR CRASH <span className="text-[#E11D48]">◆</span> PHOTOGRAPHY <span className="text-[#F3C317]">◆</span> DANCE ELITE <span className="text-[#19E3A8]">◆</span> BGMI / FREEFIRE <span className="text-[#E11D48]">◆</span> VVIT GOT LATENT <span className="text-[#F3C317]">◆</span> REEL VIDEO MAKING <span className="text-[#19E3A8]">◆</span> THE ROYAL WALK <span className="text-[#E11D48]">◆</span> CRUCIAL BEATS <span className="text-[#F3C317]">◆</span></span>
+              <span className="mx-6 inline-flex items-center gap-3">TECHNINJA <span className="text-[#F3C317]">◆</span> VV CARE <span className="text-[#19E3A8]">◆</span> MINI PROJECT <span className="text-[#E11D48]">◆</span> CODE CONFLUX <span className="text-[#F3C317]">◆</span> SYMPOSIUM <span className="text-[#19E3A8]">◆</span> AIR CRASH <span className="text-[#E11D48]">◆</span> PHOTOGRAPHY <span className="text-[#F3C317]">◆</span> DANCE ELITE <span className="text-[#19E3A8]">◆</span> BGMI / FREEFIRE <span className="text-[#E11D48]">◆</span> VVIT GOT LATENT <span className="text-[#F3C317]">◆</span> REEL VIDEO MAKING <span className="text-[#19E3A8]">◆</span> THE ROYAL WALK <span className="text-[#E11D48]">◆</span> </span>
+              <span className="mx-6 inline-flex items-center gap-3" aria-hidden>TECHNINJA <span className="text-[#F3C317]">◆</span> VV CARE <span className="text-[#19E3A8]">◆</span> MINI PROJECT <span className="text-[#E11D48]">◆</span> CODE CONFLUX <span className="text-[#F3C317]">◆</span> SYMPOSIUM <span className="text-[#19E3A8]">◆</span> AIR CRASH <span className="text-[#E11D48]">◆</span> PHOTOGRAPHY <span className="text-[#F3C317]">◆</span> DANCE ELITE <span className="text-[#19E3A8]">◆</span> BGMI / FREEFIRE <span className="text-[#E11D48]">◆</span> VVIT GOT LATENT <span className="text-[#F3C317]">◆</span> REEL VIDEO MAKING <span className="text-[#19E3A8]">◆</span> THE ROYAL WALK <span className="text-[#E11D48]">◆</span> </span>
             </div>
             <style>{`@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
           </div>
@@ -187,14 +187,14 @@ export default function Home() {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-[#0F172A]/10 bg-white px-3 py-1 font-mono text-[11px] tracking-[0.16em] uppercase">
-                <Star className="h-3.5 w-3.5 text-[#F3C317]" /> Lineup — 13 stages
+                <Star className="h-3.5 w-3.5 text-[#F3C317]" /> Lineup — 12 stages
               </div>
               <h2 className="mt-3 font-heading text-3xl font-black tracking-tight sm:text-4xl" style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "-0.02em" }}>
                 Pick your stage.
               </h2>
             </div>
             <p className="max-w-md font-body text-sm leading-6 text-[#0F172A]/60">
-              5 domains, 13 events. Each sticker peels to reveal venue, team size and price — tap to filter the real list.
+              5 domains, 12 events. Each sticker peels to reveal venue, team size and price — tap to filter the real list.
             </p>
           </div>
 
@@ -246,7 +246,7 @@ export default function Home() {
 
           <div className="mt-6 flex justify-center">
             <Link href="/events" className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.14em] uppercase text-[#0F172A]/60 hover:text-[#0F172A]">
-              View all 13 events <ArrowRight className="h-3.5 w-3.5" />
+              View all 12 events <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         </div>
@@ -260,21 +260,21 @@ export default function Home() {
             <div className="col-span-12 lg:col-span-4">
               <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#19E3A8]">Festival timetable</p>
               <h2 className="mt-2 text-3xl font-black leading-none tracking-tight" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
-                2 DAYS.<br />13 STAGES.<br />
+                2 DAYS.<br />12 STAGES.<br />
                 <span className="text-[#F3C317]">NONSTOP.</span>
               </h2>
               <p className="mt-3 max-w-sm text-sm leading-6 text-white/70">
                 Doors 9:00. Every venue published in advance — no last-minute room changes. Final times drop week of Oct 1.
               </p>
               <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1.5 font-mono text-[11px] tracking-wide text-white/80">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-[#F3C317]" /> 2 days · Oct 8–9
+                <span className="h-2 w-2 animate-pulse rounded-full bg-[#F3C317]" /> 2 days · Oct 13–14
               </div>
             </div>
             <div className="col-span-12 lg:col-span-8">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {[
-                  { day: "DAY 1 — OCT 8", items: ["Code conflux", "Group Discussion", "VV CARE", "Mini Project Expo", "TechNinja - Quiz"], dot: "bg-[#19E3A8]" },
-                  { day: "DAY 2 — OCT 9", items: ["AIR CRASH", "Reel Video Making", "BGMI & FreeFire", "VVIT GOT LATENT", "PIXELS - Photography", "The Royal Walk", "DANCE.exe", "Crucial Beats"], dot: "bg-[#F3C317]" },
+                  { day: "DAY 1 — OCT 13", items: ["Code conflux", "Group Discussion", "VV CARE", "Mini Project Expo", "TechNinja - Quiz"], dot: "bg-[#19E3A8]" },
+                  { day: "DAY 2 — OCT 14", items: ["AIR CRASH", "Reel Video Making", "BGMI & FreeFire", "VVIT GOT LATENT", "PIXELS - Photography", "The Royal Walk", "DANCE.exe"], dot: "bg-[#F3C317]" },
                 ].map((col) => (
                   <div key={col.day} className="rounded-2xl border border-white/10 bg-white/[0.06] p-5 backdrop-blur">
                     <p className="font-mono text-[11px] tracking-[0.16em] text-white/70">{col.day}</p>
@@ -310,7 +310,7 @@ export default function Home() {
               Your crew. <span className="text-[#2362EC]">Your stage.</span> One pass.
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-[#0F172A]/60">
-              Join 1000+ students across 13 events. One portal, one pass, all venues on VVIT campus. Edit your lineup till Oct 6.
+              Join 1000+ students across 12 events. One portal, one pass, all venues on VVIT campus. Edit your lineup till Oct 6.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg" className="h-11 rounded-full bg-[#0F172A] px-7 text-white hover:bg-black">
@@ -325,7 +325,7 @@ export default function Home() {
             <div className="mt-6 flex flex-wrap justify-center gap-2 font-mono text-[11px] tracking-wide text-[#0F172A]/50">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 px-3 py-1"><span className="h-1.5 w-1.5 rounded-full bg-[#19E3A8]" /> Free to browse</span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 px-3 py-1"><span className="h-1.5 w-1.5 rounded-full bg-[#F3C317]" /> Pay only on confirm</span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 px-3 py-1"><span className="h-1.5 w-1.5 rounded-full bg-[#2362EC]" /> Campus only · Oct 8–9</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F172A]/10 px-3 py-1"><span className="h-1.5 w-1.5 rounded-full bg-[#2362EC]" /> Campus only · Oct 13–14</span>
             </div>
           </div>
           <p className="mt-6 text-center font-mono text-[11px] tracking-wide text-[#0F172A]/40">

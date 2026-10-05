@@ -11,13 +11,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScreenshotFileField } from "@/components/participant/screenshot-file-field";
 import { toast } from "sonner";
-import { Inbox, Landmark, Smartphone } from "lucide-react";
+import { Copy, Check, ExternalLink, Inbox, Landmark, Smartphone } from "lucide-react";
 
 export function PayOrderButton({
   orderId,
@@ -32,6 +33,20 @@ export function PayOrderButton({
   const [upiId, setUpiId] = React.useState("");
   const [screenshotUrl, setScreenshotUrl] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);
+  const upiHandle = "fetch741264.rzp@rxairtel";
+  const upiLink = `upi://pay?pa=${upiHandle}&pn=Fetch&am=${amount}&cu=INR&tn=InnovateIgnite-${orderId.slice(0, 8)}`;
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(upiHandle);
+      setCopied(true);
+      toast.success("UPI ID copied");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Copy failed");
+    }
+  };
 
   const canSubmit = paymentMethod === "offline"
     ? true
@@ -113,11 +128,40 @@ export function PayOrderButton({
 
         {paymentMethod === "upi" ? (
           <form onSubmit={handleSubmit} className="space-y-4">
-            <Alert className="text-xs">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0F172A] via-[#1a1a1e] to-[#E11D48]/40 p-3">
+              <div className="rounded-2xl bg-white p-3 shadow-inner">
+                <div className="overflow-hidden rounded-xl border-2 border-black">
+                  <Image src="/images/upi-qr.png" alt="UPI QR" width={400} height={400} className="h-auto w-full object-contain" />
+                </div>
+              </div>
+              <p className="mt-2 text-center font-mono text-[10px] tracking-widest text-white/70">Scan with any UPI app • GPay • PhonePe • Paytm</p>
+            </div>
+
+            <div className="rounded-xl border border-[#0F172A]/10 bg-[#FFFBEB] p-3">
+              <p className="font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/50">UPI ID</p>
+              <div className="mt-1 flex items-center justify-between gap-2">
+                <span className="font-mono text-sm font-bold tracking-wide text-[#0F172A]">{upiHandle}</span>
+                <Button type="button" variant="outline" size="sm" onClick={handleCopy} className="h-7 rounded-full px-3 text-xs">
+                  {copied ? <Check className="mr-1 h-3 w-3" /> : <Copy className="mr-1 h-3 w-3" />}
+                  {copied ? "Copied" : "Copy"}
+                </Button>
+              </div>
+              <a
+                href={upiLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-[#0F172A] px-4 py-2.5 text-sm font-bold text-white hover:bg-black transition-colors"
+              >
+                Pay ₹{amount} via UPI app <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+              <p className="mt-1.5 text-center font-mono text-[10px] text-[#0F172A]/40">Opens GPay / PhonePe / Paytm / BHIM</p>
+            </div>
+
+            <Alert className="text-xs bg-amber-50 border-amber-200">
               <Inbox className="h-4 w-4" />
-              <AlertTitle>Manual verification</AlertTitle>
-              <AlertDescription>
-                An administrator verifies your payment before your registration is confirmed.
+              <AlertTitle className="text-amber-900">Manual verification</AlertTitle>
+              <AlertDescription className="text-amber-800">
+                After paying, enter the UPI transaction ID and upload the screenshot below. An administrator verifies your payment before your registration is confirmed.
               </AlertDescription>
             </Alert>
             <div className="space-y-2">
@@ -137,6 +181,12 @@ export function PayOrderButton({
                 {loading ? "Submitting…" : "Submit"}
               </Button>
             </DialogFooter>
+            <p className="text-center text-xs leading-relaxed text-[#0F172A]/60">
+              If there is any problem with the payment, contact the Event Coordinator{" "}
+              <a href="tel:+919739431299" className="font-bold text-[#0F172A] underline decoration-[#0F172A]/20 underline-offset-2 hover:text-black">
+                Sam Goldwin · +91 97394 31299
+              </a>
+            </p>
           </form>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -153,6 +203,12 @@ export function PayOrderButton({
                 {loading ? "Submitting…" : "Confirm offline payment"}
               </Button>
             </DialogFooter>
+            <p className="text-center text-xs leading-relaxed text-[#0F172A]/60">
+              If there is any problem with the payment, contact the Event Coordinator{" "}
+              <a href="tel:+919739431299" className="font-bold text-[#0F172A] underline decoration-[#0F172A]/20 underline-offset-2 hover:text-black">
+                Sam Goldwin · +91 97394 31299
+              </a>
+            </p>
           </form>
         )}
       </DialogContent>

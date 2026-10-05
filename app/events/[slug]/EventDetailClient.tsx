@@ -4,11 +4,12 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { ArrowLeft, Users, Phone, MapPin, Calendar, Clock, Banknote, ShieldCheck, ChevronDown, Loader2 } from "lucide-react";
+import { ArrowLeft, Users, Phone, MapPin, Calendar, Clock, Banknote, ShieldCheck, ChevronDown, Loader2, Wallet, CheckCircle2, Ban } from "lucide-react";
 import { EventCategory } from "@/data/eventCategories";
 import { EventList } from "@/data/eventList";
-import type { PublicEventDetail } from "@/lib/eventDetail";
+import type { PublicEventDetail, ViewerEventRegistration } from "@/lib/eventDetail";
 import { formatPriceLabel, memberCountLabel, teamSizeOptions, PricingMode, TeamSizeOption } from "@/lib/pricing";
+import { paymentStateOf } from "@/lib/paymentState";
 import { toast } from "sonner";
 import { useAuthContext } from "@/contexts/auth-context";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -20,7 +21,11 @@ interface Props {
   category: EventCategory;
   details: EventList[];
   dbEvent: PublicEventDetail | null;
+  viewerRegistration: ViewerEventRegistration | null;
 }
+
+// What the primary button on the event page should offer the viewer.
+type CtaMode = "register" | "pay" | "review" | "done" | "closed";
 
 // DB rules are stored pipe- or newline-delimited; the static sheet uses an array.
 const withProfPrefix = (name: string) => (/^prof\.?\s/i.test(name) ? name : `Prof. ${name}`);
@@ -66,7 +71,7 @@ const LATENT_QUESTIONS = [
   "Why do you think you should be selected for VVIT Got Latent?",
 ];
 
-export default function EventDetailClient({ category, details, dbEvent }: Props) {
+export default function EventDetailClient({ category, details, dbEvent, viewerRegistration }: Props) {
   const style = getCategoryStyle(category.category);
   const mainDetail = details[0] || null;
   const [open, setOpen] = useState<string>("guidelines");
@@ -79,9 +84,14 @@ export default function EventDetailClient({ category, details, dbEvent }: Props)
   const latentComplete = LATENT_QUESTIONS.every((_, i) => (latentAnswers[i] ?? "").trim().length > 0);
   const isGaming = category.eventName === "BGMI & FreeFire";
   const [selectedGame, setSelectedGame] = useState<"BGMI" | "Free Fire">("BGMI");
-  const [payInfo, setPayInfo] = useState<{ registrationId: string; amount: number } | null>(null);
+  const [payInfo, setPayInfo] = useState<{ registrationId: string; amount: number; stayOnPage: boolean } | null>(null);
   const router = useRouter();
   const { isLoggedIn } = useAuthContext();
+
+  // Server prop is the baseline; the local override lets registering/paying
+  // on this page move the button immediately (router.refresh() agrees with it).
+  const [regOverride, setRegOverride] = useState<ViewerEventRegistration | null>(null);
+  const viewerReg = regOverride ?? viewerRegistration;
 
   // DB is the source of truth at render time; static sheet data is the fallback.
   const eventName = dbEvent?.name || category.eventName;
@@ -98,7 +108,7 @@ export default function EventDetailClient({ category, details, dbEvent }: Props)
   const dateLabel =
     eventDate && !isNaN(eventDate.getTime())
       ? eventDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })
-      : "Oct 8–9";
+      : "Oct 13–14";
 
   const dbRules = dbEvent?.rules ? splitDbRules(dbEvent.rules) : [];
   const rules = (dbRules.length ? dbRules : mainDetail?.rules) as string[] | undefined;
@@ -108,11 +118,46 @@ export default function EventDetailClient({ category, details, dbEvent }: Props)
   const sizeOptions: TeamSizeOption[] = teamSizeOptions({ price, priceMode, minTeamSize, maxTeamSize, groupPrice });
   const selectedOption = sizeOptions.find((o) => o.value === selectedSize) ?? sizeOptions[0];
 
+  // Already-registered viewers get a Pay button (instead of Register) while
+  // money is still owed; submitted-but-unverified payments stop at "in review".
+  const payState = viewerReg ? paymentStateOf(viewerReg.paymentStatus, viewerReg.status) : null;
+  const amountDue = Number(viewerReg?.price ?? 0);
+  const payTarget =
+    viewerReg && viewerReg.needsPayment && amountDue > 0
+      ? { registrationId: viewerReg.id, amount: amountDue }
+      : null;
+  const ctaMode: CtaMode = !viewerReg
+    ? "register"
+    : payState === "APPROVED" || viewerReg.status === "CONFIRMED"
+      ? "done"
+      : payState === "PENDING"
+        ? "review"
+        : viewerReg.status === "REJECTED"
+          ? "closed"
+          : payTarget
+            ? "pay"
+            : "done";
+
   // Coordinator contacts are managed in the admin / coordinator panels
   // (EventCoordinatorContact) and shown here as staff vs student groups.
   const contactList = dbEvent?.coordinatorContacts ?? [];
   const contactsStaff = contactList.filter((c) => c.isStaff);
   const contactsStudents = contactList.filter((c) => !c.isStaff);
+
+  // Paying straight from an already-registered event page keeps the viewer
+  // here (button flips to "in review"); paying right after registering still
+  // drops them back on the lineup like before.
+  const closePaySheet = (submitted: boolean) => {
+    const stay = payInfo?.stayOnPage ?? false;
+    setPayInfo(null);
+    if (!stay) {
+      router.push("/events");
+      return;
+    }
+    if (submitted && viewerReg) {
+      setRegOverride({ ...viewerReg, paymentStatus: "PENDING", needsPayment: false });
+    }
+  };
 
   const handleRegister = () => {
     if (!dbEvent?.id) {
@@ -121,6 +166,11 @@ export default function EventDetailClient({ category, details, dbEvent }: Props)
     }
     if (!isLoggedIn) {
       router.push(`/auth/signup?eventId=${dbEvent.id}&redirect=${encodeURIComponent(`/events/${category.slug}`)}`);
+      return;
+    }
+    if (payTarget) {
+      // Already hold a spot but haven't paid — go straight to payment.
+      setPayInfo({ ...payTarget, stayOnPage: true });
       return;
     }
     setSelectedSize(minTeamSize);
@@ -149,12 +199,24 @@ export default function EventDetailClient({ category, details, dbEvent }: Props)
       if (res.data.success) {
         const isPaid = res.data.data?.isPaidEvent;
         const registrationId = res.data.data?.registration?.id as string | undefined;
+        const code = res.data.data?.registration?.registrationId as string | undefined;
         const amount = Number(res.data.data?.price ?? selectedOption?.price ?? 0);
         setShowConfirm(false);
+        if (registrationId) {
+          setRegOverride({
+            id: registrationId,
+            registrationId: code ?? "",
+            status: "PENDING",
+            eventName,
+            price: amount,
+            paymentStatus: null,
+            needsPayment: !!isPaid,
+          });
+        }
         if (isPaid && registrationId) {
           // Razorpay-style: open payment bottom sheet immediately after registration
           toast.success("Registered! Complete your payment", { description: `You are registered for ${eventName}. Pay now to confirm your spot.` });
-          setPayInfo({ registrationId, amount });
+          setPayInfo({ registrationId, amount, stayOnPage: false });
         } else {
           toast.success("Registered!", { description: `You are registered for ${eventName}.` });
           // WhatsApp group dialog only when no payment is due (finance-verified later otherwise)
@@ -173,9 +235,30 @@ export default function EventDetailClient({ category, details, dbEvent }: Props)
           return;
         }
         if (status === 409) {
-          toast.error(msg || "Already registered");
           setShowConfirm(false);
-          router.push("/events");
+          try {
+            const check = await axios.get(`/api/events/${dbEvent.id}/registration`);
+            const reg = check.data?.data?.registration as ViewerEventRegistration | undefined;
+            if (reg) setRegOverride(reg);
+            if (reg?.needsPayment && reg?.id) {
+              toast.info(`Already registered for ${eventName} — payment pending`, {
+                description: "Complete payment to confirm your spot.",
+              });
+              const amount = Number(reg.price ?? price ?? selectedOption?.price ?? 0);
+              setPayInfo({ registrationId: reg.id, amount, stayOnPage: false });
+              return;
+            }
+            if (reg?.status === "CONFIRMED" || reg?.paymentStatus === "SUCCESS") {
+              toast.success("Already registered — you're confirmed!");
+              router.push("/dashboard/registrations");
+              return;
+            }
+            toast.error(msg || "Already registered");
+            router.push("/dashboard/registrations");
+          } catch {
+            toast.error(msg || "Already registered");
+            router.push("/events");
+          }
           return;
         }
         toast.error(msg || "Registration failed");
@@ -250,18 +333,56 @@ export default function EventDetailClient({ category, details, dbEvent }: Props)
                   <span className="font-bold" style={{ color: statusInfo.color }}>{statusInfo.label}</span>
                 </div>
               </div>
-              <button
-                onClick={handleRegister}
-                disabled={registering || !registrationsOpen}
-                className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#0F172A] px-4 py-3 text-sm font-bold text-white hover:bg-black transition-colors disabled:opacity-50"
-              >
-                {registering ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                {registering ? "Registering…" : "Register now"}
-              </button>
-              {!registrationsOpen ? (
+              {ctaMode === "register" ? (
+                <button
+                  onClick={handleRegister}
+                  disabled={registering || !registrationsOpen}
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#0F172A] px-4 py-3 text-sm font-bold text-white hover:bg-black transition-colors disabled:opacity-50"
+                >
+                  {registering ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                  {registering ? "Registering…" : "Register now"}
+                </button>
+              ) : ctaMode === "pay" && payTarget ? (
+                <button
+                  onClick={() => setPayInfo({ ...payTarget, stayOnPage: true })}
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#0F172A] px-4 py-3 text-sm font-bold text-white hover:bg-black transition-colors"
+                >
+                  <Wallet className="h-4 w-4" /> Pay ₹{amountDue}
+                </button>
+              ) : ctaMode === "review" ? (
+                <div
+                  aria-disabled="true"
+                  className="mt-4 flex w-full cursor-default items-center justify-center gap-2 rounded-full bg-[#0F172A] px-4 py-3 text-sm font-bold text-white opacity-60"
+                >
+                  <Clock className="h-4 w-4" /> Payment in review
+                </div>
+              ) : ctaMode === "closed" ? (
+                <div
+                  aria-disabled="true"
+                  className="mt-4 flex w-full cursor-default items-center justify-center gap-2 rounded-full border border-[#0F172A]/15 bg-white px-4 py-3 text-sm font-bold text-[#0F172A]/60"
+                >
+                  <Ban className="h-4 w-4" /> Registration not active
+                </div>
+              ) : (
+                <Link
+                  href="/dashboard/registrations"
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#0F172A] px-4 py-3 text-sm font-bold text-white hover:bg-black transition-colors"
+                >
+                  <CheckCircle2 className="h-4 w-4" /> You&apos;re registered
+                </Link>
+              )}
+              {ctaMode === "pay" ? (
+                <p className="mt-2 text-center font-mono text-[11px] text-[#0F172A]/50">Already registered — pay to confirm your spot.</p>
+              ) : ctaMode === "review" ? (
+                <p className="mt-2 text-center font-mono text-[11px] text-[#0F172A]/50">Payment submitted. Finance verifies it shortly.</p>
+              ) : ctaMode === "done" ? (
+                <p className="mt-2 text-center font-mono text-[11px] text-[#0F172A]/40">Tap for your pass and payment status.</p>
+              ) : ctaMode === "closed" ? (
+                <p className="mt-2 text-center font-mono text-[11px] text-[#0F172A]/50">Contact the event coordinator if this looks wrong.</p>
+              ) : !registrationsOpen ? (
                 <p className="mt-2 text-center font-mono text-[11px] text-[#0F172A]/50">Registrations are {statusInfo.label.toLowerCase()}.</p>
               ) : (
-                <p className="mt-2 text-center font-mono text-[11px] text-[#0F172A]/40">Adds to cart → checkout in dashboard</p>
+                <p className="mt-2 text-center font-mono text-[11px] text-[#0F172A]/40">{formatPriceLabel({ price, priceMode, groupPrice })} · pay after registering</p>
               )}
             </div>
           </div>
@@ -417,17 +538,11 @@ export default function EventDetailClient({ category, details, dbEvent }: Props)
         <PaySheet
           open={!!payInfo}
           onOpenChange={(val) => {
-            if (!val) {
-              setPayInfo(null);
-              router.push("/events");
-            }
+            if (!val) closePaySheet(false);
           }}
           registrationId={payInfo.registrationId}
           amount={payInfo.amount}
-          onSubmitted={() => {
-            setPayInfo(null);
-            router.push("/events");
-          }}
+          onSubmitted={() => closePaySheet(true)}
         />
       )}
 

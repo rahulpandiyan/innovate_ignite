@@ -165,7 +165,7 @@ export async function sendRegistrationConfirmedEmail(
         <p style="margin:0;color:#111827;"><strong>Event:</strong> ${eventName}</p>
         <p style="margin:8px 0 0;color:#111827;"><strong>Registration ID:</strong> ${registrationId}</p>
       </div>
-      <p style="color:#6b7280;font-size:14px;">Your QR pass is ready in your dashboard under My Registrations. Show it at the venue for entry. See you on Oct 8–9 at VVIT Bengaluru!</p>
+      <p style="color:#6b7280;font-size:14px;">Your QR pass is ready in your dashboard under My Registrations. Show it at the venue for entry. See you on Oct 13–14 at VVIT Bengaluru!</p>
     `),
   });
 }

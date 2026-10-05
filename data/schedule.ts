@@ -22,8 +22,8 @@ export interface ScheduleDay {
 export const festSchedule: ScheduleDay[] = [
     {
         day: "DAY 1",
-        date: "8 October 2026",
-        short: "Oct 8",
+        date: "13 October 2026",
+        short: "Oct 13",
         slots: [
             {
                 time: "09:30 AM – 01:00 PM",
@@ -44,8 +44,8 @@ export const festSchedule: ScheduleDay[] = [
     },
     {
         day: "DAY 2",
-        date: "9 October 2026",
-        short: "Oct 9",
+        date: "14 October 2026",
+        short: "Oct 14",
         slots: [
             {
                 time: "09:30 AM – 11:30 AM",
@@ -81,7 +81,6 @@ export const festSchedule: ScheduleDay[] = [
                 time: "02:00 PM – 04:30 PM",
                 items: [
                     { name: "DANCE.exe", slug: "danceexe", category: "DANCE", faculty: "J Bharathi", venue: "Quadrangle" },
-                    { name: "Crucial Beats", slug: "crucial-beats", category: "THEATRE", faculty: "Selva Agnes", venue: "Seminar Hall – 1" },
                 ],
             },
         ],

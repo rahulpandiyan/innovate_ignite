@@ -13,7 +13,6 @@ import {
   Megaphone,
   ArrowRight,
   UserRound,
-  CalendarDays,
   Zap,
 } from "lucide-react";
 import { format } from "date-fns";
@@ -189,14 +188,9 @@ export default async function DashboardOverviewPage() {
           <CardTitle className="flex items-center gap-2 text-base">
             <Zap className="h-4 w-4 text-amber-500" /> Quick actions
           </CardTitle>
-          <CardDescription>Browse and register for events.</CardDescription>
+          <CardDescription>Manage your registrations and teams.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
-          <Button asChild>
-            <Link href="/events">
-              <CalendarDays className="mr-2 h-4 w-4" /> Browse all events
-            </Link>
-          </Button>
           <Button asChild variant="outline">
             <Link href="/dashboard/registrations">My registrations</Link>
           </Button>

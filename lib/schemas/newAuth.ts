@@ -16,7 +16,12 @@ export const registerCompleteSchema = z.object({
     .string()
     .regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
   collegeName: z.string().min(2, "College name is required"),
-  collegeIdNumber: z.string().min(1, "College ID number is required"),
+  // No longer collected at signup (was the USN prompt) — optional so existing
+  // callers that still send it keep working.
+  collegeIdNumber: z.string().optional(),
+  participantType: z
+    .enum(["FACULTY", "STUDENT"])
+    .default("STUDENT"),
   aadhaarNumber: z
     .string()
     .regex(/^\d{12}$/, "Aadhaar number must be exactly 12 digits")

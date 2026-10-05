@@ -1,6 +1,20 @@
 import prisma from "@/lib/db";
 import { slugify } from "@/data/eventCategories";
+import { getAuthSession } from "@/lib/authCookie";
 import type { PricingMode } from "@/lib/pricing";
+
+// The signed-in viewer's own registration for an event, trimmed to what the
+// detail page / registration API need to answer "what should this button do?".
+export interface ViewerEventRegistration {
+  id: string;
+  registrationId: string;
+  status: string;
+  eventName: string;
+  /** Amount the payment sheet asks for (matches what POST /pay records). */
+  price: number;
+  paymentStatus: string | null;
+  needsPayment: boolean;
+}
 
 // Public face of an Event row, serialized so it can cross the
 // server -> client boundary and be used by the detail page.
@@ -88,5 +102,38 @@ export async function getPublicEventBySlug(
       phone: c.phone,
       isStaff: c.isStaff,
     })),
+  };
+}
+
+// Whether the viewer already holds a spot for this event, and whether money is
+// still owed for it. `userId` is passed in by API routes that already resolved
+// the session; the detail page lets us read it from the cookie instead.
+export async function getViewerEventRegistration(
+  eventId: string,
+  userId?: string
+): Promise<ViewerEventRegistration | null> {
+  const viewerId = userId ?? (await getAuthSession())?.id;
+  if (!viewerId) return null;
+
+  const registration = await prisma.registration.findUnique({
+    where: { userId_eventId: { userId: viewerId, eventId } },
+    include: {
+      payment: { select: { status: true } },
+      event: { select: { price: true, name: true } },
+    },
+  });
+  if (!registration) return null;
+
+  const price = Number(registration.event.price ?? 0);
+  const paymentStatus = registration.payment?.status ?? null;
+
+  return {
+    id: registration.id,
+    registrationId: registration.registrationId,
+    status: registration.status,
+    eventName: registration.event.name,
+    price,
+    paymentStatus,
+    needsPayment: registration.status === "PENDING" && price > 0 && paymentStatus !== "SUCCESS",
   };
 }

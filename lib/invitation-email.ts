@@ -2,7 +2,7 @@
 // renders in Outlook/Gmail (PNG assets only — Outlook cannot decode WebP).
 import { sendEmail } from "@/lib/email";
 import {
-  interDepartmentEvents,
+  eventCategories,
   type EventCategory,
 } from "@/data/eventCategories";
 
@@ -183,14 +183,14 @@ export function buildInvitationHtml(
 
   const grouped = DOMAIN_ORDER.map((domain) => ({
     meta: DOMAIN_META[domain] ?? { label: domain, color: BLUE },
-    events: interDepartmentEvents.filter((event) => event.category === domain),
+    events: eventCategories.filter((event) => event.category === domain),
   })).filter((group) => group.events.length > 0);
 
   const domainBlocks = grouped
     .map((group) => domainBlock(group.meta.label, group.meta.color, group.events))
     .join("");
 
-  const totalEvents = interDepartmentEvents.length;
+  const totalEvents = eventCategories.length;
   const totalDomains = grouped.length;
 
   return `<!doctype html>
@@ -226,7 +226,7 @@ export function buildInvitationHtml(
 </head>
 <body>
 <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${SOFT};">
-  Invitation to Innovate Ignite '26 — ${totalEvents} events across ${totalDomains} domains, 8–9 October 2026 at VVIT Bengaluru. Register your college.
+  Invitation to Innovate Ignite '26 — ${totalEvents} events across ${totalDomains} domains, 13–14 October 2026 at VVIT Bengaluru. Register your college.
 </div>
 <center style="width:100%;background:${SOFT};padding:36px 0;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" class="gut" style="padding:0 20px;">
@@ -243,7 +243,7 @@ export function buildInvitationHtml(
         <img src="${esc(ASSET("logo-innovate-ignite.png"))}" width="132" alt="Innovate Ignite '26" style="width:132px;max-width:132px;height:auto;">
       </td>
       <td align="right" valign="middle" class="hide-sm">
-        <span style="display:inline-block;font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:0.1em;color:${NAVY};background:${SOFT};border:1px solid ${HAIRLINE};border-radius:999px;padding:8px 14px;">08—09 OCT 2026</span>
+        <span style="display:inline-block;font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:0.1em;color:${NAVY};background:${SOFT};border:1px solid ${HAIRLINE};border-radius:999px;padding:8px 14px;">13—14 OCT 2026</span>
       </td>
     </tr></table>
   </td></tr>
@@ -275,7 +275,7 @@ export function buildInvitationHtml(
       <tr>
         <td class="stack" width="34%" valign="top" style="padding:18px 20px;border-right:1px solid ${HAIRLINE};">
           <div style="font:700 10px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;letter-spacing:0.14em;text-transform:uppercase;color:${MUTED};">Dates</div>
-          <div style="margin-top:8px;font:600 14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:${INK};">Thu &amp; Fri<br>8–9 Oct 2026</div>
+          <div style="margin-top:8px;font:600 14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:${INK};">Tue &amp; Wed<br>13–14 Oct 2026</div>
         </td>
         <td class="stack" width="40%" valign="top" style="padding:18px 20px;border-right:1px solid ${HAIRLINE};">
           <div style="font:700 10px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;letter-spacing:0.14em;text-transform:uppercase;color:${MUTED};">Venue</div>

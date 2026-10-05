@@ -10,6 +10,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { LoadingButton } from "@/components/LoadingButton";
 import { toast } from "sonner";
@@ -45,7 +46,7 @@ function SignUpContent() {
   });
   const completeForm = useForm<z.infer<typeof registerCompleteSchema>>({
     resolver: zodResolver(registerCompleteSchema),
-    defaultValues: { name: "", email: "", phone: "", collegeName: "", collegeIdNumber: "", password: "" },
+    defaultValues: { name: "", email: "", phone: "", collegeName: "", participantType: "STUDENT", password: "" },
   });
 
   async function handleSendOtp(values: z.infer<typeof sendOtpSchema>) {
@@ -94,14 +95,39 @@ function SignUpContent() {
           try {
             const regRes = await axios.post(`/api/events/${eventId}/register`);
             const isPaid = regRes.data?.data?.isPaidEvent;
-            if (isPaid) {
+            const registrationId = regRes.data?.data?.registration?.id as string | undefined;
+            if (isPaid && registrationId) {
+              toast.success("Account created & registered — payment pending", { description: "Complete payment in dashboard to confirm. Registration shows as pending until paid." });
+              router.push(`/dashboard/registrations?pay=${registrationId}`);
+              return;
+            } else if (isPaid) {
               toast.success("Account created & registered — payment pending", { description: "Complete payment in dashboard to confirm. Registration shows as pending until paid." });
             } else {
               toast.success("Account created & registered!", { description: "You are registered for the event. Check dashboard." });
             }
           } catch (e: unknown) {
             if (axios.isAxiosError(e) && e.response?.status === 409) {
-              toast.success("Account created!", { description: "You were already registered for that event." });
+              // Already registered — check if payment is still pending and redirect to payment
+              try {
+                const check = await axios.get(`/api/events/${eventId}/registration`);
+                const reg = check.data?.data?.registration as
+                  | { id: string; needsPayment: boolean; paymentStatus: string | null; status: string }
+                  | undefined;
+                if (reg?.needsPayment && reg?.id) {
+                  toast.info("Already registered — payment pending", {
+                    description: "Complete payment to confirm your spot.",
+                  });
+                  router.push(`/dashboard/registrations?pay=${reg.id}`);
+                  return;
+                }
+                if (reg?.status === "CONFIRMED" || reg?.paymentStatus === "SUCCESS") {
+                  toast.success("Account created! Already registered — you're confirmed!");
+                } else {
+                  toast.success("Account created!", { description: "You were already registered for that event." });
+                }
+              } catch {
+                toast.success("Account created!", { description: "You were already registered for that event." });
+              }
             } else {
               const msg = axios.isAxiosError(e) ? e.response?.data?.error?.message : undefined;
               toast.success("Account created!", { description: msg || "Welcome aboard! Please confirm your event registration in dashboard." });
@@ -124,8 +150,8 @@ function SignUpContent() {
 
       <div className="overflow-hidden border-y border-[#0F172A]/10 bg-[#0F172A] py-2">
         <div className="flex animate-[marquee_22s_linear_infinite] whitespace-nowrap font-mono text-[10px] sm:text-[11px] tracking-[0.16em] uppercase text-white">
-          <span className="mx-6">TECHNINJA - QUIZ · VV CARE · MINI PROJECT EXPO · CODE CONFLUX · GROUP DISCUSSION · AIR CRASH · PIXELS - PHOTOGRAPHY · DANCE.EXE · BGMI & FREEFIRE · VVIT GOT LATENT · REEL VIDEO MAKING · THE ROYAL WALK · CRUCIAL BEATS · VVIT BENGALURU · OCT 8–9</span>
-          <span className="mx-6" aria-hidden>TECHNINJA - QUIZ · VV CARE · MINI PROJECT EXPO · CODE CONFLUX · GROUP DISCUSSION · AIR CRASH · PIXELS - PHOTOGRAPHY · DANCE.EXE · BGMI & FREEFIRE · VVIT GOT LATENT · REEL VIDEO MAKING · THE ROYAL WALK · CRUCIAL BEATS · VVIT BENGALURU · OCT 8–9</span>
+          <span className="mx-6">TECHNINJA - QUIZ · VV CARE · MINI PROJECT EXPO · CODE CONFLUX · GROUP DISCUSSION · AIR CRASH · PIXELS - PHOTOGRAPHY · DANCE.EXE · BGMI & FREEFIRE · VVIT GOT LATENT · REEL VIDEO MAKING · THE ROYAL WALK · VVIT BENGALURU · OCT 13–14</span>
+          <span className="mx-6" aria-hidden>TECHNINJA - QUIZ · VV CARE · MINI PROJECT EXPO · CODE CONFLUX · GROUP DISCUSSION · AIR CRASH · PIXELS - PHOTOGRAPHY · DANCE.EXE · BGMI & FREEFIRE · VVIT GOT LATENT · REEL VIDEO MAKING · THE ROYAL WALK · VVIT BENGALURU · OCT 13–14</span>
         </div>
         <style>{`@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
       </div>
@@ -146,7 +172,7 @@ function SignUpContent() {
                 <span className="block text-[44px] sm:text-[52px] text-[#2362EC]">ACCOUNT</span>
               </h1>
               <p className="mt-3 max-w-sm text-sm leading-6 text-[#0F172A]/60">
-                One pass for all 13 stages. Verify your email, then complete your profile. No spam — just your lineup.
+                One pass for all 12 stages. Verify your email, then complete your profile. No spam — just your lineup.
               </p>
               <div className="mt-5 flex items-center gap-1.5">
                 {[1, 2, 3].map((s) => (
@@ -263,10 +289,20 @@ function SignUpContent() {
                         <FormMessage className="text-xs" />
                       </FormItem>
                     )} />
-                    <FormField control={completeForm.control} name="collegeIdNumber" render={({ field }) => (
+                    <FormField control={completeForm.control} name="participantType" render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">College ID Number</FormLabel>
-                        <FormControl><Input className="h-11 rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 text-[16px] sm:text-sm focus:bg-white" placeholder="USN / ID" {...field} /></FormControl>
+                        <FormLabel className="font-mono text-[11px] font-bold tracking-[0.14em] uppercase text-[#0F172A]/60">I am a</FormLabel>
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger className="h-11 w-full rounded-xl border-[#0F172A]/10 bg-[#FFFBEB]/50 text-[16px] sm:text-sm focus:bg-white">
+                              <SelectValue placeholder="Select Student or Faculty" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="STUDENT">Student</SelectItem>
+                            <SelectItem value="FACULTY">Faculty</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage className="text-xs" />
                       </FormItem>
                     )} />

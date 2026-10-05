@@ -1,4 +1,4 @@
-import { Music, Gamepad2, Star, Code, Clapperboard } from "lucide-react";
+import { Music, Gamepad2, Star, Code } from "lucide-react";
 
 export const categories = [
   {
@@ -18,15 +18,6 @@ export const categories = [
     accentLight: "hsl(258 70% 55% / 0.08)",
     accentBorder: "hsl(258 70% 55% / 0.25)",
     tags: ["BGMI & FreeFire"],
-  },
-  {
-    name: "Theatre",
-    count: 1,
-    icon: Clapperboard,
-    accent: "hsl(224 68% 30%)",
-    accentLight: "hsl(224 68% 30% / 0.08)",
-    accentBorder: "hsl(224 68% 30% / 0.2)",
-    tags: ["Crucial Beats"],
   },
   {
     name: "General",
@@ -49,5 +40,5 @@ export const categories = [
 ];
 
 export const marqueeItems = [
-  "TechNinja - Quiz", "Code conflux", "Mini Project Expo", "BGMI & FreeFire", "Crucial Beats", "VV CARE", "AIR CRASH", "VVIT GOT LATENT", "Group Discussion", "PIXELS - Photography", "DANCE.exe", "Reel Video Making", "The Royal Walk",
+  "TechNinja - Quiz", "Code conflux", "Mini Project Expo", "BGMI & FreeFire", "VV CARE", "AIR CRASH", "VVIT GOT LATENT", "Group Discussion", "PIXELS - Photography", "DANCE.exe", "Reel Video Making", "The Royal Walk",
 ];

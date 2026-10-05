@@ -71,7 +71,7 @@ export default function SchedulePage() {
           <Link href="/" className="inline-flex items-center gap-2 text-[#0F172A]/60 hover:text-[#0F172A]">
             <ArrowLeft className="h-3.5 w-3.5" /> Home
           </Link>
-          <span className="hidden sm:inline-flex items-center gap-2 text-[#0F172A]/40">VVIT · Oct 8–9 · Bengaluru</span>
+          <span className="hidden sm:inline-flex items-center gap-2 text-[#0F172A]/40">VVIT · Oct 13–14 · Bengaluru</span>
         </div>
 
         {/* ── Hero ─────────────────────────────────────────── */}
@@ -83,7 +83,7 @@ export default function SchedulePage() {
             SCHEDULE
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-[#0F172A]/60">
-            Two days, {totalEvents} stages, Oct 8–9. Tap any event for its rules, fee and coordinators.
+            Two days, {totalEvents} stages, Oct 13–14. Tap any event for its rules, fee and coordinators.
           </p>
           <p className="mx-auto mt-2 max-w-xl font-mono text-xs text-[#0F172A]/50">
             Check for clashes before you register — timings here are the coordinators&apos; latest.

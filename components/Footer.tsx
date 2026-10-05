@@ -29,7 +29,7 @@ export default function Footer() {
           <div className="col-span-12 lg:col-span-5">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[11px] tracking-[0.16em] uppercase text-white/70">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#19E3A8]" />
-              VVIT · Bengaluru · Oct 8–9, 2026
+              VVIT · Bengaluru · Oct 13–14, 2026
             </div>
             <p className="mt-3 font-mono text-[11px] tracking-[0.14em] uppercase text-[#F3C317]">
               Organized by Department of CSE
@@ -40,7 +40,7 @@ export default function Footer() {
               <span className="text-[#F3C317]">built by students.</span>
             </h3>
             <p className="mt-3 max-w-md text-sm leading-6 text-white/60">
-              Vijaya Vittala Institute Of Technology presents Innovate Ignite — 13 stages, 5 domains, one campus.
+              Vijaya Vittala Institute Of Technology presents Innovate Ignite — 12 stages, 5 domains, one campus.
               Code at midnight. Paint at dawn. Dance at dusk.
             </p>
             <div className="mt-6 flex items-center gap-3">
@@ -73,8 +73,8 @@ export default function Footer() {
             <p className="font-mono text-[11px] tracking-[0.18em] uppercase text-white/40">Explore</p>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li><Link href="/" className="text-white/70 hover:text-white transition-colors">Home</Link></li>
-              <li><Link href="/events" className="text-white/70 hover:text-white transition-colors">Events — 13 stages</Link></li>
-              <li><Link href="/schedule" className="text-white/70 hover:text-white transition-colors">Schedule — Oct 8–9</Link></li>
+              <li><Link href="/events" className="text-white/70 hover:text-white transition-colors">Events — 12 stages</Link></li>
+              <li><Link href="/schedule" className="text-white/70 hover:text-white transition-colors">Schedule — Oct 13–14</Link></li>
               <li><Link href="/rules" className="text-white/70 hover:text-white transition-colors">Rules & Regulations</Link></li>
               <li><Link href="/contact" className="text-white/70 hover:text-white transition-colors">Contact</Link></li>
               <li><Link href="/about" className="text-white/70 hover:text-white transition-colors">About VVIT</Link></li>
@@ -108,7 +108,7 @@ export default function Footer() {
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 <span className="rounded-full bg-[#2362EC] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-white">13 EVENTS</span>
-                <span className="rounded-full bg-[#F3C317] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-[#0F172A]">OCT 8–9</span>
+                <span className="rounded-full bg-[#F3C317] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-[#0F172A]">OCT 13–14</span>
               </div>
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
