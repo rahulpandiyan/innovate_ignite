@@ -19,7 +19,8 @@ export async function generateStaticParams() {
 const LEGACY_REDIRECTS: Record<string, string> = {
   "dance-elite": "/events/danceexe",
   "techninja": "/events/techninja-quiz",
-  "mini-project-presentation": "/events/mini-project-expo",
+  "mini-project-presentation": "/events/project-expo",
+  "mini-project-expo": "/events/project-expo",
   "photography": "/events/pixels-photography",
   "symposium-group-discussion": "/events/group-discussion",
 };

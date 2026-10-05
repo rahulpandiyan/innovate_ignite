@@ -43,8 +43,8 @@ export const interDepartmentEvents: EventCategory[] = [
         maxTeamSize: 3,
     },
     {
-        slug: slugify("Mini Project Expo"),
-        eventName: "Mini Project Expo",
+        slug: slugify("Project Expo"),
+        eventName: "Project Expo",
         category: "TECHNICAL",
         priceMode: "PER_TEAM",
         price: 200,

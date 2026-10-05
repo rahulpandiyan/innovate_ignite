@@ -150,8 +150,8 @@ function SignUpContent() {
 
       <div className="overflow-hidden border-y border-[#0F172A]/10 bg-[#0F172A] py-2">
         <div className="flex animate-[marquee_22s_linear_infinite] whitespace-nowrap font-mono text-[10px] sm:text-[11px] tracking-[0.16em] uppercase text-white">
-          <span className="mx-6">TECHNINJA - QUIZ · VV CARE · MINI PROJECT EXPO · CODE CONFLUX · GROUP DISCUSSION · AIR CRASH · PIXELS - PHOTOGRAPHY · DANCE.EXE · BGMI & FREEFIRE · VVIT GOT LATENT · REEL VIDEO MAKING · THE ROYAL WALK · VVIT BENGALURU · OCT 13–14</span>
-          <span className="mx-6" aria-hidden>TECHNINJA - QUIZ · VV CARE · MINI PROJECT EXPO · CODE CONFLUX · GROUP DISCUSSION · AIR CRASH · PIXELS - PHOTOGRAPHY · DANCE.EXE · BGMI & FREEFIRE · VVIT GOT LATENT · REEL VIDEO MAKING · THE ROYAL WALK · VVIT BENGALURU · OCT 13–14</span>
+          <span className="mx-6">TECHNINJA - QUIZ · VV CARE · PROJECT EXPO · CODE CONFLUX · GROUP DISCUSSION · AIR CRASH · PIXELS - PHOTOGRAPHY · DANCE.EXE · BGMI & FREEFIRE · VVIT GOT LATENT · REEL VIDEO MAKING · THE ROYAL WALK · VVIT BENGALURU · OCT 13–14</span>
+          <span className="mx-6" aria-hidden>TECHNINJA - QUIZ · VV CARE · PROJECT EXPO · CODE CONFLUX · GROUP DISCUSSION · AIR CRASH · PIXELS - PHOTOGRAPHY · DANCE.EXE · BGMI & FREEFIRE · VVIT GOT LATENT · REEL VIDEO MAKING · THE ROYAL WALK · VVIT BENGALURU · OCT 13–14</span>
         </div>
         <style>{`@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
       </div>

@@ -216,7 +216,7 @@ async function seedEvents(superAdminId: string) {
       rules: "Solo + Group allowed | Solo ₹50 (max 5 min) | Group 2-12 ₹150 (5-7 min) | Any dance form | Bring the track on a pen drive | Coordinator: J Bharathi | Students: Yashashwini 9187621057, Krishnaveni 9743116619, Lahari M 8884084501",
     },
     {
-      name: "Mini Project Expo",
+      name: "Project Expo",
       category: "TECHNICAL",
       type: "TEAM" as const,
       price: 200,

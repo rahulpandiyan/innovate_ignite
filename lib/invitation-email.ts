@@ -39,7 +39,7 @@ const DOMAIN_ORDER = ["TECHNICAL", "GAMING", "DANCE", "THEATRE", "GENERAL"];
 const BLURBS: Record<string, string> = {
   "techninja-quiz": "Three rounds of general technical trivia. Judging is on merit and AI tools are strictly off the table.",
   "code-conflux": "Debugging, coding and problem-solving rounds for first- to fourth-year students across every branch.",
-  "mini-project-expo": "Hardware, software or hybrid projects on display, judged on innovation and technical implementation.",
+  "project-expo": "Hardware, software or hybrid projects on display, judged on innovation and technical implementation.",
   "bgmi-freefire": "Offline campus squad showdown for four-player teams, with a prize pool of up to ₹5,000.",
   "vvit-got-latent": "An open stage for any talent — sing, dance, act, improvise. About 150 seconds to make it count.",
   "danceexe": "Any dance style, solo or as a group of up to twelve. Let the floor decide the act.",

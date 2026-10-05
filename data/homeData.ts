@@ -8,7 +8,7 @@ export const categories = [
     accent: "hsl(221 82% 55%)",
     accentLight: "hsl(221 82% 55% / 0.08)",
     accentBorder: "hsl(221 82% 55% / 0.2)",
-    tags: ["TechNinja - Quiz", "Code conflux", "Mini Project Expo"],
+    tags: ["TechNinja - Quiz", "Code conflux", "Project Expo"],
   },
   {
     name: "Gaming",
@@ -40,5 +40,5 @@ export const categories = [
 ];
 
 export const marqueeItems = [
-  "TechNinja - Quiz", "Code conflux", "Mini Project Expo", "BGMI & FreeFire", "VV CARE", "AIR CRASH", "VVIT GOT LATENT", "Group Discussion", "PIXELS - Photography", "DANCE.exe", "Reel Video Making", "The Royal Walk",
+  "TechNinja - Quiz", "Code conflux", "Project Expo", "BGMI & FreeFire", "VV CARE", "AIR CRASH", "VVIT GOT LATENT", "Group Discussion", "PIXELS - Photography", "DANCE.exe", "Reel Video Making", "The Royal Walk",
 ];

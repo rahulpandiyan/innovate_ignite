@@ -222,10 +222,10 @@ export const eventsList: EventList[] = [
         ],
     },
     {
-        slug: slugify("Mini Project Expo"),
+        slug: slugify("Project Expo"),
         category: "TECHNICAL",
         image: eventImage,
-        name: "Mini Project Expo",
+        name: "Project Expo",
         rules: [
             "Team size: 3–4 members per team.",
             "Eligibility: open to all engineering students from CS, EC, AI/ML and allied branches.",

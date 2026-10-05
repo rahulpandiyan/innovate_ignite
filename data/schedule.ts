@@ -36,7 +36,7 @@ export const festSchedule: ScheduleDay[] = [
             {
                 time: "01:30 PM – 04:30 PM",
                 items: [
-                    { name: "Mini Project Expo", slug: "mini-project-expo", category: "TECHNICAL", faculty: "Rashmi Rani Samantaray", venue: "2nd Floor Labs & Classes" },
+                    { name: "Project Expo", slug: "project-expo", category: "TECHNICAL", faculty: "Rashmi Rani Samantaray", venue: "2nd Floor Labs & Classes" },
                     { name: "TechNinja - Quiz", slug: "techninja-quiz", category: "TECHNICAL", faculty: "M G Kousar", venue: "Ground Floor Labs" },
                 ],
             },

@@ -255,7 +255,7 @@ async function seedEvents(superAdminId: string, coordinatorId: string, judgeId: 
       assignJudgeId: judgeId,
     },
     {
-      name: "Mini Project Expo",
+      name: "Project Expo",
       category: "TECHNICAL",
       type: "TEAM" as const,
       price: 200,
