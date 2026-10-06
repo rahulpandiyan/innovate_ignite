@@ -1,4 +1,4 @@
-import eventImage from "@/public/images/pexels-jidev-mohan-356965646-14469571.jpg";
+﻿import eventImage from "@/public/images/pexels-jidev-mohan-356965646-14469571.jpg";
 import { StaticImageData } from "next/image";
 
 export interface EventList {
@@ -30,7 +30,7 @@ export const eventsList: EventList[] = [
         name: "TechNinja - Quiz",
         rules: [
             "The quiz consists of three rounds: Preliminary Round, Second Round, and Final Round.",
-            "The total duration of the quiz is 1.5–2 hours. Preliminary Round: 25 minutes. Second Round: 25 minutes. Final Round: 25 minutes.",
+            "The total duration of the quiz is 1.5ÃƒÂ¢Ã‚â‚¬Ã‚â€œ2 hours. Preliminary Round: 25 minutes. Second Round: 25 minutes. Final Round: 25 minutes.",
             "Each question will have four options, and participants must select only one correct answer.",
             "Each team must consist of two members. Solo participation is not allowed.",
             "Each team should bring one smartphone to participate in the quiz.",
@@ -58,7 +58,7 @@ export const eventsList: EventList[] = [
             "Display the same video on the competition day and analyze the issues of vendors and give solution to the vendors' problems.",
             "Time limit for the competition is 6 minutes.",
             "NOTE: the Social Spotlight video must be recorded prior in advance with proper clarity.",
-            "Team size: 2–3 members.",
+            "Team size: 2ÃƒÂ¢Ã‚â‚¬Ã‚â€œ3 members.",
             "Free entry.",
             "If the number of teams is less than 6, the event will be cancelled.",
         ],
@@ -77,7 +77,7 @@ export const eventsList: EventList[] = [
         rules: [
             "Offline, campus-only squad competition for BGMI and Free Fire.",
             "Date: Wednesday, October 14, 2026.",
-            "Prize pool: up to ₹5,000.",
+            "Prize pool: up to ÃƒÂ¢Ã‚â€šÃ‚Â¹5,000.",
             "Teams must consist of 4 student players.",
             "Players can only represent one team.",
             "Registration must be completed via the official link with accurate information.",
@@ -128,11 +128,11 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Reel Video Making",
         rules: [
-            "Eligibility & Registration: open only to undergraduate (UG) teams of 2–3 members. Registration is free.",
+            "Eligibility & Registration: open only to undergraduate (UG) teams of 2ÃƒÂ¢Ã‚â‚¬Ã‚â€œ3 members. Registration is free.",
             "Theme & Content: teams will be assigned a specific theme on-the-spot with no prior preparation allowed. Final reel must be educational, entertaining, and respectful (max 90 seconds). Vulgar or 18+ content is strictly prohibited.",
             "Creation & AI ban: reels must be created, recorded, and edited entirely by team members during the event. The use of any Artificial Intelligence (AI) tools is strictly banned.",
             "Submission deadline: final videos must be emailed to harishhari781823@gmail.com or divyachavala05@gmail.com between 9:30 AM and 3:00 PM.",
-            "Judging & Venue: completed reels will be showcased in Seminar Hall–2. Evaluated for creativity and teamwork, followed by on-the-spot prize distribution.",
+            "Judging & Venue: completed reels will be showcased in Seminar HallÃƒÂ¢Ã‚â‚¬Ã‚â€œ2. Evaluated for creativity and teamwork, followed by on-the-spot prize distribution.",
         ],
         coordinators: [
             { name: "Sushma BM", faculty: true },
@@ -147,7 +147,7 @@ export const eventsList: EventList[] = [
         name: "The Royal Walk",
         rules: [
             "Character & Costume: participants must portray an Indian historical, mythological, royal, or legendary character using appropriate traditional attire.",
-            "Presentation & Time: each participant gets 2–3 minutes to walk, pose, and present their character. Background music should be submitted in advance.",
+            "Presentation & Time: each participant gets 2ÃƒÂ¢Ã‚â‚¬Ã‚â€œ3 minutes to walk, pose, and present their character. Background music should be submitted in advance.",
             "Props & Safety: decorative props such as crowns, shields, and toy swords are permitted. Sharp, dangerous, or harmful props are strictly prohibited.",
             "Registration & Eligibility: registration is free. The chosen character must be submitted in advance. A minimum of 6 participants is required for the event to be conducted; otherwise, the event may be cancelled.",
             "Conduct & Important Notes: participants must report 30 minutes before the event and maintain respectful conduct. Vulgar, offensive, discriminatory, or inappropriate performances may lead to disqualification. Organisers' decision will be final.",
@@ -208,7 +208,7 @@ export const eventsList: EventList[] = [
         name: "DANCE.exe",
         rules: [
             "Open to all VVIT students.",
-            "Solo, Duo and Group performances allowed (group of 2–12 members).",
+            "Solo, Duo and Group performances allowed (group of 2ÃƒÂ¢Ã‚â‚¬Ã‚â€œ12 members).",
             "Any dance style is allowed.",
             "Use of vulgar content is strictly prohibited.",
             "Performances should be within the given time limit.",
@@ -227,7 +227,7 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Project Expo",
         rules: [
-            "Team size: 3–4 members per team.",
+            "Team size: 3ÃƒÂ¢Ã‚â‚¬Ã‚â€œ4 members per team.",
             "Eligibility: open to all engineering students from CS, EC, AI/ML and allied branches.",
             "Project type: Hardware, Software, or Hybrid projects are allowed.",
             "Originality: projects must be original. Plagiarism or copied projects will lead to disqualification.",
@@ -238,7 +238,7 @@ export const eventsList: EventList[] = [
             "Discipline: participants must follow the instructions of the organizers and maintain proper conduct.",
             "Judges' decision: the judges' decision will be final.",
             "Disqualification: misconduct, plagiarism, false information, or violation of event rules may result in disqualification.",
-            "Registration fee: ₹200 per team.",
+            "Registration fee: ÃƒÂ¢Ã‚â€šÃ‚Â¹200 per team.",
             "Date: 13 October 2026 | Time: 1:30 PM – 4:30 PM | Venue: Room No. 201 & 202.",
         ],
         coordinators: [
@@ -303,7 +303,7 @@ export const eventsList: EventList[] = [
         rules: [
             "The topic will be announced at the venue.",
             "Teams must choose to speak FOR or AGAINST the topic.",
-            "Team size: 2–3 members.",
+            "Team size: 2ÃƒÂ¢Ã‚â‚¬Ã‚â€œ3 members.",
             "Teams receive 5 minutes of preparation time after the topic is announced.",
             "Every team member must actively participate.",
             "Respectful communication is mandatory.",
@@ -318,3 +318,5 @@ export const eventsList: EventList[] = [
         ],
     },
 ];
+
+
