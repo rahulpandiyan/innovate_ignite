@@ -81,7 +81,6 @@ export default function EventDetailClient({ category, details, dbEvent, viewerRe
   const [selectedSize, setSelectedSize] = useState<number>(category.minTeamSize);
   const [latentAnswers, setLatentAnswers] = useState<Record<number, string>>({});
   const isLatent = category.eventName === "VVIT GOT LATENT";
-  const latentComplete = LATENT_QUESTIONS.every((_, i) => (latentAnswers[i] ?? "").trim().length > 0);
   const isGaming = category.eventName === "BGMI & FreeFire";
   const [selectedGame, setSelectedGame] = useState<"BGMI" | "Free Fire">("BGMI");
   const [payInfo, setPayInfo] = useState<{ registrationId: string; amount: number; stayOnPage: boolean } | null>(null);
@@ -182,19 +181,13 @@ export default function EventDetailClient({ category, details, dbEvent, viewerRe
   const confirmRegister = async () => {
     if (!dbEvent?.id) return;
     if (!selectedOption) return;
-    if (isLatent && !latentComplete) {
-      toast.error("Please answer all the selection questions.");
-      return;
-    }
-    setRegistering(true);
-    try {
-      const body: Record<string, unknown> = { teamSize: selectedOption.value };
-      if (isGaming) body.game = selectedGame;
       if (isLatent) {
-        body.answers = Object.fromEntries(
-          LATENT_QUESTIONS.map((q, i) => [q, (latentAnswers[i] ?? "").trim()])
-        );
+        // Questions deferred to profile; no validation required at registration
       }
+      setRegistering(true);
+      try {
+        const body: Record<string, unknown> = { teamSize: selectedOption.value };
+        if (isGaming) body.game = selectedGame;
       const res = await axios.post(`/api/events/${dbEvent.id}/register`, body);
       if (res.data.success) {
         const isPaid = res.data.data?.isPaidEvent;
@@ -620,28 +613,16 @@ export default function EventDetailClient({ category, details, dbEvent, viewerRe
 
           {isLatent && (
             <div className="space-y-3">
-              <p className="font-mono text-[11px] tracking-[0.14em] uppercase text-[#0F172A]/40">
-                Selection questions · all required
+              <p className="text-sm text-[#0F172A]/70">
+                Please complete the VVIT GOT LATENT questions in your Dashboard &gt; Profile after registration.
               </p>
-              {LATENT_QUESTIONS.map((q, i) => (
-                <label key={i} className="block">
-                  <span className="mb-1 block text-sm font-medium leading-5 text-[#0F172A]">{i + 1}. {q}</span>
-                  <textarea
-                    value={latentAnswers[i] ?? ""}
-                    onChange={(e) => setLatentAnswers((prev) => ({ ...prev, [i]: e.target.value }))}
-                    rows={2}
-                    placeholder="Your answer…"
-                    className="w-full rounded-xl border border-[#0F172A]/15 bg-white px-3 py-2 text-sm text-[#0F172A] placeholder:text-[#0F172A]/35 focus:border-[#2362EC]/40 focus:outline-none focus:ring-4 focus:ring-[#2362EC]/10"
-                  />
-                </label>
-              ))}
             </div>
           )}
 
           <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="outline" onClick={() => setShowConfirm(false)} className="rounded-full">Cancel</Button>
-            <Button onClick={confirmRegister} disabled={registering || (isLatent && !latentComplete)} className="rounded-full bg-[#0F172A] text-white hover:bg-black">
-              {registering ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Registering…</> : selectedOption && selectedOption.price > 0 ? `Register team · ₹${selectedOption.price}` : "Register team · Free"}
+            <Button onClick={confirmRegister} disabled={registering} className="rounded-full bg-[#0F172A] text-white hover:bg-black">
+              {registering ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Registering�?�</> : selectedOption && selectedOption.price > 0 ? `Register team A� �,1${selectedOption.price}` : "Register team A� Free"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -88,14 +88,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ eve
     const registrationId = `REG-${String(regCounter.value).padStart(6, "0")}`;
 
     // optional questionnaire answers (e.g. VVIT Got Latent selection form)
-    let latentAnswers: Record<string, string> | undefined;
-    if (body.answers && typeof body.answers === "object" && !Array.isArray(body.answers)) {
-      const entries = Object.entries(body.answers)
-        .filter(([q, a]) => typeof q === "string" && typeof a === "string" && a.trim().length > 0)
-        .slice(0, 20)
-        .map(([q, a]) => [q.slice(0, 300), (a as string).slice(0, 2000)] as const);
-      if (entries.length > 0) latentAnswers = Object.fromEntries(entries);
-    }
+      let latentAnswers: Record<string, string> | undefined;
+      // if (body.answers && typeof body.answers === "object" && !Array.isArray(body.answers)) {
+      //   const entries = Object.entries(body.answers)
+      //     .filter(([q, a]) => typeof q === "string" && typeof a === "string" && a.trim().length > 0)
+      //     .slice(0, 20)
+      //     .map(([q, a]) => [q.slice(0, 300), (a as string).slice(0, 2000)] as const);
+      //   if (entries.length > 0) latentAnswers = Object.fromEntries(entries);
+      // }
     let game: string | undefined;
     if (body.game && typeof body.game === "string" && (body.game === "BGMI" || body.game === "Free Fire")) {
       game = body.game;
