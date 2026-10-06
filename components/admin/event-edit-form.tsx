@@ -137,7 +137,7 @@ export function EventEditForm({
         <div>
           <CardTitle className="text-base">{event.name}</CardTitle>
           <CardDescription>
-            {event.category.replace(/_/g, " ")} · {event.type} · ₹{event.price} · {event.status}
+            {event.category.replace(/_/g, " ")} · {event.type} · {Number(event.price) > 0 ? `₹${event.price}` : "Free"} · {event.status}
           </CardDescription>
         </div>
         <div className="flex items-center gap-2">

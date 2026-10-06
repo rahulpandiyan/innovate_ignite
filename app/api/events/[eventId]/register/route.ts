@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import prisma from "@/lib/db";
 import { requireAuth, successResponse, errorResponse } from "@/lib/apiHelpers";
 import { computeEventPrice } from "@/lib/pricing";
+import { ensureAttendeeAndQR } from "@/lib/participantService";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ eventId: string }> }) {
   try {
@@ -100,16 +101,21 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ eve
       game = body.game;
     }
 
+    const isFree = price <= 0;
+
     const registration = await prisma.registration.create({
       data: {
         registrationId,
         userId,
         eventId,
         collegeId: participant.collegeId,
-        status: "PENDING",
+        status: isFree ? "CONFIRMED" : "PENDING",
         formResponses: { teamSize, price, priceMode: event.priceMode, ...(latentAnswers ? { latentAnswers } : {}), ...(game ? { game } : {}) },
       },
     });
+
+    // Free events confirm instantly (attendee + QR pass), no payment step.
+    if (isFree) await ensureAttendeeAndQR(registration.id);
 
     // Do NOT create a payment yet — payment is created only when the user
     // actually submits UPI transaction ID + screenshot via POST /api/registrations/[id]/pay

@@ -200,13 +200,14 @@ export default function EventDetailClient({ category, details, dbEvent, viewerRe
         const isPaid = res.data.data?.isPaidEvent;
         const registrationId = res.data.data?.registration?.id as string | undefined;
         const code = res.data.data?.registration?.registrationId as string | undefined;
+        const regStatus = (res.data.data?.registration?.status as string | undefined) ?? "PENDING";
         const amount = Number(res.data.data?.price ?? selectedOption?.price ?? 0);
         setShowConfirm(false);
         if (registrationId) {
           setRegOverride({
             id: registrationId,
             registrationId: code ?? "",
-            status: "PENDING",
+            status: regStatus,
             eventName,
             price: amount,
             paymentStatus: null,
@@ -218,7 +219,12 @@ export default function EventDetailClient({ category, details, dbEvent, viewerRe
           toast.success("Registered! Complete your payment", { description: `You are registered for ${eventName}. Pay now to confirm your spot.` });
           setPayInfo({ registrationId, amount, stayOnPage: false });
         } else {
-          toast.success("Registered!", { description: `You are registered for ${eventName}.` });
+          const confirmed = regStatus === "CONFIRMED";
+          toast.success(confirmed ? "Registered & confirmed!" : "Registered!", {
+            description: confirmed
+              ? `You are registered for ${eventName}. Your QR pass is ready.`
+              : `You are registered for ${eventName}.`,
+          });
           // WhatsApp group dialog only when no payment is due (finance-verified later otherwise)
           if (!isPaid) setShowWhatsApp(true);
         }
@@ -376,13 +382,15 @@ export default function EventDetailClient({ category, details, dbEvent, viewerRe
               ) : ctaMode === "review" ? (
                 <p className="mt-2 text-center font-mono text-[11px] text-[#0F172A]/50">Payment submitted. Finance verifies it shortly.</p>
               ) : ctaMode === "done" ? (
-                <p className="mt-2 text-center font-mono text-[11px] text-[#0F172A]/40">Tap for your pass and payment status.</p>
+                <p className="mt-2 text-center font-mono text-[11px] text-[#0F172A]/40">{price > 0 ? "Tap for your pass and payment status." : "Tap for your QR pass."}</p>
               ) : ctaMode === "closed" ? (
                 <p className="mt-2 text-center font-mono text-[11px] text-[#0F172A]/50">Contact the event coordinator if this looks wrong.</p>
               ) : !registrationsOpen ? (
                 <p className="mt-2 text-center font-mono text-[11px] text-[#0F172A]/50">Registrations are {statusInfo.label.toLowerCase()}.</p>
               ) : (
-                <p className="mt-2 text-center font-mono text-[11px] text-[#0F172A]/40">{formatPriceLabel({ price, priceMode, groupPrice })} · pay after registering</p>
+                <p className="mt-2 text-center font-mono text-[11px] text-[#0F172A]/40">
+                  {price > 0 ? `${formatPriceLabel({ price, priceMode, groupPrice })} · pay after registering` : "Free · instant confirmation"}
+                </p>
               )}
             </div>
           </div>
@@ -600,13 +608,13 @@ export default function EventDetailClient({ category, details, dbEvent, viewerRe
                 >
                   <span className="text-sm font-bold leading-none">{opt.label}</span>
                   <span className={`mt-1.5 font-mono text-xs ${selectedSize === opt.value ? "text-white/70" : "text-[#0F172A]/50"}`}>
-                    ₹{opt.price}
+                    {opt.price > 0 ? `₹${opt.price}` : "Free"}
                   </span>
                 </button>
               ))}
             </div>
             <p className="pt-1 font-mono text-[11px] text-[#0F172A]/50">
-              {selectedOption ? formatPriceLabel({ price, priceMode, groupPrice }) : ""} · {selectedOption ? `₹${selectedOption.price} total` : ""}
+              {selectedOption ? (price > 0 ? `${formatPriceLabel({ price, priceMode, groupPrice })} · ₹${selectedOption.price} total` : "Free · no payment needed") : ""}
             </p>
           </div>
 
@@ -633,7 +641,7 @@ export default function EventDetailClient({ category, details, dbEvent, viewerRe
           <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="outline" onClick={() => setShowConfirm(false)} className="rounded-full">Cancel</Button>
             <Button onClick={confirmRegister} disabled={registering || (isLatent && !latentComplete)} className="rounded-full bg-[#0F172A] text-white hover:bg-black">
-              {registering ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Registering…</> : `Register team · ₹${selectedOption?.price ?? 0}`}
+              {registering ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Registering…</> : selectedOption && selectedOption.price > 0 ? `Register team · ₹${selectedOption.price}` : "Register team · Free"}
             </Button>
           </DialogFooter>
         </DialogContent>

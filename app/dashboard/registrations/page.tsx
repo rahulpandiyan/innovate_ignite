@@ -109,7 +109,7 @@ export default async function RegistrationsPage({
       Status: r.status,
       Team: r.team?.name ?? "",
       PaymentStatus: r.payment?.status ?? (Number(r.event.price) > 0 ? "Not submitted" : "Free"),
-      Amount: r.payment ? Number(r.payment.amount) : Number(r.event.price),
+      Amount: r.payment ? Number(r.payment.amount) : Number(r.event.price) > 0 ? Number(r.event.price) : "Free",
     };
   });
 
@@ -206,8 +206,10 @@ export default async function RegistrationsPage({
                         </div>
                       ) : reg.status === "PENDING" && Number(reg.event.price) > 0 ? (
                         <PayRegistrationButton registrationId={reg.id} amount={Number(reg.event.price)} />
-                      ) : (
+                      ) : Number(reg.event.price) > 0 ? (
                         <span className="text-muted-foreground">—</span>
+                      ) : (
+                        <span className="text-muted-foreground">Free</span>
                       )}
                     </TableCell>
                     <TableCell className="text-right">

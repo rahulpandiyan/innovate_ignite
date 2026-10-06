@@ -61,6 +61,7 @@ function esc(value: string): string {
 }
 
 function feeLabel(event: EventCategory): string {
+  if (event.price <= 0) return "Free";
   switch (event.priceMode) {
     case "PER_TEAM":
       return `₹${event.price} / team`;

@@ -160,7 +160,7 @@ export default async function TeamsPage() {
                   </span>
                 </div>
                 <CardDescription>
-                  Led by {team.leader.name} · ₹{team.event.price.toString()}
+                  Led by {team.leader.name} · {Number(team.event.price) > 0 ? `₹${team.event.price.toString()}` : "Free"}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">

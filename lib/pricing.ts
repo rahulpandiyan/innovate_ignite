@@ -18,6 +18,7 @@ export function formatPriceLabel(opts: {
   groupPrice?: number | null;
 }): string {
   const { price, priceMode, groupPrice } = opts;
+  if (price <= 0) return "Free";
   if (priceMode === "PER_PARTICIPANT") return `₹${price} per member`;
   if (priceMode === "SOLO_OR_GROUP") return `Solo ₹${price} · Group ₹${groupPrice ?? price}`;
   return `₹${price} per team`;

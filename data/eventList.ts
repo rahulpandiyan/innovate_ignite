@@ -59,7 +59,7 @@ export const eventsList: EventList[] = [
             "Time limit for the competition is 6 minutes.",
             "NOTE: the Social Spotlight video must be recorded prior in advance with proper clarity.",
             "Team size: 2–3 members.",
-            "Fee: ₹50 per head.",
+            "Free entry.",
             "If the number of teams is less than 6, the event will be cancelled.",
         ],
         coordinators: [
@@ -128,7 +128,7 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Reel Video Making",
         rules: [
-            "Eligibility & Registration: open only to undergraduate (UG) teams of 2–3 members. Registration fee: ₹50 per team.",
+            "Eligibility & Registration: open only to undergraduate (UG) teams of 2–3 members. Registration is free.",
             "Theme & Content: teams will be assigned a specific theme on-the-spot with no prior preparation allowed. Final reel must be educational, entertaining, and respectful (max 90 seconds). Vulgar or 18+ content is strictly prohibited.",
             "Creation & AI ban: reels must be created, recorded, and edited entirely by team members during the event. The use of any Artificial Intelligence (AI) tools is strictly banned.",
             "Submission deadline: final videos must be emailed to harishhari781823@gmail.com or divyachavala05@gmail.com between 9:30 AM and 3:00 PM.",
@@ -149,7 +149,7 @@ export const eventsList: EventList[] = [
             "Character & Costume: participants must portray an Indian historical, mythological, royal, or legendary character using appropriate traditional attire.",
             "Presentation & Time: each participant gets 2–3 minutes to walk, pose, and present their character. Background music should be submitted in advance.",
             "Props & Safety: decorative props such as crowns, shields, and toy swords are permitted. Sharp, dangerous, or harmful props are strictly prohibited.",
-            "Registration & Eligibility: registration fee: ₹50 per participant. The chosen character must be submitted in advance. A minimum of 6 participants is required for the event to be conducted; otherwise, the event may be cancelled.",
+            "Registration & Eligibility: registration is free. The chosen character must be submitted in advance. A minimum of 6 participants is required for the event to be conducted; otherwise, the event may be cancelled.",
             "Conduct & Important Notes: participants must report 30 minutes before the event and maintain respectful conduct. Vulgar, offensive, discriminatory, or inappropriate performances may lead to disqualification. Organisers' decision will be final.",
         ],
         coordinators: [
@@ -187,7 +187,7 @@ export const eventsList: EventList[] = [
         name: "PIXELS - Photography",
         rules: [
             "PIXELS is an on-campus photography competition organized under Innovate and Ignite 2026 at Vijaya Vittala Institute of Technology. The event encourages participants to capture visual stories and see the world through a different lens.",
-            "Date: October 14, 2026 | Time: 9:30 AM onwards | Venue: Quadrangle | Registration fee: ₹50 per participant.",
+            "Date: October 14, 2026 | Time: 9:30 AM onwards | Venue: Quadrangle | Free entry.",
             "Open to all registered students using smartphones or standard cameras (DSLR/Mirrorless).",
             "All photographs must be shot on campus during the event hours.",
             "Only basic editing (brightness, contrast, cropping, color correction) is permitted. Image manipulation, AI generation, or heavy compositing is strictly prohibited.",

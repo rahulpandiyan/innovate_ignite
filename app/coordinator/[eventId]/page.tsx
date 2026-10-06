@@ -204,7 +204,7 @@ export default async function CoordinatorEventPage({ params }: PageProps) {
               <CardDescription>Read-only config for this event.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4 sm:grid-cols-2">
-              <ConfigRow label="Price" value={`₹${event.price.toString()}`} />
+              <ConfigRow label="Price" value={Number(event.price) > 0 ? `₹${event.price.toString()}` : "Free"} />
               <ConfigRow label="Registration type" value={event.type} />
               <ConfigRow label="Team size" value={`${event.minTeamSize ?? "—"} – ${event.maxTeamSize ?? "∞"}`} />
               <ConfigRow label="Venue" value={event.venue ?? "—"} />
