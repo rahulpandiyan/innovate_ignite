@@ -156,7 +156,7 @@ async function seedEvents(superAdminId: string, coordinatorId: string, judgeId: 
       priceMode: "SOLO_OR_GROUP" as const,
       groupPrice: null,
       minTeamSize: 1,
-      maxTeamSize: 3,
+      maxTeamSize: 5,
       status: "OPEN" as const,
       date: new Date("2026-10-14T10:00:00.000Z"),
       rules: "Solo | Free | Talent show | Max 150s | Coordinators: Kavyashree | Students: Shree Khyathi R, M. Harshitha",

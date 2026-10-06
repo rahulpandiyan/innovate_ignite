@@ -133,7 +133,7 @@ async function seedEvents(superAdminId: string) {
       priceMode: "SOLO_OR_GROUP" as const,
       groupPrice: null,
       minTeamSize: 1,
-      maxTeamSize: 3,
+      maxTeamSize: 5,
       status: "OPEN" as const,
       date: new Date("2026-10-14T09:30:00+05:30"),
       time: "09:30 AM – 01:00 PM",

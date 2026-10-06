@@ -112,7 +112,7 @@ export const interDepartmentEvents: EventCategory[] = [
         priceMode: "SOLO_OR_GROUP",
         price: 0,
         minTeamSize: 1,
-        maxTeamSize: 3,
+        maxTeamSize: 5,
     },
     {
         slug: slugify("Reel Video Making"),
