@@ -622,7 +622,7 @@ export default function EventDetailClient({ category, details, dbEvent, viewerRe
           <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="outline" onClick={() => setShowConfirm(false)} className="rounded-full">Cancel</Button>
             <Button onClick={confirmRegister} disabled={registering} className="rounded-full bg-[#0F172A] text-white hover:bg-black">
-              {registering ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Registering�?�</> : selectedOption && selectedOption.price > 0 ? `Register team A� �,1${selectedOption.price}` : "Register team A� Free"}
+              {registering ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Registering�?�</> : selectedOption && selectedOption.price > 0 ? `Register team – �,1${selectedOption.price}` : "Register team – Free"}
             </Button>
           </DialogFooter>
         </DialogContent>
