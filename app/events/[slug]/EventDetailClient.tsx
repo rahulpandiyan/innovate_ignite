@@ -106,8 +106,8 @@ export default function EventDetailClient({ category, details, dbEvent, viewerRe
   const eventDate = dbEvent?.date ? new Date(dbEvent.date) : null;
   const dateLabel =
     eventDate && !isNaN(eventDate.getTime())
-      ? eventDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })
-      : "Oct 13–14";
+      ? eventDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+      : "Oct 13–14, 2026";
 
   const dbRules = dbEvent?.rules ? splitDbRules(dbEvent.rules) : [];
   const rules = (dbRules.length ? dbRules : mainDetail?.rules) as string[] | undefined;
