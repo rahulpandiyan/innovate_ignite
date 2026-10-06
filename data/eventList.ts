@@ -103,7 +103,7 @@ export const eventsList: EventList[] = [
             "Think you have a talent that deserves the spotlight? Whether you sing, dance, act, create, perform, entertain, or have a talent that's uniquely your own, VVIT GOT LATENT is your stage to show what you can do.",
             "Bring your talent, your personality, and your spontaneity and get ready for an unforgettable showdown!",
             "Open talent: participants can showcase any talent, including singing, dance, comedy, mimicry, magic, poetry, acting, beatboxing, instrumental music, storytelling, and more.",
-            "Solo participation: VVIT GOT LATENT is a solo competition. Each participant will perform individually.",
+            "Participation: Solo, Duo or Group (up to 3 members).",
             "Performance time: maximum 150 seconds (2 minutes 30 seconds).",
             "Special extension: if the organizers/panel feel that a performance is exceptionally engaging and worth continuing, they may grant an additional 60 seconds at their discretion. Any extension is entirely subject to the organizers' approval.",
             "Funny G-Form: participants will be required to answer a set of funny, unexpected, quirky, and creative questions in the registration form.",
@@ -208,7 +208,7 @@ export const eventsList: EventList[] = [
         name: "DANCE.exe",
         rules: [
             "Open to all VVIT students.",
-            "Solo and group performances allowed (group of 2–12 members).",
+            "Solo, Duo and Group performances allowed (group of 2–12 members).",
             "Any dance style is allowed.",
             "Use of vulgar content is strictly prohibited.",
             "Performances should be within the given time limit.",

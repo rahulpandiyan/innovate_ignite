@@ -109,10 +109,10 @@ export const interDepartmentEvents: EventCategory[] = [
         slug: slugify("VVIT GOT LATENT"),
         eventName: "VVIT GOT LATENT",
         category: "GENERAL",
-        priceMode: "PER_PARTICIPANT",
+        priceMode: "SOLO_OR_GROUP",
         price: 0,
         minTeamSize: 1,
-        maxTeamSize: 1,
+        maxTeamSize: 3,
     },
     {
         slug: slugify("Reel Video Making"),
