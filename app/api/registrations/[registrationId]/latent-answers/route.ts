@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { getAuthSession } from "@/lib/authCookie";
 import prisma from "@/lib/db";
-import { errorResponse, successResponse } from "@/lib/apiResponse";
+import { errorResponse, successResponse } from "@/lib/apiHelpers";
 
 const PatchSchema = z.object({
   answers: z.record(z.string(), z.string()),
