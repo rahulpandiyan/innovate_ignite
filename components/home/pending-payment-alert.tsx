@@ -70,7 +70,7 @@ export function PendingPaymentAlert() {
                         — <span className="font-mono font-semibold">₹{summary.totalDue.toLocaleString("en-IN")}</span> due
                       </>
                     )}
-                    . Complete it now so your spot is confirmed.
+                    . Complete it now to lock in your spot.
                   </>
                 ) : (
                   <>

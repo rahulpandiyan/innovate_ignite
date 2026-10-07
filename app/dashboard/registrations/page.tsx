@@ -197,14 +197,16 @@ export default async function RegistrationsPage({
                             {reg.payment.status}
                           </span>
                           <span className="text-muted-foreground">₹{reg.payment.amount.toString()}</span>
-                          {reg.payment.status !== "SUCCESS" && reg.status === "PENDING" && (
+                          {reg.payment.status !== "SUCCESS" &&
+                            reg.status !== "CANCELLED" &&
+                            Number(reg.event.price) > 0 && (
                             <PayRegistrationButton registrationId={reg.id} amount={Number(reg.payment.amount)} />
                           )}
                           {reg.payment.status === "SUCCESS" && (
                             <WhatsAppGroupButton eventName={displayName(reg as never)} />
                           )}
                         </div>
-                      ) : reg.status === "PENDING" && Number(reg.event.price) > 0 ? (
+                      ) : Number(reg.event.price) > 0 && reg.status !== "CANCELLED" ? (
                         <PayRegistrationButton registrationId={reg.id} amount={Number(reg.event.price)} />
                       ) : Number(reg.event.price) > 0 ? (
                         <span className="text-muted-foreground">—</span>

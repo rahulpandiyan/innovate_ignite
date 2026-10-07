@@ -18,8 +18,9 @@ export async function GET() {
     prisma.registration.findMany({
       where: {
         userId,
-        status: "PENDING",
-          event: { price: { gte: 0 } },
+        status: { in: ["PENDING", "CONFIRMED"] },
+        event: { price: { gt: 0 } },
+        OR: [{ payment: null }, { payment: { status: { not: "SUCCESS" } } }],
       },
       select: {
         id: true,

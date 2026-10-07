@@ -36,7 +36,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ reg
   });
   if (!registration) return errorResponse("Registration not found.", 404);
   if (registration.userId !== auth.session.id) return errorResponse("Forbidden.", 403);
-  if (registration.status === "CONFIRMED") return errorResponse("Already confirmed.", 400);
+  // Confirmed registrations can still pay when they were confirmed without a
+  // successful payment (e.g. registered while the event was free).
+  if (registration.status === "CONFIRMED" && registration.payment?.status === "SUCCESS") {
+    return errorResponse("Already confirmed.", 400);
+  }
 
   const price = Number(registration.event.price ?? 0);
   if (price <= 0) return errorResponse("This event is free.", 400);
