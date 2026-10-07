@@ -19,7 +19,7 @@ export async function GET() {
       where: {
         userId,
         status: "PENDING",
-        event: { price: { gt: 0 } },
+          event: { price: { gte: 0 } },
       },
       select: {
         id: true,
