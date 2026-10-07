@@ -37,7 +37,7 @@ export default async function PendingPaymentsPage({
   // PENDING row with no transaction id (user hasn't uploaded anything).
   const pendingWhere: Prisma.RegistrationWhereInput = {
     status: "PENDING",
-    event: { price: { gt: 0 } },
+    event: { price: { gte: 0 } },
     OR: [
       { payment: null },
       { payment: { status: "PENDING", transactionId: null } },
