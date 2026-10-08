@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { MailWarning, Search } from "lucide-react";
 import { format } from "date-fns";
 import { displayEventName, getGameChoice } from "@/lib/eventDisplay";
+import { registrationDueAmount } from "@/lib/pricing";
 
 export const dynamic = "force-dynamic";
 
@@ -62,7 +63,7 @@ export default async function PendingPaymentsPage({
 
   const include = {
     user: { select: { name: true, email: true, phone: true, collegeName: true, participant: { select: { participantId: true } } } },
-    event: { select: { name: true, price: true } },
+    event: { select: { name: true, price: true, priceMode: true, groupPrice: true, minTeamSize: true } },
     payment: { select: { status: true, amount: true, transactionId: true } },
   } as const;
 
@@ -91,7 +92,7 @@ export default async function PendingPaymentsPage({
     ParticipantID: r.user.participant?.participantId ?? "",
     Event: displayEventName(r.event.name, r.formResponses),
     Game: getGameChoice(r.event.name, r.formResponses) ?? "",
-    Amount: r.payment ? Number(r.payment.amount) : Number(r.event.price),
+    Amount: registrationDueAmount(r.event, r.formResponses),
     RegistrationID: r.registrationId,
   }));
 
@@ -183,7 +184,7 @@ export default async function PendingPaymentsPage({
                     </a>
                   </td>
                   <td className="px-4 py-2">{displayEventName(r.event.name, r.formResponses)}</td>
-                  <td className="px-4 py-2 font-mono">₹{Number(r.payment?.amount ?? r.event.price).toFixed(0)}</td>
+                  <td className="px-4 py-2 font-mono">₹{registrationDueAmount(r.event, r.formResponses).toFixed(0)}</td>
                   <td className="px-4 py-2">
                     <RemindPaymentButton registrationId={r.id} participantName={r.user.name} />
                   </td>

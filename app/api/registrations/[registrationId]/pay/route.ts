@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import prisma from "@/lib/db";
 import { requireAuth, successResponse, errorResponse } from "@/lib/apiHelpers";
+import { registrationDueAmount } from "@/lib/pricing";
 import { z } from "zod";
 
 const paySchema = z
@@ -32,7 +33,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ reg
 
   const registration = await prisma.registration.findUnique({
     where: { id: registrationId },
-    include: { payment: true, event: { select: { price: true } } },
+    include: {
+      payment: true,
+      event: { select: { price: true, priceMode: true, groupPrice: true, minTeamSize: true } },
+    },
   });
   if (!registration) return errorResponse("Registration not found.", 404);
   if (registration.userId !== auth.session.id) return errorResponse("Forbidden.", 403);
@@ -42,7 +46,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ reg
     return errorResponse("Already confirmed.", 400);
   }
 
-  const price = Number(registration.event.price ?? 0);
+  // Group / per-member dues must not fall back to the base event price.
+  const price = registrationDueAmount(registration.event, registration.formResponses);
   if (price <= 0) return errorResponse("This event is free.", 400);
 
   // If payment already exists and is not PENDING, block resubmit
@@ -56,6 +61,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ reg
     await prisma.payment.update({
       where: { registrationId: registration.id },
       data: {
+        amount: price,
         transactionId: isOffline ? "OFFLINE" : upiTransactionId,
         receiptUrl: isOffline ? null : paymentScreenshotUrl,
         gatewayRef: isOffline ? "OFFLINE" : paymentScreenshotUrl,
@@ -65,7 +71,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ reg
     await prisma.payment.create({
       data: {
         registrationId: registration.id,
-        amount: registration.event.price,
+        amount: price,
         status: "PENDING",
         transactionId: isOffline ? "OFFLINE" : upiTransactionId,
         receiptUrl: isOffline ? null : paymentScreenshotUrl,

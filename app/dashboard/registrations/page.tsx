@@ -19,6 +19,7 @@ import { WhatsAppGroupButton } from "@/components/participant/whatsapp-group-but
 import { ExportExcelButton } from "@/components/ui/export-excel";
 import { festSchedule } from "@/data/schedule";
 import { displayEventName, getGameChoice } from "@/lib/eventDisplay";
+import { registrationDueAmount } from "@/lib/pricing";
 import { format } from "date-fns";
 
 function scheduleFallback(name: string) {
@@ -61,6 +62,9 @@ export default async function RegistrationsPage({
           time: true,
           venue: true,
           price: true,
+          priceMode: true,
+          groupPrice: true,
+          minTeamSize: true,
         },
       },
       team: { select: { id: true, name: true } },
@@ -90,7 +94,13 @@ export default async function RegistrationsPage({
           width: 420,
         });
       }
-      return { ...reg, qrDataUrl, qrToken: attendee?.qrPass?.token ?? null, attendeeId: attendee?.attendeeId ?? null };
+      return {
+        ...reg,
+        due: registrationDueAmount(reg.event, reg.formResponses),
+        qrDataUrl,
+        qrToken: attendee?.qrPass?.token ?? null,
+        attendeeId: attendee?.attendeeId ?? null,
+      };
     })
   );
 
@@ -108,19 +118,14 @@ export default async function RegistrationsPage({
       RegistrationID: r.registrationId,
       Status: r.status,
       Team: r.team?.name ?? "",
-      PaymentStatus: r.payment?.status ?? (Number(r.event.price) > 0 ? "Not submitted" : "Free"),
-      Amount: r.payment ? Number(r.payment.amount) : Number(r.event.price) > 0 ? Number(r.event.price) : "Free",
+      PaymentStatus: r.payment?.status ?? (r.due > 0 ? "Not submitted" : "Free"),
+      Amount: r.due > 0 ? r.due : "Free",
     };
   });
 
   // Deep link from reminder mail: ?pay=<registrationId> opens that payment sheet
   const autoPay = payId ? rows.find((r) => r.id === payId) ?? null : null;
-  const autoPayAmount =
-    autoPay != null
-      ? autoPay.payment
-        ? Number(autoPay.payment.amount)
-        : Number(autoPay.event.price)
-      : 0;
+  const autoPayAmount = autoPay != null ? autoPay.due : 0;
 
   return (
     <div className="space-y-6">
@@ -196,19 +201,19 @@ export default async function RegistrationsPage({
                           <span className={reg.payment.status === "SUCCESS" ? "text-green-700" : "text-amber-600"}>
                             {reg.payment.status}
                           </span>
-                          <span className="text-muted-foreground">₹{reg.payment.amount.toString()}</span>
+                          <span className="text-muted-foreground">₹{reg.due}</span>
                           {reg.payment.status !== "SUCCESS" &&
                             reg.status !== "CANCELLED" &&
-                            Number(reg.event.price) > 0 && (
-                            <PayRegistrationButton registrationId={reg.id} amount={Number(reg.payment.amount)} />
+                            reg.due > 0 && (
+                            <PayRegistrationButton registrationId={reg.id} amount={reg.due} />
                           )}
                           {reg.payment.status === "SUCCESS" && (
                             <WhatsAppGroupButton eventName={displayName(reg as never)} />
                           )}
                         </div>
-                      ) : Number(reg.event.price) > 0 && reg.status !== "CANCELLED" ? (
-                        <PayRegistrationButton registrationId={reg.id} amount={Number(reg.event.price)} />
-                      ) : Number(reg.event.price) > 0 ? (
+                      ) : reg.status !== "CANCELLED" && reg.due > 0 ? (
+                        <PayRegistrationButton registrationId={reg.id} amount={reg.due} />
+                      ) : reg.due > 0 ? (
                         <span className="text-muted-foreground">—</span>
                       ) : (
                         <span className="text-muted-foreground">Free</span>

@@ -4,6 +4,7 @@ import { requireAuth, successResponse, errorResponse } from "@/lib/apiHelpers";
 import { assertPermission } from "@/lib/rbac";
 import { sendPaymentReminderEmail } from "@/lib/email";
 import { displayEventName } from "@/lib/eventDisplay";
+import { registrationDueAmount } from "@/lib/pricing";
 
 // POST /api/registrations/:registrationId/remind — Finance nudges a
 // registered-but-unpaid participant by mail to pay and book the slot.
@@ -25,7 +26,7 @@ export async function POST(
     where: { id: registrationId },
     include: {
       user: { select: { name: true, email: true } },
-      event: { select: { name: true, price: true } },
+      event: { select: { name: true, price: true, priceMode: true, groupPrice: true, minTeamSize: true } },
       payment: { select: { status: true, amount: true, transactionId: true } },
     },
   });
@@ -41,9 +42,7 @@ export async function POST(
     return errorResponse("Payment already submitted — verify it instead of reminding.", 400);
   }
 
-  const amount = registration.payment
-    ? Number(registration.payment.amount)
-    : Number(registration.event.price);
+  const amount = registrationDueAmount(registration.event, registration.formResponses);
 
   let mailId = "";
   try {

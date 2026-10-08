@@ -38,6 +38,37 @@ export interface TeamSizeOption {
   price: number;
 }
 
+// Amount a registration actually owes: always derived from the event's current
+// price config + the team size the participant picked at registration time.
+// Never trust `event.price` alone for group / per-participant pricing.
+export function registrationDueAmount(
+  event: {
+    price: unknown;
+    priceMode: PricingMode;
+    groupPrice?: unknown;
+    minTeamSize?: number | null;
+  },
+  formResponses: unknown
+): number {
+  const fr = (formResponses ?? {}) as { teamSize?: unknown };
+  const min = event.minTeamSize ?? 1;
+  let teamSize =
+    typeof fr.teamSize === "number" && Number.isFinite(fr.teamSize)
+      ? Math.trunc(fr.teamSize)
+      : min;
+  if (!Number.isFinite(teamSize) || teamSize < 1) teamSize = 1;
+  const groupPrice =
+    event.groupPrice === null || event.groupPrice === undefined
+      ? null
+      : Number(event.groupPrice);
+  return computeEventPrice({
+    price: Number(event.price ?? 0),
+    priceMode: event.priceMode,
+    teamSize,
+    groupPrice,
+  });
+}
+
 export function teamSizeOptions(opts: {
   price: number;
   priceMode: PricingMode;

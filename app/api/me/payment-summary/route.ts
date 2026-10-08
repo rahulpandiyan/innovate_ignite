@@ -1,6 +1,7 @@
 import { requireAuth, successResponse } from "@/lib/apiHelpers";
 import prisma from "@/lib/db";
 import { displayEventName } from "@/lib/eventDisplay";
+import { registrationDueAmount } from "@/lib/pricing";
 
 export const dynamic = "force-dynamic";
 
@@ -25,8 +26,8 @@ export async function GET() {
       select: {
         id: true,
         formResponses: true,
-        event: { select: { name: true, price: true } },
-        payment: { select: { status: true } },
+        event: { select: { name: true, price: true, priceMode: true, groupPrice: true, minTeamSize: true } },
+        payment: { select: { status: true, transactionId: true } },
       },
       orderBy: { createdAt: "desc" },
       take: 50,
@@ -49,7 +50,7 @@ export async function GET() {
 
   for (const reg of registrations) {
     const status = reg.payment?.status ?? null;
-    const amount = Number(reg.event.price);
+    const amount = registrationDueAmount(reg.event, reg.formResponses);
     const item = {
       label: displayEventName(reg.event.name, reg.formResponses),
       amount,
@@ -64,7 +65,13 @@ export async function GET() {
       reviewEvents.push(item);
       continue;
     }
-    // PENDING / FAILED / CANCELLED all mean the student still owes money.
+    // Screenshot + transaction ID already submitted → finance is verifying it,
+    // so this is "in review", not something the student still has to pay.
+    if (status === "PENDING" && reg.payment?.transactionId) {
+      reviewEvents.push(item);
+      continue;
+    }
+    // FAILED / CANCELLED / PENDING-without-submission: student still owes money.
     unpaidEvents.push(item);
   }
 

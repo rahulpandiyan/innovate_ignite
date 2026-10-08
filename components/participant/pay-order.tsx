@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScreenshotFileField } from "@/components/participant/screenshot-file-field";
 import { toast } from "sonner";
-import { Copy, Check, ExternalLink, Inbox, Landmark, Smartphone } from "lucide-react";
+import { Copy, Check, ExternalLink, Landmark, Smartphone } from "lucide-react";
 
 export function PayOrderButton({
   orderId,
@@ -157,13 +157,30 @@ export function PayOrderButton({
               <p className="mt-1.5 text-center font-mono text-[10px] text-[#0F172A]/40">Opens GPay / PhonePe / Paytm / BHIM</p>
             </div>
 
-            <Alert className="text-xs bg-amber-50 border-amber-200">
-              <Inbox className="h-4 w-4" />
-              <AlertTitle className="text-amber-900">Manual verification</AlertTitle>
-              <AlertDescription className="text-amber-800">
-                After paying, enter the UPI transaction ID and upload the screenshot below. An administrator verifies your payment before your registration is confirmed.
-              </AlertDescription>
-            </Alert>
+            <div className="space-y-2.5 rounded-xl border-2 border-amber-300/70 bg-[#FFFBEB] p-3.5">
+              <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#0F172A]/55">How to pay</p>
+              <ol className="list-decimal space-y-2 pl-4 text-xs leading-relaxed text-[#0F172A]/80 marker:font-mono marker:font-bold marker:text-[#0F172A]/60">
+                <li>
+                  Pay <span className="font-bold text-[#0F172A]">₹{amount}</span> only to this UPI ID:{" "}
+                  <span className="font-mono font-bold text-[#0F172A]">{upiHandle}</span> — scan the QR above or tap “Pay
+                  ₹{amount} via UPI app”.
+                </li>
+                <li>
+                  After paying, take a <strong>screenshot</strong> of the success screen and{" "}
+                  <strong>upload it below</strong> together with the UPI transaction ID, then submit.
+                </li>
+                <li>
+                  Payment problem? Contact the Event Coordinator <strong>Sam Goldwin</strong> at{" "}
+                  <a href="tel:+919739431299" className="font-bold text-[#0F172A] underline underline-offset-2 hover:text-black">
+                    +91 97394 31299
+                  </a>
+                  .
+                </li>
+              </ol>
+              <p className="text-[10px] leading-relaxed text-[#0F172A]/55">
+                An administrator verifies your payment before your order is confirmed.
+              </p>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="upi">UPI transaction ID</Label>
               <Input
