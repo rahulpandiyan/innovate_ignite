@@ -143,6 +143,33 @@ export function PaySheet({ open, onOpenChange, registrationId, amount, onSubmitt
             <>
               {/* QR + UPI section */}
               <div className="mt-4 space-y-4">
+                <div className="space-y-2.5 rounded-xl border-2 border-amber-300/70 bg-[#FFFBEB] p-3.5">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#0F172A]/55">How to pay</p>
+                  <ol className="list-decimal space-y-2 pl-4 text-xs leading-relaxed text-[#0F172A]/80 marker:font-mono marker:font-bold marker:text-[#0F172A]/60">
+                    <li>
+                      Pay <span className="font-bold text-[#0F172A]">₹{amount}</span> only to this UPI ID:{" "}
+                      <span className="font-mono font-bold text-[#0F172A]">{upiHandle}</span> — scan the QR below or tap “Pay
+                      ₹{amount} via UPI app”.
+                    </li>
+                    <li>
+                      After paying, take a <strong>screenshot</strong> of the success screen and{" "}
+                      <strong>upload it below</strong> together with the UPI transaction ID, then submit.
+                    </li>
+                    <li>
+                      Payment problem? Contact the Event Coordinator{" "}
+                      <strong>Sam Goldwin</strong> at{" "}
+                      <a href="tel:+919739431299" className="font-bold text-[#0F172A] underline underline-offset-2 hover:text-black">
+                        +91 97394 31299
+                      </a>
+                      .
+                    </li>
+                  </ol>
+                  <p className="text-[10px] leading-relaxed text-[#0F172A]/55">
+                    Your registration stays <strong>pending</strong> until finance verifies the screenshot. You&apos;ll get the
+                    QR pass after confirmation.
+                  </p>
+                </div>
+
                 <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0F172A] via-[#1a1a1e] to-[#E11D48]/40 p-3">
                   <div className="rounded-2xl bg-white p-3 shadow-inner">
                     <div className="overflow-hidden rounded-xl border-2 border-black">
@@ -170,33 +197,6 @@ export function PaySheet({ open, onOpenChange, registrationId, amount, onSubmitt
                     Pay ₹{amount} via UPI app <ExternalLink className="h-3.5 w-3.5" />
                   </a>
                   <p className="mt-1.5 text-center font-mono text-[10px] text-[#0F172A]/40">Opens GPay / PhonePe / Paytm / BHIM</p>
-                </div>
-
-                <div className="space-y-2.5 rounded-xl border-2 border-amber-300/70 bg-[#FFFBEB] p-3.5">
-                  <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#0F172A]/55">How to pay</p>
-                  <ol className="list-decimal space-y-2 pl-4 text-xs leading-relaxed text-[#0F172A]/80 marker:font-mono marker:font-bold marker:text-[#0F172A]/60">
-                    <li>
-                      Pay <span className="font-bold text-[#0F172A]">₹{amount}</span> only to this UPI ID:{" "}
-                      <span className="font-mono font-bold text-[#0F172A]">{upiHandle}</span> — scan the QR above or tap “Pay
-                      ₹{amount} via UPI app”.
-                    </li>
-                    <li>
-                      After paying, take a <strong>screenshot</strong> of the success screen and{" "}
-                      <strong>upload it below</strong> together with the UPI transaction ID, then submit.
-                    </li>
-                    <li>
-                      Payment problem? Contact the Event Coordinator{" "}
-                      <strong>Sam Goldwin</strong> at{" "}
-                      <a href="tel:+919739431299" className="font-bold text-[#0F172A] underline underline-offset-2 hover:text-black">
-                        +91 97394 31299
-                      </a>
-                      .
-                    </li>
-                  </ol>
-                  <p className="text-[10px] leading-relaxed text-[#0F172A]/55">
-                    Your registration stays <strong>pending</strong> until finance verifies the screenshot. You&apos;ll get the
-                    QR pass after confirmation.
-                  </p>
                 </div>
               </div>
 
